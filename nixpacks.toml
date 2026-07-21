@@ -2,17 +2,12 @@
 # Build configuration for monorepo structure
 
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = [
-  "ls -la",
-  "cd backend && npm ci",
-  "ls -la"
-]
+cmds = ["cd backend && npm ci"]
 
 [phases.build]
-cmds = ["echo 'Files in build:' && ls -la && cat server.js"]
 
 [start]
-cmd = "ls -la && node server.js"
+cmd = "node server.js"
