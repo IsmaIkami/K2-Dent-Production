@@ -6,20 +6,20 @@
  */
 
 // Environnement (à changer manuellement)
-const ENV = 'development'; // 'development' ou 'production'
+const ENV = 'production'; // 'development' ou 'production'
 
 // Configuration par environnement
 const CONFIG = {
   development: {
     BACKEND_URL: 'http://localhost:3000',
-    SUPABASE_URL: 'https://xxxxx.supabase.co', // À remplir
-    SUPABASE_ANON_KEY: 'eyJhbGci...', // À remplir
+    SUPABASE_URL: 'https://sqgxscrwcffjfomlsoyf.supabase.co',
+    SUPABASE_ANON_KEY: 'sb_publishable_hHlYAIA-iTFLe8iI2XF8CA_2tu3oewp',
     FRONTEND_URL: 'http://localhost:8000'
   },
   production: {
-    BACKEND_URL: 'https://k2dent-backend-production.up.railway.app', // À remplir avec votre URL Railway
-    SUPABASE_URL: 'https://xxxxx.supabase.co', // À remplir
-    SUPABASE_ANON_KEY: 'eyJhbGci...', // À remplir
+    BACKEND_URL: 'https://k2-dent-production-production.up.railway.app',
+    SUPABASE_URL: 'https://sqgxscrwcffjfomlsoyf.supabase.co',
+    SUPABASE_ANON_KEY: 'sb_publishable_hHlYAIA-iTFLe8iI2XF8CA_2tu3oewp',
     FRONTEND_URL: 'https://ismaikami.github.io/K2-Dent-Production'
   }
 };
