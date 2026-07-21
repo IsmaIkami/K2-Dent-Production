@@ -1242,7 +1242,7 @@
                     closeNewPatientModal();
 
                     // Reload patients list
-                    loadPatients();
+                    await loadAllPatients();
                 } else {
                     alert('❌ Erreur lors de la création du patient');
                 }
