@@ -1239,31 +1239,31 @@
                         <div style="display: flex; gap: 24px; align-items: flex-start;">
                             <div class="patient-avatar-large">👤</div>
                             <div style="flex: 1;">
-                                <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Marie Dubois</h1>
+                                <h1 class="patient-name" style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Chargement...</h1>
                                 <div class="patient-meta-grid">
                                     <div class="meta-item">
                                         <div class="meta-label">Email</div>
-                                        <div class="meta-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a474b58434f044e5f484543596a4f474b434604484f">[email&#160;protected]</a></div>
+                                        <div class="meta-value" id="patient-email">-</div>
                                     </div>
                                     <div class="meta-item">
                                         <div class="meta-label">Téléphone</div>
-                                        <div class="meta-value">+32 475 12 34 56</div>
+                                        <div class="meta-value" id="patient-phone">-</div>
                                     </div>
                                     <div class="meta-item">
                                         <div class="meta-label">Date de naissance</div>
-                                        <div class="meta-value">05/03/1983 (42 ans)</div>
+                                        <div class="meta-value" id="patient-dob">-</div>
                                     </div>
                                     <div class="meta-item">
                                         <div class="meta-label">NISS</div>
-                                        <div class="meta-value">83.03.05-123.45</div>
+                                        <div class="meta-value" id="patient-niss">-</div>
                                     </div>
                                     <div class="meta-item">
                                         <div class="meta-label">Mutuelle</div>
-                                        <div class="meta-value" style="color: var(--success);">✓ Mutuelle Chrétienne</div>
+                                        <div class="meta-value" id="patient-mutuelle" style="color: var(--success);">-</div>
                                     </div>
                                     <div class="meta-item">
-                                        <div class="meta-label">N° Affiliation</div>
-                                        <div class="meta-value">306-1234567-89</div>
+                                        <div class="meta-label">Adresse</div>
+                                        <div class="meta-value" id="patient-address">-</div>
                                     </div>
                                 </div>
                                 
@@ -1700,7 +1700,7 @@
                 <div class="notification-content">
                     <div class="notification-title">Nouvelle analyse IA disponible</div>
                     <div class="notification-text">
-                        L'analyse de la radiographie panoramique de Marie Dubois est terminée. 3 recommandations générées.
+                        L'analyse de la radiographie panoramique est terminée. 3 recommandations générées.
                     </div>
                     <div class="notification-time">Il y a 5 minutes</div>
                 </div>
@@ -1726,7 +1726,7 @@
                 <div class="notification-content">
                     <div class="notification-title">Rappel traitement</div>
                     <div class="notification-text">
-                        Jean Martin - Traitement endodontique dent 16 prévu demain à 10h00.
+                        Prochain rendez-vous: Traitement endodontique dent 16 prévu demain à 10h00.
                     </div>
                     <div class="notification-time">Il y a 1 heure</div>
                 </div>
@@ -1828,7 +1828,7 @@
             <form>
                 <div class="form-group">
                     <label class="form-label">Patient</label>
-                    <input type="text" class="form-input" value="Marie Dubois" readonly>
+                    <input type="text" class="form-input patient-name-input" value="Chargement..." readonly>
                 </div>
 
                 <div class="form-group">
@@ -1907,8 +1907,9 @@
                 }, 1000);
 
                 console.log('Adding to timeline...');
+                const patientNameForLog = document.querySelector('.patient-name')?.textContent || 'le patient';
                 addToTimeline('', 'badge-manual', 'Enregistrement consultation démarré',
-                    'Enregistrement audio de la consultation en cours avec le patient Marie Dubois.');
+                    `Enregistrement audio de la consultation en cours avec ${patientNameForLog}.`);
                 console.log('Recording started successfully!');
             } catch (error) {
                 console.error('Error in startRecording:', error);
@@ -1947,19 +1948,32 @@
                     document.getElementById('anamnesisSection').style.display = 'block';
 
                     try {
-                        // Get patient data
-                        const patientData = {
-                            name: 'Marie Dubois',
-                            age: 42,
-                            niss: '83.03.05-123.45',
-                            mutuelle: 'Mutualité Chrétienne',
-                            mutuelleCode: '300',
+                        // Get patient data from currentPatient or use defaults
+                        const patientAge = currentPatient ? calculateAge(currentPatient.date_of_birth) : null;
+                        const patientData = currentPatient ? {
+                            name: `${currentPatient.first_name} ${currentPatient.last_name}`,
+                            age: patientAge,
+                            niss: formatNISS(currentPatient.niss),
+                            mutuelle: currentPatient.mutuelle_code || 'Non renseignée',
+                            mutuelleCode: currentPatient.mutuelle_code || '',
+                            bim: currentPatient.bim || false,
+                            language: 'FR',
+                            allergies: 'Non renseignées',
+                            medications: 'Non renseignées',
+                            conditions: 'Non renseignées',
+                            dentalHistory: 'À compléter'
+                        } : {
+                            name: 'Patient non identifié',
+                            age: null,
+                            niss: '-',
+                            mutuelle: '-',
+                            mutuelleCode: '',
                             bim: false,
                             language: 'FR',
-                            allergies: 'Pénicilline',
-                            medications: 'Aucune',
-                            conditions: 'Aucune',
-                            dentalHistory: 'Dernière visite il y a 6 mois'
+                            allergies: '-',
+                            medications: '-',
+                            conditions: '-',
+                            dentalHistory: '-'
                         };
 
                         // Generate with IA
@@ -2051,19 +2065,32 @@
             try {
                 AI_Dental.showAILoading('anamnesisText', 'IA en cours de génération de l\'anamnèse...');
 
-                // Get patient data
-                const patientData = {
-                    name: 'Marie Dubois',
-                    age: 42,
-                    niss: '83.03.05-123.45',
-                    mutuelle: 'Mutualité Chrétienne',
-                    mutuelleCode: '300',
+                // Get patient data from currentPatient
+                const patientAge = currentPatient ? calculateAge(currentPatient.date_of_birth) : null;
+                const patientData = currentPatient ? {
+                    name: `${currentPatient.first_name} ${currentPatient.last_name}`,
+                    age: patientAge,
+                    niss: formatNISS(currentPatient.niss),
+                    mutuelle: currentPatient.mutuelle_code || 'Non renseignée',
+                    mutuelleCode: currentPatient.mutuelle_code || '',
+                    bim: currentPatient.bim || false,
+                    language: 'FR',
+                    allergies: 'Non renseignées',
+                    medications: 'Non renseignées',
+                    conditions: 'Non renseignées',
+                    dentalHistory: 'À compléter'
+                } : {
+                    name: 'Patient non identifié',
+                    age: null,
+                    niss: '-',
+                    mutuelle: '-',
+                    mutuelleCode: '',
                     bim: false,
                     language: 'FR',
-                    allergies: 'Pénicilline',
-                    medications: 'Aucune',
-                    conditions: 'Aucune',
-                    dentalHistory: 'Dernière visite il y a 6 mois'
+                    allergies: '-',
+                    medications: '-',
+                    conditions: '-',
+                    dentalHistory: '-'
                 };
 
                 // Get transcription
@@ -2329,18 +2356,30 @@
                 AI_Dental.showAILoading('prescriptionText', 'IA en cours de génération des prescriptions...');
                 document.getElementById('prescriptionSection').style.display = 'block';
 
-                // Get patient data
-                const patientData = {
-                    name: 'Marie Dubois',
-                    age: 42,
-                    weight: 65, // kg
-                    niss: '83.03.05-123.45',
-                    mutuelle: 'Mutualité Chrétienne',
-                    mutuelleCode: '300',
+                // Get patient data from currentPatient
+                const patientAge = currentPatient ? calculateAge(currentPatient.date_of_birth) : null;
+                const patientData = currentPatient ? {
+                    name: `${currentPatient.first_name} ${currentPatient.last_name}`,
+                    age: patientAge,
+                    weight: 65, // kg - à ajouter dans la DB
+                    niss: formatNISS(currentPatient.niss),
+                    mutuelle: currentPatient.mutuelle_code || 'Non renseignée',
+                    mutuelleCode: currentPatient.mutuelle_code || '',
+                    bim: currentPatient.bim || false,
+                    allergies: 'Non renseignées',
+                    medications: 'Non renseignées',
+                    conditions: 'Non renseignées'
+                } : {
+                    name: 'Patient non identifié',
+                    age: null,
+                    weight: null,
+                    niss: '-',
+                    mutuelle: '-',
+                    mutuelleCode: '',
                     bim: false,
-                    allergies: 'Pénicilline',
-                    medications: 'Aucune',
-                    conditions: 'Aucune'
+                    allergies: '-',
+                    medications: '-',
+                    conditions: '-'
                 };
 
                 // Get anamnesis
@@ -2556,6 +2595,7 @@
 
         let currentPatientId = null;
         let currentPatientNISS = null;
+        let currentPatient = null; // Store full patient object
         let supabaseInitialized = false;
 
         // Initialize Supabase on page load
@@ -2588,6 +2628,7 @@
                 if (patient) {
                     currentPatientId = patient.id;
                     currentPatientNISS = patient.niss;
+                    currentPatient = patient; // Store globally
 
                     // Update patient info in UI
                     updatePatientInfo(patient);
@@ -2614,11 +2655,61 @@
                 el.textContent = patientName;
             });
 
+            // Update patient name inputs
+            document.querySelectorAll('.patient-name-input').forEach(el => {
+                el.value = patientName;
+            });
+
             // Update header if exists
             const header = document.querySelector('.page-header h2');
             if (header) {
                 header.innerHTML = `🦷 Dashboard Patient - ${patientName}`;
             }
+
+            // Update patient metadata fields
+            const emailEl = document.getElementById('patient-email');
+            if (emailEl) emailEl.textContent = patient.email || 'Non renseigné';
+
+            const phoneEl = document.getElementById('patient-phone');
+            if (phoneEl) phoneEl.textContent = patient.phone || 'Non renseigné';
+
+            const dobEl = document.getElementById('patient-dob');
+            if (dobEl) dobEl.textContent = `${formatDate(patient.date_of_birth)}${patientAge ? ` (${patientAge} ans)` : ''}`;
+
+            const nissEl = document.getElementById('patient-niss');
+            if (nissEl) nissEl.textContent = formatNISS(patient.niss);
+
+            const mutuelleEl = document.getElementById('patient-mutuelle');
+            if (mutuelleEl) {
+                const mutuelleNames = {
+                    '306': 'Mutualité Chrétienne',
+                    '307': 'Mutualité Socialiste',
+                    '309': 'Mutualité Neutre',
+                    '311': 'Mutualité Libérale',
+                    '313': 'Mutualité Libre'
+                };
+                const mutuelleName = mutuelleNames[patient.mutuelle_code] || 'Non renseignée';
+                mutuelleEl.textContent = `✓ ${mutuelleName}`;
+            }
+
+            const addressEl = document.getElementById('patient-address');
+            if (addressEl) addressEl.textContent = patient.address_street || 'Non renseignée';
+        }
+
+        // Format NISS for display (XX.XX.XX-XXX.XX)
+        function formatNISS(niss) {
+            if (!niss || niss.length !== 11) return niss || '-';
+            return `${niss.slice(0,2)}.${niss.slice(2,4)}.${niss.slice(4,6)}-${niss.slice(6,9)}.${niss.slice(9,11)}`;
+        }
+
+        // Format date to DD/MM/YYYY
+        function formatDate(dateString) {
+            if (!dateString) return 'Non renseignée';
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
         }
 
         // Calculate age from date of birth
