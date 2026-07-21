@@ -1,13 +1,18 @@
 # Nixpacks Configuration for Railway
 # Build configuration for monorepo structure
+# IMPORTANT: Node.js 22+ required for Supabase WebSocket support
 
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = ["nodejs-22_x"]
+nixLibs = []
 
 [phases.install]
-cmds = ["cd backend && npm ci"]
+cmds = [
+  "node --version",
+  "cd backend && npm ci"
+]
 
 [phases.build]
 
 [start]
-cmd = "node server.js"
+cmd = "node --version && node server.js"

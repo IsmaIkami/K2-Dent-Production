@@ -28,15 +28,10 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
 });
 
-// Initialize Supabase client with realtime disabled for Node < 22 compatibility
+// Initialize Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    realtime: {
-      enabled: false
-    }
-  }
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 // ============================================================================
