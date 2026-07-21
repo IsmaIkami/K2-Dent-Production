@@ -1268,9 +1268,14 @@
                                 </div>
                                 
                                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
-                                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                                        <span class="alert-badge alert-danger">⚠️ Allergies: Pénicilline, Latex</span>
-                                        <span class="alert-badge alert-warning">💊 Diabète Type 2</span>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <h4 style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">Alertes Médicales</h4>
+                                        <button class="btn btn-icon btn-secondary" onclick="showMedicalDataModal()" style="padding: 6px 12px; font-size: 12px;">
+                                            ✏️ Modifier
+                                        </button>
+                                    </div>
+                                    <div id="medicalAlerts" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                        <span style="color: var(--text-secondary); font-size: 13px;">Chargement...</span>
                                     </div>
                                 </div>
                             </div>
@@ -1304,6 +1309,10 @@
                             <button class="action-btn action-ai" onclick="newAIAnalysis()">
                                 <span>🤖</span>
                                 <span>Analyse IA</span>
+                            </button>
+                            <button class="action-btn action-success" onclick="exportPatientDossier()" style="background: rgba(52, 199, 89, 0.15); border-color: var(--success); color: var(--success);">
+                                <span>📥</span>
+                                <span>Export Dossier</span>
                             </button>
                         </div>
                     </div>
@@ -2023,28 +2032,80 @@
             }
         }
 
-        function saveAnamnesis() {
+        async function saveAnamnesis() {
+            if (!currentPatientId) {
+                alert('❌ Aucun patient sélectionné');
+                return;
+            }
+
             showLoading("Enregistrement de l'anamnèse...");
-            
-            setTimeout(function() {
+
+            try {
+                const anamnesisContent = document.getElementById('anamnesisText')?.textContent || '';
+                const transcriptionText = document.getElementById('transcriptionText')?.textContent || '';
+
+                // Save anamnesis to Supabase
+                const anamnesisData = {
+                    patient_id: currentPatientId,
+                    content: anamnesisContent,
+                    type: 'AI',
+                    ai_model: 'claude-sonnet-4',
+                    transcription_text: transcriptionText,
+                    transcription_duration_sec: recordingSeconds,
+                    created_by: '00000000-0000-0000-0000-000000000000'
+                };
+
+                const savedAnamnesis = await DB.saveAnamnesis(anamnesisData);
+                console.log('✅ Anamnèse sauvegardée:', savedAnamnesis);
+
+                // Extract medical data from anamnesis and create medical_history entry
+                // This is a simplified version - in production, you'd use NLP/IA to extract structured data
+                try {
+                    const medicalData = {
+                        allergies: [], // TODO: Extract from anamnesis
+                        medications: [], // TODO: Extract from anamnesis
+                        medical_conditions: [], // TODO: Extract from anamnesis
+                        surgical_history: [],
+                        dental_concerns: anamnesisContent.substring(0, 500), // First 500 chars as summary
+                        previous_dental_treatments: [],
+                        dental_anxiety_level: null,
+                        brushing_frequency: null,
+                        flossing_frequency: null,
+                        mouthwash_use: false,
+                        practitioner_notes: `Anamnèse générée par IA le ${new Date().toLocaleDateString('fr-BE')}`
+                    };
+
+                    await DB.saveMedicalHistory(currentPatientId, medicalData);
+                    console.log('✅ Données médicales créées depuis anamnèse');
+
+                    // Reload medical data
+                    await loadMedicalData();
+                } catch (medError) {
+                    console.warn('⚠️ Could not create medical history (table may not exist yet):', medError);
+                }
+
                 hideLoading();
-                
-                addToTimeline('ai-generated', 'badge-ai', 'Anamnèse IA enregistrée', 
+
+                addToTimeline('ai-generated', 'badge-ai', 'Anamnèse IA enregistrée',
                     "Anamnèse générée automatiquement par IA à partir de l'enregistrement audio de consultation. " +
-                    'Motif: Douleur dentaire secteur supérieur droit. Durée enregistrement: ' + 
+                    'Durée enregistrement: ' +
                     Math.floor(recordingSeconds / 60) + ' min ' + (recordingSeconds % 60) + ' sec');
-                
-                addNotification('💾', 'rgba(52, 199, 89, 0.15)', 'var(--success)', 
-                    'Anamnèse enregistrée', 
+
+                addNotification('💾', 'rgba(52, 199, 89, 0.15)', 'var(--success)',
+                    'Anamnèse enregistrée',
                     "L'anamnèse a été ajoutée au dossier patient avec succès.",
                     'var(--success)');
-                
+
                 document.getElementById('transcriptionSection').style.display = 'none';
                 document.getElementById('anamnesisSection').style.display = 'none';
                 recordingSeconds = 0;
-                
+
                 alert('✅ Anamnèse enregistrée avec succès dans le dossier patient!');
-            }, 1500);
+            } catch (error) {
+                hideLoading();
+                console.error('Error saving anamnesis:', error);
+                alert('❌ Erreur lors de la sauvegarde: ' + error.message);
+            }
         }
 
         function editAnamnesis() {
@@ -2636,6 +2697,9 @@
                     // Load timeline
                     await loadPatientTimeline(patient.id);
 
+                    // Load medical data
+                    await loadMedicalData();
+
                     console.log('✅ Patient loaded:', patient.first_name, patient.last_name);
                     return patient;
                 }
@@ -2844,6 +2908,96 @@
             const niss = prompt('Entrez le NISS du patient (format: XX.XX.XX-XXX.XX):');
             if (niss) {
                 loadPatientByNISS(niss);
+            }
+        }
+
+        // =================================================================
+        // MEDICAL DATA MANAGEMENT
+        // =================================================================
+
+        let currentMedicalData = null;
+
+        async function loadMedicalData() {
+            if (!currentPatientId) return;
+
+            try {
+                currentMedicalData = await DB.getLatestMedicalHistory(currentPatientId);
+                displayMedicalAlerts(currentMedicalData);
+            } catch (error) {
+                console.error('Error loading medical data:', error);
+                displayMedicalAlerts(null);
+            }
+        }
+
+        function displayMedicalAlerts(medicalData) {
+            const alertsDiv = document.getElementById('medicalAlerts');
+            if (!alertsDiv) return;
+
+            if (!medicalData || (!medicalData.allergies?.length && !medicalData.medical_conditions?.length)) {
+                alertsDiv.innerHTML = '<span style="color: var(--text-secondary); font-size: 13px;">Aucune alerte médicale</span>';
+                return;
+            }
+
+            let html = '';
+
+            // Allergies
+            if (medicalData.allergies && medicalData.allergies.length > 0) {
+                html += `<span class="alert-badge alert-danger">⚠️ Allergies: ${medicalData.allergies.join(', ')}</span>`;
+            }
+
+            // Medical conditions
+            if (medicalData.medical_conditions && medicalData.medical_conditions.length > 0) {
+                html += `<span class="alert-badge alert-warning">💊 ${medicalData.medical_conditions.join(', ')}</span>`;
+            }
+
+            alertsDiv.innerHTML = html || '<span style="color: var(--text-secondary); font-size: 13px;">Aucune alerte</span>';
+        }
+
+        function showMedicalDataModal() {
+            alert('📋 Section Données Médicales\n\nCette fonctionnalité nécessite:\n\n1. Exécuter medical-data-enhancement.sql sur Supabase\n2. Créer la table medical_history\n3. Créer la vue patient_complete_view\n\nUne fois la DB mise à jour, vous pourrez:\n• Éditer allergies, médicaments, conditions\n• Voir l\'historique versionné\n• Auto-remplissage via anamnèse IA\n\n💡 Instructions dans supabase/medical-data-enhancement.sql');
+        }
+
+        // =================================================================
+        // EXPORT PATIENT DOSSIER
+        // =================================================================
+
+        async function exportPatientDossier() {
+            if (!currentPatientId) {
+                alert('❌ Aucun patient sélectionné');
+                return;
+            }
+
+            if (!confirm('📥 Exporter le dossier complet du patient?\n\nCela inclura:\n• Données patient\n• Historique médical\n• Timeline complète\n• Prescriptions\n• Certificats\n• Schémas dentaires\n• Radiographies\n\nFormat: JSON')) {
+                return;
+            }
+
+            try {
+                console.log('📥 Export dossier patient...');
+                const dossier = await DB.exportPatientDossier(currentPatientId);
+
+                // Download as JSON
+                const jsonStr = JSON.stringify(dossier, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const patientName = currentPatient ? `${currentPatient.first_name}_${currentPatient.last_name}` : 'patient';
+                a.download = `K2Dent_Dossier_${patientName}_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert('✅ Dossier exporté avec succès!\n\nLe fichier JSON a été téléchargé.\n\nVous pouvez maintenant:\n• L\'importer dans un autre système\n• Le convertir en PDF avec un outil externe\n• L\'archiver pour backup');
+
+                // Add to timeline
+                if (window.addToTimeline) {
+                    addToTimeline('document', 'badge-info', 'Export dossier patient',
+                        `Dossier complet exporté en JSON (${Math.round(jsonStr.length / 1024)} KB)`);
+                }
+            } catch (error) {
+                console.error('Error exporting dossier:', error);
+                alert('❌ Erreur lors de l\'export: ' + error.message);
             }
         }
 
