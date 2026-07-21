@@ -725,6 +725,9 @@
     <script src="config.js"></script>
 
     <script>
+        // Patient ID from URL parameter
+        let currentPatientId = null;
+
         // Initial tooth statuses
         const toothStatuses = {
             16: 'caries',
@@ -736,6 +739,15 @@
             38: 'missing',
             48: 'missing'
         };
+
+        // Get patient ID from URL on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            currentPatientId = params.get('patient');
+            if (!currentPatientId) {
+                console.warn('⚠️ Aucun patient spécifié dans l\'URL');
+            }
+        });
 
         let selectedTreatment = null;
 
@@ -860,15 +872,21 @@
             return labels[status] || 'Sain';
         }
 
-        function saveDentalChart() {
-            const chartData = {
-                patient: 'Marie Dubois',
-                date: new Date().toISOString(),
-                teeth: toothStatuses
-            };
+        async function saveDentalChart() {
+            if (!currentPatientId) {
+                alert('⚠️ Aucun patient sélectionné. Veuillez accéder à cette page depuis le dossier patient.');
+                return;
+            }
 
-            console.log('Schéma dentaire sauvegardé:', chartData);
-            alert('✅ Schéma dentaire enregistré avec succès!\n\n' + Object.keys(toothStatuses).length + ' dents documentées.');
+            try {
+                // Save to Supabase
+                const savedChart = await DB.saveDentalChart(currentPatientId, toothStatuses);
+                console.log('✅ Schéma dentaire sauvegardé dans Supabase:', savedChart);
+                alert('✅ Schéma dentaire enregistré avec succès dans la base de données!\n\n' + Object.keys(toothStatuses).length + ' dents documentées.');
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde schéma dentaire:', error);
+                alert('❌ Erreur lors de la sauvegarde: ' + error.message);
+            }
         }
 
         // Theme management

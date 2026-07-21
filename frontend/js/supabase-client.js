@@ -564,6 +564,36 @@ const DB = {
     }
   },
 
+  /**
+   * Get all prescriptions (with patient info)
+   * @returns {Promise<Array>} All prescriptions
+   */
+  async getAllPrescriptions() {
+    try {
+      const { data, error } = await supabase
+        .from('prescriptions')
+        .select(`
+          *,
+          patients (
+            first_name,
+            last_name
+          )
+        `)
+        .order('prescription_date', { ascending: false });
+
+      if (error) throw error;
+
+      // Format patient name
+      return (data || []).map(rx => ({
+        ...rx,
+        patient_name: rx.patients ? `${rx.patients.first_name} ${rx.patients.last_name}` : 'Patient inconnu'
+      }));
+    } catch (error) {
+      console.error('Error fetching all prescriptions:', error);
+      throw error;
+    }
+  },
+
   // ========================================================================
   // CERTIFICATES
   // ========================================================================

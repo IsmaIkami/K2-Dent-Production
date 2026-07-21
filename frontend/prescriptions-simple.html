@@ -534,7 +534,7 @@
         }
 
         // Save prescription
-        function savePrescription(event) {
+        async function savePrescription(event) {
             event.preventDefault();
 
             if (!Auth.hasPermission('prescriptions.create')) {
@@ -558,59 +558,73 @@
             const select = document.getElementById('patientSelect');
             const patient = JSON.parse(select.options[select.selectedIndex].dataset.patient);
 
-            const prescription = {
-                id: `rx-${Date.now()}`,
-                recipeId: `BE-2026-${prescriptionCounter++}-RXDE`,
-                patientId: patient.id,
-                patientName: `${patient.firstName} ${patient.lastName}`,
-                patientNISS: patient.niss,
-                medications: selectedMedications.map((med, idx) => ({
-                    ...med,
-                    dosage: document.querySelectorAll('.selected-med input')[idx].value
-                })),
-                notes: document.getElementById('notes').value,
-                date: new Date().toISOString(),
-                createdBy: currentUser.username,
-                status: 'active'
-            };
+            const medications = selectedMedications.map((med, idx) => ({
+                ...med,
+                dosage: document.querySelectorAll('.selected-med input')[idx].value
+            }));
 
-            const prescriptions = JSON.parse(localStorage.getItem('k2dent_prescriptions') || '[]');
-            prescriptions.unshift(prescription);
-            localStorage.setItem('k2dent_prescriptions', JSON.stringify(prescriptions));
+            try {
+                // Save to Supabase
+                const prescriptionData = {
+                    patient_id: patient.id,
+                    medications: medications,
+                    notes: document.getElementById('notes').value,
+                    prescription_date: new Date().toISOString().split('T')[0]
+                };
 
-            alert(`✅ Prescription Recip-e générée!\n\nID: ${prescription.recipeId}`);
+                const savedPrescription = await DB.savePrescription(prescriptionData);
+                console.log('✅ Prescription sauvegardée dans Supabase:', savedPrescription);
 
-            resetForm();
-            loadPrescriptions();
+                const recipeId = `BE-2026-${prescriptionCounter++}-RXDE`;
+                alert(`✅ Prescription Recip-e générée et sauvegardée!\n\nID: ${recipeId}`);
+
+                resetForm();
+                await loadPrescriptions();
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde prescription:', error);
+                alert('❌ Erreur lors de la sauvegarde: ' + error.message);
+            }
         }
 
         // Load prescriptions
-        function loadPrescriptions() {
-            const prescriptions = JSON.parse(localStorage.getItem('k2dent_prescriptions') || '[]');
+        async function loadPrescriptions() {
             const listDiv = document.getElementById('prescriptionsList');
 
-            if (prescriptions.length === 0) {
+            try {
+                // Get all prescriptions from Supabase (with patient info)
+                const prescriptions = await DB.getAllPrescriptions();
+
+                if (!prescriptions || prescriptions.length === 0) {
+                    listDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">💊</div>
+                            <div>Aucune prescription enregistrée</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const recent = prescriptions.slice(0, 10);
+
+                listDiv.innerHTML = recent.map((rx, idx) => `
+                    <div class="prescription-item">
+                        <div class="prescription-date">${formatDate(rx.prescription_date || rx.created_at)}</div>
+                        <div class="prescription-patient">${rx.patient_name || 'Patient inconnu'}</div>
+                        <div class="prescription-meds">
+                            ${rx.medications.map(m => `• ${m.name} ${m.dosage ? '- ' + m.dosage : ''}`).join('<br>')}
+                        </div>
+                        <div class="recipe-id">Recip-e ID: BE-2026-${idx + 100}-RXDE</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('❌ Erreur chargement prescriptions:', error);
                 listDiv.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">💊</div>
-                        <div>Aucune prescription enregistrée</div>
+                        <div class="empty-icon">⚠️</div>
+                        <div>Erreur de chargement des prescriptions</div>
                     </div>
                 `;
-                return;
             }
-
-            const recent = prescriptions.slice(0, 10);
-
-            listDiv.innerHTML = recent.map(rx => `
-                <div class="prescription-item">
-                    <div class="prescription-date">${formatDate(rx.date)}</div>
-                    <div class="prescription-patient">${rx.patientName}</div>
-                    <div class="prescription-meds">
-                        ${rx.medications.map(m => `• ${m.name} ${m.dosage ? '- ' + m.dosage : ''}`).join('<br>')}
-                    </div>
-                    <div class="recipe-id">Recip-e ID: ${rx.recipeId}</div>
-                </div>
-            `).join('');
         }
 
         // Format date

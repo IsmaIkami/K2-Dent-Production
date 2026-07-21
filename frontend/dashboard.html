@@ -2242,30 +2242,63 @@
             document.getElementById('certificateModal').classList.remove('active');
         }
 
-        function generateCertificate() {
+        async function generateCertificate() {
+            if (!currentPatientId) {
+                alert('⚠️ Aucun patient sélectionné');
+                return;
+            }
+
             const type = document.getElementById('certificateType').value;
             const startDate = document.getElementById('certStartDate').value;
             const endDate = document.getElementById('certEndDate').value;
             const reason = document.getElementById('certReason').value;
-            
+
+            if (!startDate || !endDate) {
+                alert('⚠️ Veuillez remplir les dates');
+                return;
+            }
+
             document.getElementById('certificateModal').classList.remove('active');
             showLoading('Génération du certificat...');
-            
-            setTimeout(() => {
+
+            try {
+                // Map certificate type to DB format
+                let certType = 'work';
+                if (type.toLowerCase().includes('école')) certType = 'school';
+                else if (type.toLowerCase().includes('médical')) certType = 'other';
+
+                // Save to Supabase
+                const certificateData = {
+                    patient_id: currentPatientId,
+                    type: certType,
+                    title: type,
+                    content: reason || 'Certificat médical',
+                    valid_from: startDate,
+                    valid_to: endDate,
+                    certificate_date: new Date().toISOString().split('T')[0]
+                };
+
+                const savedCert = await DB.saveCertificate(certificateData);
+                console.log('✅ Certificat sauvegardé dans Supabase:', savedCert);
+
                 hideLoading();
-                
+
                 // Add to timeline
-                addToTimeline('certificate', 'badge-certificate', 'Certificat d\'absence généré', 
-                    `Type: ${type}<br>Période: ${new Date(startDate).toLocaleDateString('fr-BE')} - ${new Date(endDate).toLocaleDateString('fr-BE')}<br>Envoyé par email au patient`);
-                
+                addToTimeline('certificate', 'badge-certificate', 'Certificat d\'absence généré',
+                    `Type: ${type}<br>Période: ${new Date(startDate).toLocaleDateString('fr-BE')} - ${new Date(endDate).toLocaleDateString('fr-BE')}<br>Sauvegardé dans la base de données`);
+
                 // Add notification
-                addNotification('📄', 'rgba(255, 149, 0, 0.15)', 'var(--warning)', 
-                    'Certificat généré', 
-                    `Le certificat d'absence a été généré et envoyé par email à Marie Dubois.`,
+                addNotification('📄', 'rgba(255, 149, 0, 0.15)', 'var(--warning)',
+                    'Certificat généré et sauvegardé',
+                    `Le certificat d'absence a été généré et enregistré dans la base de données.`,
                     'var(--warning)');
-                
-                alert('✅ Certificat généré avec succès et envoyé au patient par email!');
-            }, 2000);
+
+                alert('✅ Certificat généré avec succès et sauvegardé dans la base de données!');
+            } catch (error) {
+                hideLoading();
+                console.error('❌ Erreur génération certificat:', error);
+                alert('❌ Erreur lors de la génération du certificat: ' + error.message);
+            }
         }
 
         // Send INAMI
