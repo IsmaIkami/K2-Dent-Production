@@ -922,11 +922,18 @@
                     hasAnonKey: !!window.K2_CONFIG?.SUPABASE_ANON_KEY
                 });
 
-                // Ensure config.js is loaded
+                // Ensure config.js is loaded - try multiple times
+                let retries = 0;
+                while (typeof window.K2_CONFIG === 'undefined' && retries < 5) {
+                    console.warn(`❌ config.js not loaded! Retry ${retries + 1}/5...`);
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    retries++;
+                }
+
                 if (typeof window.K2_CONFIG === 'undefined') {
-                    console.error('❌ config.js not loaded! Waiting...');
-                    // Wait a bit for config.js to load
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    console.error('❌ FATAL: config.js failed to load after 5 retries');
+                    alert(`❌ Erreur de configuration\n\nconfig.js n'a pas pu se charger.\n\nVeuillez rafraîchir la page (Cmd+R).`);
+                    return;
                 }
 
                 // Debug configuration
@@ -935,7 +942,7 @@
                 console.log('🔍 DEBUG - ANON_KEY length:', window.K2_CONFIG?.SUPABASE_ANON_KEY?.length);
 
                 supabaseInitialized = initSupabase();
-                console.log('Supabase init result:', supabaseInitialized);
+                console.log('✅ Supabase init result:', supabaseInitialized);
 
                 if (supabaseInitialized) {
                     console.log('✅ K2 Dent Patients - Supabase initialized');
