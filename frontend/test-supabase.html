@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Client</title>
+</head>
+<body>
+    <h1>Test Supabase Client Loading</h1>
+    <div id="result"></div>
+
+    <!-- Config -->
+    <script>
+        window.K2_CONFIG = {
+            SUPABASE_URL: 'https://sqgxscrwcffjfomlsoyf.supabase.co',
+            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxZ3hzY3J3Y2ZmamZvbWxzb3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTE2NjMsImV4cCI6MjEwMDIyNzY2M30.TtLYJKBM7XxrdsHiHS9EGOxnyniSdAhBLPUkhpReidU'
+        };
+        console.log('✅ K2_CONFIG set');
+    </script>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Supabase Client -->
+    <script src="js/supabase-client.js"></script>
+
+    <!-- Test -->
+    <script>
+        setTimeout(() => {
+            const result = document.getElementById('result');
+            let html = '<h2>Test Results:</h2><ul>';
+
+            html += `<li>window.supabase: ${typeof window.supabase}</li>`;
+            html += `<li>window.K2_CONFIG: ${typeof window.K2_CONFIG}</li>`;
+            html += `<li>window.initSupabase: ${typeof window.initSupabase}</li>`;
+            html += `<li>window.DB: ${typeof window.DB}</li>`;
+
+            if (typeof window.initSupabase === 'function') {
+                const initialized = window.initSupabase();
+                html += `<li>initSupabase() result: ${initialized}</li>`;
+            } else {
+                html += `<li style="color: red;">❌ initSupabase not loaded!</li>`;
+            }
+
+            html += '</ul>';
+            result.innerHTML = html;
+
+            console.log('Test complete');
+        }, 1000);
+    </script>
+</body>
+</html>
