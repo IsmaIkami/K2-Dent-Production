@@ -740,54 +740,7 @@
                             ➕ Nouveau Patient
                         </button>
                     </div>
-
-                    <div class="patient-item" onclick="window.location.href='index.html'">
-                        <div class="patient-avatar">👤</div>
-                        <div class="patient-info">
-                            <div class="patient-name">Marie Dubois</div>
-                            <div class="patient-meta">
-                                <span>📧 marie.dubois@email.com</span>
-                                <span>📞 +32 475 12 34 56</span>
-                                <span>🎂 05/03/1983 (42 ans)</span>
-                                <span style="color: var(--success);">✓ Mutuelle Chrétienne</span>
-                            </div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn btn-icon btn-primary" onclick="event.stopPropagation(); window.location.href='index.html'">
-                                📂 Dossier
-                            </button>
-                            <button class="btn btn-icon btn-secondary" onclick="event.stopPropagation(); alert('Planifier RDV')">
-                                📅 RDV
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="patient-item">
-                        <div class="patient-avatar">👤</div>
-                        <div class="patient-info">
-                            <div class="patient-name">Jean Martin</div>
-                            <div class="patient-meta">
-                                <span>📧 jean.martin@email.com</span>
-                                <span>📞 +32 476 98 76 54</span>
-                                <span>🎂 12/08/1975 (49 ans)</span>
-                                <span style="color: var(--success);">✓ Mutualité Socialiste</span>
-                            </div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn btn-icon btn-primary" onclick="alert('Ouvrir dossier Jean Martin')">
-                                📂 Dossier
-                            </button>
-                            <button class="btn btn-icon btn-secondary" onclick="alert('Planifier RDV')">
-                                📅 RDV
-                            </button>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 24px;">
-                        <button class="btn btn-secondary" onclick="alert('Charger plus de patients')">
-                            Charger plus de patients...
-                        </button>
-                    </div>
+                    <!-- La liste sera chargée dynamiquement depuis Supabase -->
                 </div>
             </div>
         </main>
@@ -869,6 +822,71 @@
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeNewPatientModal()">Annuler</button>
                     <button type="submit" class="btn btn-primary">✅ Créer Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Modification Patient -->
+    <div id="editPatientModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Modifier Patient</h2>
+                <button class="modal-close" onclick="closeEditPatientModal()">&times;</button>
+            </div>
+
+            <form id="editPatientForm" onsubmit="updatePatient(event)">
+                <input type="hidden" id="edit_patient_id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Prénom *</label>
+                        <input type="text" id="edit_first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom *</label>
+                        <input type="text" id="edit_last_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>NISS *</label>
+                        <input type="text" id="edit_niss" required pattern="[0-9]{11}" placeholder="00000000000" maxlength="11" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Date de naissance *</label>
+                        <input type="date" id="edit_date_of_birth" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="edit_email" placeholder="patient@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" id="edit_phone" placeholder="+32 475 00 00 00">
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse</label>
+                        <input type="text" id="edit_address">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Mutuelle</label>
+                        <select id="edit_mutuelle_code">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="306">306 - Mutualité Chrétienne</option>
+                            <option value="307">307 - Mutualité Socialiste</option>
+                            <option value="309">309 - Mutualité Neutre</option>
+                            <option value="311">311 - Mutualité Libérale</option>
+                            <option value="313">313 - Mutualité Libre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="edit_is_bim" value="true">
+                            BIM (Bénéficiaire Intervention Majorée)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditPatientModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">✅ Sauvegarder</button>
                 </div>
             </form>
         </div>
@@ -1098,47 +1116,90 @@
             window.location.href = `agenda.html?niss=${encodeURIComponent(patient.niss)}`;
         }
 
-        // Edit patient
-        async function editPatient(patientId) {
+        // Edit patient - show modal
+        function editPatient(patientId) {
             if (!supabaseInitialized) {
                 alert('⚠️ Supabase non configuré');
                 return;
             }
 
             const patient = allPatients.find(p => p.id === patientId);
-            if (!patient) return;
+            if (!patient) {
+                alert('❌ Patient introuvable');
+                return;
+            }
 
-            // Simple prompt-based edit (could be replaced with a modal form)
-            const firstName = prompt('Prénom:', patient.first_name);
-            if (!firstName) return;
+            // Populate form with patient data
+            document.getElementById('edit_patient_id').value = patient.id;
+            document.getElementById('edit_first_name').value = patient.first_name || '';
+            document.getElementById('edit_last_name').value = patient.last_name || '';
+            document.getElementById('edit_niss').value = patient.niss || '';
+            document.getElementById('edit_date_of_birth').value = patient.date_of_birth || '';
+            document.getElementById('edit_email').value = patient.email || '';
+            document.getElementById('edit_phone').value = patient.phone || '';
+            document.getElementById('edit_address').value = patient.address_street || '';
+            document.getElementById('edit_mutuelle_code').value = patient.mutuelle_code || '';
+            document.getElementById('edit_is_bim').checked = patient.bim || false;
 
-            const lastName = prompt('Nom:', patient.last_name);
-            if (!lastName) return;
+            // Show modal
+            const modal = document.getElementById('editPatientModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+            }
+        }
 
-            const email = prompt('Email:', patient.email || '');
-            const phone = prompt('Téléphone:', patient.phone || '');
+        function closeEditPatientModal() {
+            const modal = document.getElementById('editPatientModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+        }
+
+        async function updatePatient(event) {
+            event.preventDefault();
+
+            if (!supabaseInitialized) {
+                alert('⚠️ Supabase non configuré');
+                return;
+            }
+
+            const patientId = document.getElementById('edit_patient_id').value;
+            const patient = allPatients.find(p => p.id === patientId);
+            if (!patient) {
+                alert('❌ Patient introuvable');
+                return;
+            }
+
+            const patientData = {
+                id: patientId,
+                first_name: document.getElementById('edit_first_name').value.trim(),
+                last_name: document.getElementById('edit_last_name').value.trim(),
+                niss: patient.niss,
+                date_of_birth: document.getElementById('edit_date_of_birth').value,
+                email: document.getElementById('edit_email').value.trim() || null,
+                phone: document.getElementById('edit_phone').value.trim() || null,
+                address_street: document.getElementById('edit_address').value.trim() || null,
+                mutuelle_code: document.getElementById('edit_mutuelle_code').value || null,
+                bim: document.getElementById('edit_is_bim').checked,
+                gender: patient.gender
+            };
 
             try {
-                const updated = await DB.savePatient({
-                    id: patient.id,
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    phone: phone,
-                    // Keep other fields unchanged
-                    niss: patient.niss,
-                    date_of_birth: patient.date_of_birth,
-                    gender: patient.gender,
-                    mutuelle_code: patient.mutuelle_code,
-                    bim: patient.bim
-                });
+                const updated = await DB.savePatient(patientData);
 
-                console.log('✅ Patient updated');
-                await loadAllPatients(); // Reload list
-                alert('✅ Patient mis à jour avec succès!');
+                if (updated) {
+                    console.log('✅ Patient mis à jour:', updated);
+                    closeEditPatientModal();
+                    await loadAllPatients();
+                    alert('✅ Patient mis à jour avec succès!');
+                } else {
+                    alert('❌ Erreur lors de la mise à jour du patient');
+                }
             } catch (error) {
                 console.error('Error updating patient:', error);
-                alert('⚠️ Erreur lors de la mise à jour: ' + error.message);
+                alert('❌ Erreur: ' + error.message);
             }
         }
 
