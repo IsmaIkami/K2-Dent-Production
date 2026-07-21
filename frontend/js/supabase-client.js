@@ -861,6 +861,133 @@ const Realtime = {
    */
   unsubscribe(subscription) {
     return supabaseClient.removeChannel(subscription);
+  },
+
+  // ==========================================================================
+  // MEDICAL HISTORY - Données médicales versionnées
+  // ==========================================================================
+
+  /**
+   * Get latest medical history for a patient
+   */
+  async getLatestMedicalHistory(patientId) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('medical_history')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      // Return null if no history exists yet
+      if (error.code === 'PGRST116') return null;
+      console.error('Error fetching medical history:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get all medical history versions for a patient
+   */
+  async getAllMedicalHistory(patientId) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('medical_history')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching medical history versions:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Create or update medical history (creates new version)
+   */
+  async saveMedicalHistory(patientId, medicalData, createdBy = '00000000-0000-0000-0000-000000000000') {
+    try {
+      const { data, error } = await supabaseClient.rpc('create_medical_history_version', {
+        p_patient_id: patientId,
+        p_allergies: medicalData.allergies || [],
+        p_medications: medicalData.medications || [],
+        p_medical_conditions: medicalData.medical_conditions || [],
+        p_surgical_history: medicalData.surgical_history || [],
+        p_dental_concerns: medicalData.dental_concerns || null,
+        p_previous_dental_treatments: medicalData.previous_dental_treatments || [],
+        p_dental_anxiety_level: medicalData.dental_anxiety_level || null,
+        p_brushing_frequency: medicalData.brushing_frequency || null,
+        p_flossing_frequency: medicalData.flossing_frequency || null,
+        p_mouthwash_use: medicalData.mouthwash_use || false,
+        p_practitioner_notes: medicalData.practitioner_notes || null,
+        p_created_by: createdBy
+      });
+
+      if (error) throw error;
+      return data; // Returns new medical_history ID
+    } catch (error) {
+      console.error('Error saving medical history:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get complete patient view (with latest medical data)
+   */
+  async getPatientCompleteView(patientId) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('patient_complete_view')
+        .select('*')
+        .eq('id', patientId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching complete patient view:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Export patient dossier as structured data
+   * (to be used for PDF generation or export)
+   */
+  async exportPatientDossier(patientId) {
+    try {
+      const [patient, medicalHistory, timeline, prescriptions, certificates, dentalCharts, xrays] = await Promise.all([
+        this.getPatient(patientId),
+        this.getAllMedicalHistory(patientId),
+        this.getPatientTimeline(patientId),
+        this.getPatientPrescriptions(patientId),
+        this.getPatientCertificates(patientId),
+        this.getPatientDentalCharts(patientId),
+        this.getPatientXrays(patientId)
+      ]);
+
+      return {
+        patient,
+        medicalHistory,
+        timeline,
+        prescriptions,
+        certificates,
+        dentalCharts,
+        xrays,
+        exportDate: new Date().toISOString(),
+        exportedBy: 'K2 Dent v1.0.0'
+      };
+    } catch (error) {
+      console.error('Error exporting patient dossier:', error);
+      throw error;
+    }
   }
 };
 
