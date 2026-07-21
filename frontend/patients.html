@@ -546,14 +546,13 @@
         }
     </style>
 
-    <!-- Supabase Client -->
-    <!-- K2 Dent Configuration -->
+    <!-- K2 Dent Configuration (MUST load first) -->
     <script src="config.js"></script>
 
+    <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- K2 Dent Configuration -->
-    <script src="config.js"></script>
 
+    <!-- K2 Dent Supabase Integration -->
     <script src="js/supabase-client.js"></script>
 </head>
 <body>
@@ -871,9 +870,6 @@
         </main>
     </div>
 
-    <!-- K2 Dent Configuration -->
-    <script src="config.js"></script>
-
     <script>
         // Theme Management
         function toggleTheme() {
@@ -919,12 +915,29 @@
         // Initialize Supabase and load patients
         document.addEventListener('DOMContentLoaded', async function() {
             try {
+                // Debug configuration
+                console.log('🔍 K2_CONFIG check:', {
+                    exists: typeof window.K2_CONFIG !== 'undefined',
+                    supabaseUrl: window.K2_CONFIG?.SUPABASE_URL,
+                    hasAnonKey: !!window.K2_CONFIG?.SUPABASE_ANON_KEY
+                });
+
+                // Ensure config.js is loaded
+                if (typeof window.K2_CONFIG === 'undefined') {
+                    console.error('❌ config.js not loaded! Waiting...');
+                    // Wait a bit for config.js to load
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+
                 supabaseInitialized = initSupabase();
+                console.log('Supabase init result:', supabaseInitialized);
+
                 if (supabaseInitialized) {
                     console.log('✅ K2 Dent Patients - Supabase initialized');
                     await loadAllPatients();
                 } else {
                     console.warn('⚠️ Supabase not configured - showing demo data');
+                    alert('⚠️ Configuration Supabase manquante\n\nVérifiez que config.js est bien chargé avec les bonnes credentials.');
                 }
             } catch (error) {
                 console.error('Error initializing patients module:', error);
