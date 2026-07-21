@@ -1,13 +1,13 @@
 # Nixpacks Configuration for Railway
-# Specifies that the Node.js app is in the backend directory
+# Note: Set Root Directory to "backend" in Railway Settings
 
 [phases.setup]
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["cd backend && npm ci"]
+cmds = ["npm ci"]
 
 [phases.build]
 
 [start]
-cmd = "cd backend && node server.js"
+cmd = "node server.js"

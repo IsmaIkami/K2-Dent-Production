@@ -1,16 +1,10 @@
 # Railway Configuration - K2 Dent Backend
-# This tells Railway to build and run from the backend directory
+# IMPORTANT: Set Root Directory to "backend" in Railway Settings
 
 [build]
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "cd backend && node server.js"
+startCommand = "node server.js"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-
-[env]
-NODE_ENV = "production"
-PORT = "3000"
-HOST = "0.0.0.0"
-LOG_LEVEL = "info"
