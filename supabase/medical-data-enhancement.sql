@@ -3,21 +3,56 @@
 -- ============================================================================
 -- Ajoute des champs structurés pour les données médicales courantes
 -- utilisées dans les cabinets dentaires
+-- Version: 1.0 - Safe to re-run (uses IF NOT EXISTS)
 -- ============================================================================
 
--- Ajouter champs médicaux manquants à la table patients
-ALTER TABLE patients
-ADD COLUMN IF NOT EXISTS blood_type VARCHAR(5),
-ADD COLUMN IF NOT EXISTS smoker BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS alcohol_consumption VARCHAR(20) CHECK (alcohol_consumption IN ('NONE', 'OCCASIONAL', 'MODERATE', 'HEAVY')),
-ADD COLUMN IF NOT EXISTS pregnant BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS breastfeeding BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS anticoagulant_therapy BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS diabetes BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS hypertension BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS heart_disease BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS last_dental_visit DATE,
-ADD COLUMN IF NOT EXISTS dental_hygiene_frequency VARCHAR(50);
+-- Ajouter champs médicaux manquants à la table patients (safe - IF NOT EXISTS)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='blood_type') THEN
+        ALTER TABLE patients ADD COLUMN blood_type VARCHAR(5);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='smoker') THEN
+        ALTER TABLE patients ADD COLUMN smoker BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='alcohol_consumption') THEN
+        ALTER TABLE patients ADD COLUMN alcohol_consumption VARCHAR(20) CHECK (alcohol_consumption IN ('NONE', 'OCCASIONAL', 'MODERATE', 'HEAVY'));
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='pregnant') THEN
+        ALTER TABLE patients ADD COLUMN pregnant BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='breastfeeding') THEN
+        ALTER TABLE patients ADD COLUMN breastfeeding BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='anticoagulant_therapy') THEN
+        ALTER TABLE patients ADD COLUMN anticoagulant_therapy BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='diabetes') THEN
+        ALTER TABLE patients ADD COLUMN diabetes BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='hypertension') THEN
+        ALTER TABLE patients ADD COLUMN hypertension BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='heart_disease') THEN
+        ALTER TABLE patients ADD COLUMN heart_disease BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='last_dental_visit') THEN
+        ALTER TABLE patients ADD COLUMN last_dental_visit DATE;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='patients' AND column_name='dental_hygiene_frequency') THEN
+        ALTER TABLE patients ADD COLUMN dental_hygiene_frequency VARCHAR(50);
+    END IF;
+END $$;
 
 -- Créer table pour historique des antécédents médicaux (versioning)
 CREATE TABLE IF NOT EXISTS medical_history (
@@ -52,8 +87,8 @@ CREATE TABLE IF NOT EXISTS medical_history (
   CONSTRAINT fk_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_medical_history_patient ON medical_history(patient_id);
-CREATE INDEX idx_medical_history_created_at ON medical_history(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_medical_history_patient ON medical_history(patient_id);
+CREATE INDEX IF NOT EXISTS idx_medical_history_created_at ON medical_history(created_at DESC);
 
 -- Vue complète du patient avec dernières données médicales
 CREATE OR REPLACE VIEW patient_complete_view AS
@@ -180,6 +215,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Drop trigger if exists, then create
+DROP TRIGGER IF EXISTS update_patients_updated_at ON patients;
 CREATE TRIGGER update_patients_updated_at
   BEFORE UPDATE ON patients
   FOR EACH ROW
