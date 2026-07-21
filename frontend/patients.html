@@ -1229,9 +1229,9 @@
             const formData = new FormData(form);
 
             // Validation des données
-            const firstName = formData.get('first_name')?.trim();
-            const lastName = formData.get('last_name')?.trim();
-            const niss = formData.get('niss')?.trim();
+            const firstName = (formData.get('first_name') || '').trim();
+            const lastName = (formData.get('last_name') || '').trim();
+            const niss = (formData.get('niss') || '').trim();
             const dateOfBirth = formData.get('date_of_birth');
 
             // Vérifications obligatoires
@@ -1269,9 +1269,9 @@
                 last_name: lastName,
                 niss: niss,
                 date_of_birth: dateOfBirth,
-                email: formData.get('email')?.trim() || null,
-                phone: formData.get('phone')?.trim() || null,
-                address_street: formData.get('address')?.trim() || null,
+                email: (formData.get('email') || '').trim() || null,
+                phone: (formData.get('phone') || '').trim() || null,
+                address_street: (formData.get('address') || '').trim() || null,
                 mutuelle_code: formData.get('mutuelle_code') || null,
                 bim: formData.get('is_bim') !== null
             };
