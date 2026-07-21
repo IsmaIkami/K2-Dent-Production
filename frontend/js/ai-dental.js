@@ -1,6 +1,6 @@
 /**
  * K2 DENT — AI DENTAL ASSISTANT
- * Claude API integration for AI-powered clinical workflows
+ * AI API integration for AI-powered clinical workflows
  * Anamnesis generation, prescription suggestions, diagnosis support
  *
  * @author Ismail Sialyen
@@ -57,7 +57,7 @@ const AI_CONFIG = {
 // ============================================================================
 
 /**
- * Generate professional dental anamnesis using Claude AI
+ * Generate professional dental anamnesis using AI
  * @param {object} patientData - Patient information
  * @param {string} transcription - Voice recording transcription
  * @returns {Promise<string>} - Generated anamnesis (markdown format)
@@ -195,7 +195,7 @@ Si certaines informations manquent, indique "[À compléter par Dr. Sialyen]".`;
 // ============================================================================
 
 /**
- * Generate prescription suggestions using Claude AI
+ * Generate prescription suggestions using AI
  * @param {object} patientData - Patient information
  * @param {string} anamnesis - Generated anamnesis
  * @returns {Promise<string>} - Prescription suggestions (markdown format)
@@ -590,4 +590,4 @@ if (typeof window !== 'undefined') {
   };
 }
 
-console.log('✅ AI Dental Assistant loaded - Powered by Claude Sonnet 4.5');
+console.log('✅ AI Dental Assistant loaded');

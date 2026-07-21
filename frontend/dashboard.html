@@ -1942,8 +1942,8 @@
 
                 // AUTO-GENERATE ANAMNESIS WITH CLAUDE AI
                 (async function() {
-                    console.log('Generating anamnesis with Claude AI...');
-                    AI_Dental.showAILoading('anamnesisText', 'Claude IA en cours de génération de l\'anamnèse...');
+                    console.log('Generating anamnesis with IA...');
+                    AI_Dental.showAILoading('anamnesisText', 'IA en cours de génération de l\'anamnèse...');
                     document.getElementById('anamnesisSection').style.display = 'block';
 
                     try {
@@ -1962,7 +1962,7 @@
                             dentalHistory: 'Dernière visite il y a 6 mois'
                         };
 
-                        // Generate with Claude AI
+                        // Generate with IA
                         const anamnesis = await AI_Dental.generateAnamnesis(patientData, transcription);
 
                         // Display result
@@ -1983,7 +1983,7 @@
                         // Show notification
                         addNotification('🤖', 'rgba(139, 92, 246, 0.15)', 'var(--purple)',
                             'Anamnèse IA générée',
-                            `Claude Sonnet 4.5 a généré l'anamnèse (Version ${version.version}). Durée enregistrement: ` +
+                            `Intelligence Artificielle a généré l'anamnèse (Version ${version.version}). Durée enregistrement: ` +
                             Math.floor(recordingSeconds / 60) + ' min ' + (recordingSeconds % 60) + ' sec',
                             'var(--purple)');
 
@@ -2069,7 +2069,7 @@
                 // Get transcription
                 const transcription = document.getElementById('transcriptionText').textContent;
 
-                // Generate anamnesis with Claude AI
+                // Generate anamnesis with IA
                 const anamnesis = await AI_Dental.generateAnamnesis(patientData, transcription);
 
                 // Display result
@@ -2082,7 +2082,7 @@
                 AI_Dental.showNotification(`✅ Anamnèse régénérée - Version ${version.version}`, 'success');
 
                 addToTimeline('ai-generated', 'badge-ai', 'Anamnèse régénérée par IA',
-                    `Nouvelle version générée par Claude Sonnet 4.5 - Version ${version.version}`);
+                    `Nouvelle version générée par Intelligence Artificielle - Version ${version.version}`);
 
             } catch (error) {
                 console.error('Error generating anamnesis:', error);
@@ -2293,7 +2293,7 @@
 
         async function generateAIPrescriptions() {
             try {
-                AI_Dental.showAILoading('prescriptionText', 'Claude IA en cours de génération des prescriptions...');
+                AI_Dental.showAILoading('prescriptionText', 'IA en cours de génération des prescriptions...');
                 document.getElementById('prescriptionSection').style.display = 'block';
 
                 // Get patient data
@@ -2313,7 +2313,7 @@
                 // Get anamnesis
                 const anamnesis = document.getElementById('anamnesisText').textContent;
 
-                // Generate prescriptions with Claude AI
+                // Generate prescriptions with IA
                 const prescriptions = await AI_Dental.generatePrescriptions(patientData, anamnesis);
 
                 // Display result
@@ -2326,7 +2326,7 @@
                 AI_Dental.showNotification('✅ Prescriptions générées - À valider par Dr. Sialyen', 'success');
 
                 addToTimeline('ai-generated', 'badge-ai', 'Prescriptions IA générées',
-                    'Suggestions de prescriptions générées par Claude Sonnet 4.5 - Validation obligatoire');
+                    'Suggestions de prescriptions générées par Intelligence Artificielle - Validation obligatoire');
 
             } catch (error) {
                 console.error('Error generating prescriptions:', error);
