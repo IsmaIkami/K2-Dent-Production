@@ -440,6 +440,10 @@
             animation: fadeIn 0.3s;
         }
 
+        .modal.active {
+            display: flex !important;
+        }
+
         .modal-content {
             background: #1a1d2e;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1167,6 +1171,7 @@
             const modal = document.getElementById('newPatientModal');
             if (modal) {
                 modal.style.display = 'flex';
+                modal.classList.add('active');
                 document.getElementById('newPatientForm').reset();
             }
         }
@@ -1208,6 +1213,7 @@
             const modal = document.getElementById('newPatientModal');
             if (modal) {
                 modal.style.display = 'none';
+                modal.classList.remove('active');
             }
         }
 
@@ -1222,16 +1228,52 @@
             const form = event.target;
             const formData = new FormData(form);
 
+            // Validation des données
+            const firstName = formData.get('first_name')?.trim();
+            const lastName = formData.get('last_name')?.trim();
+            const niss = formData.get('niss')?.trim();
+            const dateOfBirth = formData.get('date_of_birth');
+
+            // Vérifications obligatoires
+            if (!firstName || !lastName) {
+                alert('❌ Nom et prénom sont obligatoires');
+                return;
+            }
+
+            if (!niss || !/^\d{11}$/.test(niss)) {
+                alert('❌ NISS invalide\n\nLe NISS doit contenir exactement 11 chiffres.');
+                return;
+            }
+
+            if (!dateOfBirth || new Date(dateOfBirth) > new Date()) {
+                alert('❌ Date de naissance invalide\n\nLa date ne peut pas être dans le futur.');
+                return;
+            }
+
+            // Vérifier doublon NISS
+            try {
+                const existingPatient = await DB.getPatientByNISS(niss);
+                if (existingPatient) {
+                    alert(`❌ Un patient avec ce NISS existe déjà :\n\n${existingPatient.first_name} ${existingPatient.last_name}\nNISS: ${existingPatient.niss}`);
+                    return;
+                }
+            } catch (err) {
+                // Patient n'existe pas = OK, continuer
+                if (!err.message.includes('No rows')) {
+                    console.error('Erreur vérification NISS:', err);
+                }
+            }
+
             const patientData = {
-                first_name: formData.get('first_name'),
-                last_name: formData.get('last_name'),
-                niss: formData.get('niss'),
-                date_of_birth: formData.get('date_of_birth'),
-                email: formData.get('email') || null,
-                phone: formData.get('phone') || null,
-                address_street: formData.get('address') || null,
+                first_name: firstName,
+                last_name: lastName,
+                niss: niss,
+                date_of_birth: dateOfBirth,
+                email: formData.get('email')?.trim() || null,
+                phone: formData.get('phone')?.trim() || null,
+                address_street: formData.get('address')?.trim() || null,
                 mutuelle_code: formData.get('mutuelle_code') || null,
-                bim: formData.get('is_bim') === 'true'
+                bim: formData.get('is_bim') !== null
             };
 
             try {
