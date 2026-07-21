@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - K2 Dent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0A0E1A 0%, #1E2740 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #141B2D;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 48px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #2A3347;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0066FF, #00C896);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: #8B92A8;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0A0E1A;
+            border: 1px solid #2A3347;
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0066FF;
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0066FF, #0052CC);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .demo-users {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #2A3347;
+        }
+
+        .demo-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8B92A8;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .demo-user {
+            background: #0A0E1A;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .demo-user:hover {
+            border-color: #0066FF;
+            background: #1E2740;
+        }
+
+        .demo-user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .demo-user-role {
+            font-size: 12px;
+            color: #8B92A8;
+        }
+
+        .error {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid #FF3B30;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #FF3B30;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #8B92A8;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">🦷</div>
+            <div class="logo-text">K2 Dent</div>
+            <div class="logo-subtitle">Cabinet Dentaire Dr. SIALYEN</div>
+        </div>
+
+        <div id="error" class="error"></div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" placeholder="Entrez votre mot de passe" required>
+            </div>
+
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+
+        <div class="demo-users">
+            <div class="demo-title">Comptes de démonstration</div>
+            <div class="demo-user" onclick="fillLogin('ismail', 'ismail')">
+                <div>
+                    <div class="demo-user-name">Ismail Sialyen</div>
+                    <div class="demo-user-role">Propriétaire (Admin complet)</div>
+                </div>
+                <div style="color: #0066FF;">👤</div>
+            </div>
+            <div class="demo-user" onclick="fillLogin('katja', 'katja')">
+                <div>
+                    <div class="demo-user-name">Katja Sialyen</div>
+                    <div class="demo-user-role">Propriétaire (Admin complet)</div>
+                </div>
+                <div style="color: #0066FF;">👤</div>
+            </div>
+            <div class="demo-user" onclick="fillLogin('ekaterina', 'ekaterina')">
+                <div>
+                    <div class="demo-user-name">Dr. Ekaterina SIALYEN</div>
+                    <div class="demo-user-role">Dentiste (INAMI 3-02462-81-001)</div>
+                </div>
+                <div style="color: #00C896;">🦷</div>
+            </div>
+            <div class="demo-user" onclick="fillLogin('marie', 'marie')">
+                <div>
+                    <div class="demo-user-name">Marie Dupont</div>
+                    <div class="demo-user-role">Assistante (Accès limité)</div>
+                </div>
+                <div style="color: #8B92A8;">👥</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            🇧🇪 Conforme RGPD & INAMI 2026<br>
+            Développé par Ismail Sialyen | Powered by RCE
+        </div>
+    </div>
+
+    <script src="js/belgium.js"></script>
+    <script src="js/auth-rbac.js"></script>
+    <script>
+        function fillLogin(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+            document.getElementById('username').focus();
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+
+            // Login using Auth module
+            const user = Auth.login(username, password);
+
+            if (user) {
+                // Success - redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                // Error
+                errorDiv.textContent = '❌ Identifiants invalides. Veuillez réessayer.';
+                errorDiv.classList.add('show');
+
+                // Hide error after 5 seconds
+                setTimeout(() => {
+                    errorDiv.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        // Check if already logged in
+        if (Auth.isLoggedIn()) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

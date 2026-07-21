@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentalCockpit Pro - Système Intelligent de Gestion Dentaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --purple: #8B5CF6;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1E2740;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #2A3347;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF1;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            width: 280px;
+            overflow-y: auto;
+        }
+
+        .sidebar-content {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 32px;
+            display: grid;
+            gap: 24px;
+        }
+
+        /* Patient Info Card */
+        .patient-info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+        }
+
+        .patient-avatar-large {
+            width: 90px;
+            height: 90px;
+            background: rgba(0, 102, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 3px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .patient-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px 24px;
+            margin-top: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .alert-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .alert-danger {
+            background: rgba(255, 59, 48, 0.15);
+            color: #FF6B6B;
+        }
+
+        .alert-warning {
+            background: rgba(255, 149, 0, 0.15);
+            color: #FFB84D;
+        }
+
+        /* Quick Actions Panel */
+        .quick-actions-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .action-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+        }
+
+        .action-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .action-secondary:hover {
+            background: var(--bg-main);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .action-ai {
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            color: white;
+        }
+
+        .action-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.positive { color: var(--success); }
+
+        /* AI Panel */
+        .ai-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .ai-header {
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+
+        .ai-content {
+            padding: 28px;
+        }
+
+        .ai-analysis {
+            background: var(--bg-main);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .ai-analysis-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        .ai-analysis-content {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .ai-suggestions {
+            display: grid;
+            gap: 12px;
+        }
+
+        .ai-suggestion {
+            background: var(--bg-main);
+            padding: 18px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--purple);
+            transition: all 0.2s;
+        }
+
+        .ai-suggestion:hover {
+            background: var(--bg-hover);
+        }
+
+        .ai-suggestion-text {
+            font-size: 14px;
+        }
+
+        .ai-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-main);
+            border-color: var(--primary);
+        }
+
+        .btn-icon {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 32px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--bg-card);
+            z-index: 1;
+        }
+
+        .timeline-item.ai-generated::before {
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+        }
+
+        .timeline-item.xray::before {
+            background: var(--secondary);
+        }
+
+        .timeline-item.certificate::before {
+            background: var(--warning);
+        }
+
+        .timeline-item.inami::before {
+            background: var(--success);
+        }
+
+        .timeline-content {
+            background: var(--bg-main);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .timeline-content:hover {
+            background: var(--bg-hover);
+        }
+
+        .timeline-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .timeline-badge {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .badge-ai {
+            background: rgba(139, 92, 246, 0.2);
+            color: #A78BFA;
+        }
+
+        .badge-xray {
+            background: rgba(0, 200, 150, 0.2);
+            color: var(--secondary);
+        }
+
+        .badge-manual {
+            background: rgba(0, 102, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-certificate {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-inami {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+        }
+
+        .timeline-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .edit-history-btn {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .edit-history-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Medical Data Grid */
+        .medical-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .medical-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .medical-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .medical-card-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .data-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* X-Ray Viewer */
+        .xray-viewer {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            grid-column: 1 / -1;
+        }
+
+        .xray-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .xray-toolbar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .xray-display {
+            background: #000;
+            border-radius: 16px;
+            aspect-ratio: 16/10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .xray-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .xray-placeholder {
+            color: #444;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .xray-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .xray-info-item {
+            background: var(--bg-main);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .xray-info-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .xray-info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Real-time Indicator */
+        .realtime-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+
+        .realtime-pulse {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            bottom: 0;
+            width: 400px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            transition: right 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .notifications-panel.active {
+            right: 0;
+        }
+
+        .notification {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 102, 255, 0.15);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notification-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .history-version {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .history-version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-version-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .history-version-author {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: rgba(139, 92, 246, 0.2);
+            color: #A78BFA;
+            border-radius: 6px;
+        }
+
+        .history-version-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .medical-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="logo">
+                    <div class="logo-icon">🦷</div>
+                    <div class="logo-text">DentalCockpit Pro</div>
+                </div>
+
+                <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <a href="dashboard.html" class="nav-item active">
+                        <span>📊</span>
+                        <span>Dashboard Patient</span>
+                    </a>
+                    <a href="patients.html" class="nav-item">
+                        <span>👥</span>
+                        <span>Patients</span>
+                    </a>
+                    <a href="agenda.html" class="nav-item">
+                        <span>📅</span>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="treatment.html" class="nav-item">
+                        <span>🎯</span>
+                        <span>Plan de Traitement</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Clinique</div>
+                    <a href="dental-chart.html" class="nav-item">
+                        <span>🦷</span>
+                        <span>Schéma Dentaire</span>
+                    </a>
+                    <a href="paro.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Parodontologie</span>
+                    </a>
+                    <a href="ortho.html" class="nav-item">
+                        <span>🔧</span>
+                        <span>Orthodontie</span>
+                    </a>
+                    <a href="prescriptions.html" class="nav-item">
+                        <span>💊</span>
+                        <span>Prescriptions</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Imagerie Médicale</div>
+                    <a href="xrays.html" class="nav-item">
+                        <span>📷</span>
+                        <span>Radiographies X</span>
+                    </a>
+                    <a href="scanner3d.html" class="nav-item">
+                        <span>🔬</span>
+                        <span>Scanner 3D</span>
+                    </a>
+                    <a href="photos.html" class="nav-item">
+                        <span>🖼️</span>
+                        <span>Photos Intra-orales</span>
+                    </a>
+                    <a href="camera.html" class="nav-item">
+                        <span>📸</span>
+                        <span>Caméra Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Intelligence Artificielle</div>
+                    <a href="ai-analysis.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>Analyses IA</span>
+                    </a>
+                    <a href="ai-reports.html" class="nav-item">
+                        <span>📈</span>
+                        <span>Rapports Intelligents</span>
+                    </a>
+                    <a href="ai-history.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>Historique Complet IA</span>
+                    </a>
+                    <a href="ai-realtime.html" class="nav-item">
+                        <span>⚡</span>
+                        <span>IA Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Administration</div>
+                    <a href="inami.html" class="nav-item">
+                        <span>💳</span>
+                        <span>INAMI / e-Health</span>
+                    </a>
+                    <a href="mutuelles.html" class="nav-item">
+                        <span>🏥</span>
+                        <span>Mutuelles</span>
+                    </a>
+                    <a href="certificates.html" class="nav-item">
+                        <span>📄</span>
+                        <span>Certificats</span>
+                    </a>
+                    <a href="billing.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Facturation</span>
+                    </a>
+                </div>
+            </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div style="text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Design by</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Ismail Sialyen</div>
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Powered by</div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 2px;">RCE</div>
+                    <div style="font-size: 8px; color: var(--text-secondary); margin-top: 2px;">AI Engine</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="topbar">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Rechercher patient, dossier, radio, diagnostic...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
+                        🌙
+                    </div>
+                    <div class="icon-btn" onclick="toggleNotifications()">
+                        🔔
+                        <span class="badge" id="notifCount">5</span>
+                    </div>
+                    <div class="icon-btn">⚙️</div>
+                    <div class="icon-btn">👤</div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Patient Cockpit Layout -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <!-- Patient Info Card -->
+                    <div class="patient-info-card">
+                        <div style="display: flex; gap: 24px; align-items: flex-start;">
+                            <div class="patient-avatar-large">👤</div>
+                            <div style="flex: 1;">
+                                <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Marie Dubois</h1>
+                                <div class="patient-meta-grid">
+                                    <div class="meta-item">
+                                        <div class="meta-label">Email</div>
+                                        <div class="meta-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a474b58434f044e5f484543596a4f474b434604484f">[email&#160;protected]</a></div>
+                                    </div>
+                                    <div class="meta-item">
+                                        <div class="meta-label">Téléphone</div>
+                                        <div class="meta-value">+32 475 12 34 56</div>
+                                    </div>
+                                    <div class="meta-item">
+                                        <div class="meta-label">Date de naissance</div>
+                                        <div class="meta-value">05/03/1983 (42 ans)</div>
+                                    </div>
+                                    <div class="meta-item">
+                                        <div class="meta-label">NISS</div>
+                                        <div class="meta-value">83.03.05-123.45</div>
+                                    </div>
+                                    <div class="meta-item">
+                                        <div class="meta-label">Mutuelle</div>
+                                        <div class="meta-value" style="color: var(--success);">✓ Mutuelle Chrétienne</div>
+                                    </div>
+                                    <div class="meta-item">
+                                        <div class="meta-label">N° Affiliation</div>
+                                        <div class="meta-value">306-1234567-89</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                        <span class="alert-badge alert-danger">⚠️ Allergies: Pénicilline, Latex</span>
+                                        <span class="alert-badge alert-warning">💊 Diabète Type 2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Sidebar -->
+                    <div class="quick-actions-panel">
+                        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Actions Rapides</h3>
+                        <div style="display: grid; gap: 10px;">
+                            <button class="action-btn action-primary" onclick="openXrayViewer()">
+                                <span>📷</span>
+                                <span>Ouvrir Radio X</span>
+                            </button>
+                            <button class="action-btn action-secondary" onclick="openCertificateModal()">
+                                <span>📄</span>
+                                <span>Certificat Absence</span>
+                            </button>
+                            <button class="action-btn action-secondary" onclick="sendINAMI()">
+                                <span>💳</span>
+                                <span>Envoi INAMI</span>
+                            </button>
+                            <button class="action-btn action-secondary" onclick="checkMutuelle()">
+                                <span>🏥</span>
+                                <span>Vérif. Mutuelle</span>
+                            </button>
+                            <button class="action-btn action-secondary" onclick="openScanner3D()">
+                                <span>🔬</span>
+                                <span>Scanner 3D</span>
+                            </button>
+                            <button class="action-btn action-ai" onclick="newAIAnalysis()">
+                                <span>🤖</span>
+                                <span>Analyse IA</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Stats -->
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Dernière Visite</div>
+                                <div class="stat-value">4j</div>
+                                <div class="stat-change positive">✓ À jour</div>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(0, 200, 150, 0.15); color: var(--secondary);">
+                                📅
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Traitements Actifs</div>
+                                <div class="stat-value">3</div>
+                                <div class="stat-change">En cours</div>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(0, 102, 255, 0.15); color: var(--primary);">
+                                🎯
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Analyses IA</div>
+                                <div class="stat-value">12</div>
+                                <div class="stat-change positive">+3 ce mois</div>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">
+                                🤖
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Risque Global</div>
+                                <div class="stat-value" style="font-size: 28px; color: var(--warning);">Modéré</div>
+                                <div class="stat-change">Surveillance +</div>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(255, 149, 0, 0.15); color: var(--warning);">
+                                ⚠️
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Recording & AI Transcription Panel -->
+                <div class="ai-panel" style="margin-bottom: 24px;">
+                    <div class="ai-header" style="background: linear-gradient(135deg, #00C896, #00A578);">
+                        <div class="ai-title">
+                            <span>🎤</span>
+                            <span>Enregistrement & Transcription IA</span>
+                        </div>
+                        <div class="ai-status">
+                            <div class="status-dot" id="recordingStatusDot" style="background: var(--gray);"></div>
+                            <span id="recordingStatusText">Prêt</span>
+                        </div>
+                    </div>
+                    <div class="ai-content">
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <div id="recordingTimer" style="display: none; font-size: 48px; font-weight: 800; color: var(--danger); font-family: monospace; margin: 24px 0;">
+                                00:00
+                            </div>
+                            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                                <button class="btn btn-primary" id="startRecordBtn" onclick="startRecording()" style="background: var(--danger);">
+                                    🎤 Démarrer l'enregistrement
+                                </button>
+                                <button class="btn btn-secondary" id="stopRecordBtn" onclick="stopRecording()" style="display: none;">
+                                    ⏹️ Terminer l'enregistrement
+                                </button>
+                            </div>
+                            <p style="color: var(--text-secondary); margin-top: 16px; font-size: 14px;">
+                                💡 Enregistrez votre consultation - L'IA va transcrire et générer l'anamnèse automatiquement
+                            </p>
+                        </div>
+
+                        <!-- Transcription Section -->
+                        <div id="transcriptionSection" style="display: none;">
+                            <div class="ai-analysis">
+                                <div class="ai-analysis-title">
+                                    <span>📝</span>
+                                    <span>Transcription Consultation</span>
+                                </div>
+                                <div class="ai-analysis-content" id="transcriptionText" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Anamnesis Section -->
+                        <div id="anamnesisSection" style="display: none; margin-top: 20px;">
+                            <div style="background: rgba(0, 200, 150, 0.1); border: 2px solid var(--secondary); border-radius: 12px; padding: 24px;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                    <h3 style="font-size: 18px; font-weight: 700; margin: 0;">✨ Anamnèse Générée par IA</h3>
+                                    <span style="background: var(--secondary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                                        AUTO
+                                    </span>
+                                </div>
+                                <div style="background: white; border-radius: 10px; padding: 20px; color: #1A1D29;">
+                                    <div id="anamnesisText" style="white-space: pre-wrap; line-height: 1.7; color: #1A1D29;"></div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
+                                    <button class="btn btn-primary" onclick="saveAnamnesis()">
+                                        💾 Enregistrer dans le Dossier
+                                    </button>
+                                    <button class="btn btn-primary" onclick="generateAIPrescriptions()" style="background: var(--warning);">
+                                        💊 Générer Prescriptions IA
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="editAnamnesis()">
+                                        ✏️ Modifier
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="regenerateAnamnesis()">
+                                        🔄 Régénérer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI PRESCRIPTION SUGGESTIONS -->
+                        <div id="prescriptionSection" style="display: none; margin-top: 20px;">
+                            <div style="background: rgba(255, 149, 0, 0.1); border: 2px solid var(--warning); border-radius: 12px; padding: 24px;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                    <h3 style="font-size: 18px; font-weight: 700; margin: 0;">💊 Prescriptions IA — À valider par Dr. Sialyen</h3>
+                                    <span style="background: var(--warning); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                                        SUGGESTIONS
+                                    </span>
+                                </div>
+
+                                <!-- Warning Banner -->
+                                <div style="background: rgba(255, 59, 48, 0.1); border: 1px solid var(--danger); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                                    <div style="display: flex; gap: 12px; align-items: start;">
+                                        <span style="font-size: 24px;">⚠️</span>
+                                        <div>
+                                            <strong style="color: var(--danger);">VALIDATION OBLIGATOIRE</strong>
+                                            <p style="margin: 8px 0 0 0; font-size: 13px; line-height: 1.5;">
+                                                Ces prescriptions sont générées par IA à titre indicatif uniquement.
+                                                Elles DOIVENT être validées et signées par Dr. Sialyen avant délivrance au patient.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Prescription Content -->
+                                <div style="background: white; border-radius: 10px; padding: 20px; color: #1A1D29; margin-bottom: 20px;">
+                                    <div id="prescriptionText" style="white-space: pre-wrap; line-height: 1.7; color: #1A1D29;"></div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    <button class="btn btn-primary" onclick="openRecipePage()">
+                                        ✅ Valider et Créer Recip-e
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="regeneratePrescriptions()">
+                                        🔄 Régénérer
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="editPrescriptions()">
+                                        ✏️ Modifier
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Panel -->
+                <div class="ai-panel">
+                    <div class="ai-header">
+                        <div class="ai-title">
+                            <span>🤖</span>
+                            <span>Analyse IA en Temps Réel</span>
+                        </div>
+                        <div class="ai-status">
+                            <div class="status-dot"></div>
+                            <span>Actif</span>
+                        </div>
+                    </div>
+                    <div class="ai-content">
+                        <div class="ai-analysis">
+                            <div class="ai-analysis-title">
+                                <span>📊</span>
+                                <span>Dernière Analyse - 08/11/2025 14:32</span>
+                            </div>
+                            <div class="ai-analysis-content">
+                                <strong>Radio panoramique analysée :</strong> Détection de carie proximale dent 36 (stade précoce). 
+                                Perte osseuse marginale secteur postérieur gauche mandibulaire (~3mm). 
+                                Obturation coronaire dent 46 intégrité compromise. Recommandation : contrôle clinique approfondi 
+                                et radiographie rétro-alvéolaire complémentaire dent 36.
+                            </div>
+                        </div>
+
+                        <div class="ai-suggestions">
+                            <div class="ai-suggestion">
+                                <div class="ai-suggestion-text">
+                                    💡 <strong>Suggestion :</strong> Planifier détartrage prophylactique
+                                </div>
+                                <button class="btn btn-icon btn-primary">Accepter</button>
+                            </div>
+                            <div class="ai-suggestion">
+                                <div class="ai-suggestion-text">
+                                    🔬 <strong>Examen complémentaire :</strong> Test de vitalité pulpaire dent 36
+                                </div>
+                                <button class="btn btn-icon btn-primary">Planifier</button>
+                            </div>
+                            <div class="ai-suggestion">
+                                <div class="ai-suggestion-text">
+                                    📅 <strong>Suivi :</strong> RDV contrôle recommandé dans 3 mois
+                                </div>
+                                <button class="btn btn-icon btn-primary">Créer RDV</button>
+                            </div>
+                        </div>
+
+                        <div class="ai-actions">
+                            <button class="btn btn-primary" onclick="regenerateAnalysis()">
+                                🔄 Régénérer Analyse
+                            </button>
+                            <button class="btn btn-secondary" onclick="editAnalysis()">
+                                ✏️ Modifier Analyse
+                            </button>
+                            <button class="btn btn-secondary" onclick="showHistory()">
+                                📜 Historique Complet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- X-Ray Viewer -->
+                <div class="xray-viewer" id="xrayViewer">
+                    <div class="xray-header">
+                        <div class="medical-card-title">📷 Visualiseur Radiographique</div>
+                        <div class="xray-toolbar">
+                            <button class="btn btn-icon btn-secondary">🔍 Zoom</button>
+                            <button class="btn btn-icon btn-secondary">🔄 Rotation</button>
+                            <button class="btn btn-icon btn-secondary">☀️ Contraste</button>
+                            <button class="btn btn-icon btn-secondary">📏 Mesure</button>
+                            <button class="btn btn-icon btn-primary" onclick="analyzeWithAI()">🤖 Analyse IA</button>
+                        </div>
+                    </div>
+                    <div class="xray-display" id="xrayDisplay">
+                        <div class="xray-placeholder">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📷</div>
+                            <div>Connecter scanner ou importer image DICOM</div>
+                            <button class="btn btn-primary" onclick="loadXray()" style="margin-top: 20px;">
+                                📁 Importer depuis Scanner
+                            </button>
+                        </div>
+                    </div>
+                    <div class="xray-info">
+                        <div class="xray-info-item">
+                            <div class="xray-info-label">Source</div>
+                            <div class="xray-info-value" id="xraySource">-</div>
+                        </div>
+                        <div class="xray-info-item">
+                            <div class="xray-info-label">Type</div>
+                            <div class="xray-info-value" id="xrayType">-</div>
+                        </div>
+                        <div class="xray-info-item">
+                            <div class="xray-info-label">Date</div>
+                            <div class="xray-info-value" id="xrayDate">-</div>
+                        </div>
+                        <div class="xray-info-item">
+                            <div class="xray-info-label">Statut IA</div>
+                            <div class="xray-info-value" id="xrayStatus" style="color: var(--text-secondary);">En attente</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline & Medical Data Grid -->
+                <div class="medical-grid">
+                    <!-- Timeline -->
+                    <div class="timeline-container">
+                        <div class="timeline-header">
+                            <div class="timeline-title">📋 Historique Patient</div>
+                            <button class="btn btn-icon btn-secondary">📤 Exporter</button>
+                        </div>
+                        <div class="timeline" id="patientTimeline">
+                            <div class="timeline-item ai-generated">
+                                <div class="timeline-content">
+                                    <div class="timeline-meta">
+                                        <span class="timeline-date">08/11/2025 - 14:32</span>
+                                        <span class="timeline-badge badge-ai">IA AUTO</span>
+                                    </div>
+                                    <div class="timeline-text">
+                                        <strong>Analyse radiographique IA :</strong> Détection carie dent 36, perte osseuse marginale. 
+                                        Recommandations générées automatiquement.
+                                    </div>
+                                    <button class="edit-history-btn" onclick="showHistory()">
+                                        📝 Voir 3 versions · Modifié par Dr. Ismail Sialyen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item xray">
+                                <div class="timeline-content">
+                                    <div class="timeline-meta">
+                                        <span class="timeline-date">08/11/2025 - 14:15</span>
+                                        <span class="timeline-badge badge-xray">RADIO X</span>
+                                    </div>
+                                    <div class="timeline-text">
+                                        <strong>Radio panoramique numérique</strong><br>
+                                        Capteur: Planmeca ProMax 3D · Résolution: 150μm · DICOM sync ✓
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <div class="timeline-meta">
+                                        <span class="timeline-date">05/11/2025 - 10:00</span>
+                                        <span class="timeline-badge badge-manual">CONSULTATION</span>
+                                    </div>
+                                    <div class="timeline-text">
+                                        <strong>Consultation de contrôle</strong><br>
+                                        Détartrage complet réalisé. Patient asymptomatique. RDV contrôle dans 6 mois.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Data -->
+                    <div class="medical-card">
+                        <div class="medical-card-header">
+                            <div class="medical-card-title">🏥 Données Médicales</div>
+                            <button class="btn btn-icon btn-secondary">✏️</button>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Groupe Sanguin</span>
+                            <span class="data-value">A+</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Allergies</span>
+                            <span class="data-value" style="color: var(--danger);">Pénicilline, Latex</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Conditions</span>
+                            <span class="data-value">Diabète Type 2</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Médication</span>
+                            <span class="data-value">Metformine 850mg</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Dernier HbA1c</span>
+                            <span class="data-value">6.8%</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Statut INAMI</span>
+                            <span class="data-value" style="color: var(--success);">✓ Actif</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">N° Mutuelle</span>
+                            <span class="data-value">306-1234567-89</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Real-time Indicator -->
+    <div class="realtime-indicator">
+        <div class="realtime-pulse"></div>
+        <div>
+            <div style="font-weight: 600; font-size: 13px;">Données synchronisées</div>
+            <div style="font-size: 11px; color: var(--text-secondary);" id="lastUpdate">Dernière MAJ: il y a 2 sec</div>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel" id="notificationsPanel">
+        <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Notifications</h2>
+            <p style="font-size: 13px; color: var(--text-secondary);"><span id="notifCountPanel">5</span> nouvelles notifications</p>
+        </div>
+
+        <div id="notificationsList">
+            <div class="notification">
+                <div class="notification-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">
+                    🤖
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Nouvelle analyse IA disponible</div>
+                    <div class="notification-text">
+                        L'analyse de la radiographie panoramique de Marie Dubois est terminée. 3 recommandations générées.
+                    </div>
+                    <div class="notification-time">Il y a 5 minutes</div>
+                </div>
+            </div>
+
+            <div class="notification" style="border-left-color: var(--secondary);">
+                <div class="notification-icon" style="background: rgba(0, 200, 150, 0.15); color: var(--secondary);">
+                    📷
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Scanner 3D connecté</div>
+                    <div class="notification-text">
+                        Le scanner iTero Element 5D Plus est maintenant connecté et prêt pour l'acquisition.
+                    </div>
+                    <div class="notification-time">Il y a 12 minutes</div>
+                </div>
+            </div>
+
+            <div class="notification" style="border-left-color: var(--warning);">
+                <div class="notification-icon" style="background: rgba(255, 149, 0, 0.15); color: var(--warning);">
+                    ⚠️
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Rappel traitement</div>
+                    <div class="notification-text">
+                        Jean Martin - Traitement endodontique dent 16 prévu demain à 10h00.
+                    </div>
+                    <div class="notification-time">Il y a 1 heure</div>
+                </div>
+            </div>
+
+            <div class="notification" style="border-left-color: var(--success);">
+                <div class="notification-icon" style="background: rgba(52, 199, 89, 0.15); color: var(--success);">
+                    💳
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Envoi INAMI confirmé</div>
+                    <div class="notification-text">
+                        La facturation pour Sophie Laurent a été transmise avec succès à l'INAMI.
+                    </div>
+                    <div class="notification-time">Il y a 2 heures</div>
+                </div>
+            </div>
+
+            <div class="notification">
+                <div class="notification-icon">
+                    📄
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Certificat généré</div>
+                    <div class="notification-text">
+                        Le certificat d'absence pour Marc Janssens est prêt à être téléchargé.
+                    </div>
+                    <div class="notification-time">Il y a 3 heures</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit History Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">📜 Historique des Modifications IA</div>
+                <button class="close-btn" onclick="closeHistory()">✕</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+                    Analyse Radiographique - Dent 36
+                </div>
+
+                <div class="history-version">
+                    <div class="history-version-header">
+                        <span class="history-version-date">08/11/2025 - 15:18</span>
+                        <span class="history-version-author">Dr. Ismail Sialyen (Manuel)</span>
+                    </div>
+                    <div class="history-version-content">
+                        <strong>Version 3 (Actuelle) :</strong> Détection de carie proximale dent 36 (stade précoce). 
+                        Perte osseuse marginale secteur postérieur gauche mandibulaire (~3mm). 
+                        Obturation coronaire dent 46 intégrité compromisepatient sous surveillance renforcée en raison du diabète.</em>
+                    </div>
+                </div>
+
+                <div class="history-version">
+                    <div class="history-version-header">
+                        <span class="history-version-date">08/11/2025 - 14:52</span>
+                        <span class="history-version-author">IA Auto-Correction</span>
+                    </div>
+                    <div class="history-version-content">
+                        <strong>Version 2 :</strong> Détection de carie proximale dent 36 (stade précoce). 
+                        Perte osseuse marginale secteur postérieur gauche mandibulaire (~3mm). 
+                        Obturation coronaire dent 46 intégrité compromise.
+                    </div>
+                </div>
+
+                <div class="history-version">
+                    <div class="history-version-header">
+                        <span class="history-version-date">08/11/2025 - 14:32</span>
+                        <span class="history-version-author">IA Génération Initiale</span>
+                    </div>
+                    <div class="history-version-content">
+                        <strong>Version 1 :</strong> Détection de carie proximale dent 36. 
+                        Perte osseuse marginale visible secteur postérieur gauche. 
+                        Obturation existante dent 46 à surveiller.
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="closeHistory()">Fermer</button>
+                <button class="btn btn-primary">📥 Exporter Historique</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="modal-overlay" id="certificateModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">📄 Générer Certificat d'Absence</div>
+                <button class="close-btn" onclick="closeCertificate()">✕</button>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Patient</label>
+                    <input type="text" class="form-input" value="Marie Dubois" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Type de certificat</label>
+                    <select class="form-select" id="certificateType">
+                        <option>Certificat d'incapacité de travail</option>
+                        <option>Certificat médical simple</option>
+                        <option>Certificat pour école</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Durée</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <input type="date" class="form-input" id="certStartDate" value="2025-11-08">
+                        <input type="date" class="form-input" id="certEndDate" value="2025-11-10">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Motif</label>
+                    <textarea class="form-textarea" id="certReason" placeholder="Intervention dentaire sous anesthésie locale...">Intervention dentaire nécessitant repos et récupération. Traitement endodontique dent 36 réalisé ce jour.</textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeCertificate()">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="generateCertificate()">
+                        📄 Générer & Envoyer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div style="margin-top: 20px; font-size: 16px; font-weight: 600;" id="loadingText">
+                Génération en cours...
+            </div>
+            <div style="margin-top: 8px; font-size: 13px; color: var(--text-secondary);">
+                Veuillez patienter
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentXrayLoaded = false;
+        let isRecording = false;
+        let recordingTimer = null;
+        let recordingSeconds = 0;
+        
+        // Recording functions
+        function startRecording() {
+            console.log('startRecording called');
+            try {
+                isRecording = true;
+                recordingSeconds = 0;
+
+                console.log('Setting UI elements...');
+                document.getElementById('startRecordBtn').style.display = 'none';
+                document.getElementById('stopRecordBtn').style.display = 'inline-flex';
+                document.getElementById('recordingTimer').style.display = 'block';
+                document.getElementById('recordingStatusDot').style.background = 'var(--danger)';
+                document.getElementById('recordingStatusText').textContent = 'Enregistrement en cours...';
+
+                console.log('Starting timer...');
+                recordingTimer = setInterval(function() {
+                    recordingSeconds++;
+                    const mins = Math.floor(recordingSeconds / 60);
+                    const secs = recordingSeconds % 60;
+                    document.getElementById('recordingTimer').textContent =
+                        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+                }, 1000);
+
+                console.log('Adding to timeline...');
+                addToTimeline('', 'badge-manual', 'Enregistrement consultation démarré',
+                    'Enregistrement audio de la consultation en cours avec le patient Marie Dubois.');
+                console.log('Recording started successfully!');
+            } catch (error) {
+                console.error('Error in startRecording:', error);
+                alert('Erreur: ' + error.message);
+            }
+        }
+
+        function stopRecording() {
+            console.log('stopRecording called');
+            try {
+                isRecording = false;
+                clearInterval(recordingTimer);
+
+                document.getElementById('stopRecordBtn').style.display = 'none';
+                document.getElementById('recordingStatusDot').style.background = 'var(--warning)';
+                document.getElementById('recordingStatusText').textContent = 'Traitement en cours...';
+
+                showLoading('Transcription et analyse IA en cours...');
+                console.log('Starting transcription timeout...');
+
+                setTimeout(function() {
+                    console.log('Transcription phase complete');
+                    hideLoading();
+                
+                const transcription = "Docteur: \"Bonjour Madame Dubois, qu'est-ce qui vous amène aujourd'hui ?\"\n\nPatient: \"Bonjour Docteur. J'ai une douleur à la dent en haut à droite depuis quelques jours.\"\n\nDocteur: \"D'accord. Pouvez-vous me décrire cette douleur ? Est-elle constante ou intermittente ?\"\n\nPatient: \"Elle est surtout présente quand je mange ou bois quelque chose de chaud ou froid. C'est vraiment désagréable, ça fait mal.\"\n\nDocteur: \"Je comprends. Avez-vous remarqué un gonflement au niveau de la gencive ?\"\n\nPatient: \"Non, pas de gonflement, mais la dent est très sensible quand je la touche.\"\n\nDocteur: \"Très bien. Depuis combien de temps exactement avez-vous cette douleur ?\"\n\nPatient: \"Ça a commencé il y a environ 5 jours. Au début c'était léger, mais ça empire.\"\n\nDocteur: \"D'accord. Je vais examiner la dent. Ouvrez bien la bouche s'il vous plaît...\"";
+
+                console.log('Setting transcription text...');
+                document.getElementById('transcriptionText').textContent = transcription;
+                document.getElementById('transcriptionSection').style.display = 'block';
+                console.log('Transcription displayed, starting anamnesis timeout...');
+
+                // AUTO-GENERATE ANAMNESIS WITH CLAUDE AI
+                (async function() {
+                    console.log('Generating anamnesis with Claude AI...');
+                    AI_Dental.showAILoading('anamnesisText', 'Claude IA en cours de génération de l\'anamnèse...');
+                    document.getElementById('anamnesisSection').style.display = 'block';
+
+                    try {
+                        // Get patient data
+                        const patientData = {
+                            name: 'Marie Dubois',
+                            age: 42,
+                            niss: '83.03.05-123.45',
+                            mutuelle: 'Mutualité Chrétienne',
+                            mutuelleCode: '300',
+                            bim: false,
+                            language: 'FR',
+                            allergies: 'Pénicilline',
+                            medications: 'Aucune',
+                            conditions: 'Aucune',
+                            dentalHistory: 'Dernière visite il y a 6 mois'
+                        };
+
+                        // Generate with Claude AI
+                        const anamnesis = await AI_Dental.generateAnamnesis(patientData, transcription);
+
+                        // Display result
+                        document.getElementById('anamnesisText').innerHTML = AI_Dental.renderMarkdownAnamnesis(anamnesis);
+
+                        // Save version history
+                        const version = AI_Dental.saveAnamnesisVersion(patientData.niss, anamnesis, 'AI');
+
+                        // Update UI
+                        document.getElementById('recordingTimer').style.display = 'none';
+                        document.getElementById('recordingStatusDot').style.background = 'var(--success)';
+                        document.getElementById('recordingStatusText').textContent = 'Terminé';
+                        document.getElementById('startRecordBtn').style.display = 'inline-flex';
+
+                        // Scroll to result
+                        document.getElementById('anamnesisSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                        // Show notification
+                        addNotification('🤖', 'rgba(139, 92, 246, 0.15)', 'var(--purple)',
+                            'Anamnèse IA générée',
+                            `Claude Sonnet 4.5 a généré l'anamnèse (Version ${version.version}). Durée enregistrement: ` +
+                            Math.floor(recordingSeconds / 60) + ' min ' + (recordingSeconds % 60) + ' sec',
+                            'var(--purple)');
+
+                        console.log('AI anamnesis generated successfully!');
+
+                    } catch (error) {
+                        console.error('Error generating AI anamnesis:', error);
+                        document.getElementById('anamnesisText').innerHTML = `
+                            <div style="color: #FF3B30; padding: 20px; text-align: center;">
+                                <strong>⚠️ Erreur IA</strong><br>
+                                ${error.message}<br><br>
+                                <small>Vérifiez votre clé API Anthropic.<br>
+                                Vous pouvez toujours saisir l'anamnèse manuellement.</small>
+                            </div>
+                        `;
+                        AI_Dental.showNotification('❌ Erreur IA: ' + error.message, 'error');
+                    }
+                })();
+            }, 3000);
+            } catch (error) {
+                console.error('Error in stopRecording:', error);
+                alert('Erreur dans stopRecording: ' + error.message);
+            }
+        }
+
+        function saveAnamnesis() {
+            showLoading("Enregistrement de l'anamnèse...");
+            
+            setTimeout(function() {
+                hideLoading();
+                
+                addToTimeline('ai-generated', 'badge-ai', 'Anamnèse IA enregistrée', 
+                    "Anamnèse générée automatiquement par IA à partir de l'enregistrement audio de consultation. " +
+                    'Motif: Douleur dentaire secteur supérieur droit. Durée enregistrement: ' + 
+                    Math.floor(recordingSeconds / 60) + ' min ' + (recordingSeconds % 60) + ' sec');
+                
+                addNotification('💾', 'rgba(52, 199, 89, 0.15)', 'var(--success)', 
+                    'Anamnèse enregistrée', 
+                    "L'anamnèse a été ajoutée au dossier patient avec succès.",
+                    'var(--success)');
+                
+                document.getElementById('transcriptionSection').style.display = 'none';
+                document.getElementById('anamnesisSection').style.display = 'none';
+                recordingSeconds = 0;
+                
+                alert('✅ Anamnèse enregistrée avec succès dans le dossier patient!');
+            }, 1500);
+        }
+
+        function editAnamnesis() {
+            const currentText = document.getElementById('anamnesisText').textContent;
+            const newText = prompt("Modifier l'anamnèse:", currentText.substring(0, 200) + '...');
+            
+            if (newText) {
+                document.getElementById('anamnesisText').textContent = newText;
+                
+                addToTimeline('ai-generated', 'badge-ai', 'Anamnèse modifiée manuellement', 
+                    "Modifications apportées par le praticien à l'anamnèse générée par IA.");
+                
+                alert("✅ Anamnèse modifiée! N'oubliez pas de sauvegarder.");
+            }
+        }
+
+        async function regenerateAnamnesis() {
+            try {
+                AI_Dental.showAILoading('anamnesisText', 'IA en cours de génération de l\'anamnèse...');
+
+                // Get patient data
+                const patientData = {
+                    name: 'Marie Dubois',
+                    age: 42,
+                    niss: '83.03.05-123.45',
+                    mutuelle: 'Mutualité Chrétienne',
+                    mutuelleCode: '300',
+                    bim: false,
+                    language: 'FR',
+                    allergies: 'Pénicilline',
+                    medications: 'Aucune',
+                    conditions: 'Aucune',
+                    dentalHistory: 'Dernière visite il y a 6 mois'
+                };
+
+                // Get transcription
+                const transcription = document.getElementById('transcriptionText').textContent;
+
+                // Generate anamnesis with Claude AI
+                const anamnesis = await AI_Dental.generateAnamnesis(patientData, transcription);
+
+                // Display result
+                document.getElementById('anamnesisText').innerHTML = AI_Dental.renderMarkdownAnamnesis(anamnesis);
+
+                // Save version history
+                const version = AI_Dental.saveAnamnesisVersion(patientData.niss, anamnesis, 'AI');
+
+                // Show success
+                AI_Dental.showNotification(`✅ Anamnèse régénérée - Version ${version.version}`, 'success');
+
+                addToTimeline('ai-generated', 'badge-ai', 'Anamnèse régénérée par IA',
+                    `Nouvelle version générée par Claude Sonnet 4.5 - Version ${version.version}`);
+
+            } catch (error) {
+                console.error('Error generating anamnesis:', error);
+                AI_Dental.showNotification('❌ Erreur: ' + error.message, 'error');
+                document.getElementById('anamnesisText').innerHTML = `
+                    <div style="color: #FF3B30; padding: 20px; text-align: center;">
+                        <strong>Erreur lors de la génération</strong><br>
+                        ${error.message}<br><br>
+                        Vérifiez votre clé API Anthropic dans les paramètres.
+                    </div>
+                `;
+            }
+        }
+        
+        // Toggle notifications panel
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationsPanel');
+            panel.classList.toggle('active');
+        }
+
+        // Close notifications when clicking outside
+        document.addEventListener('click', function(event) {
+            const panel = document.getElementById('notificationsPanel');
+            const trigger = event.target.closest('.icon-btn');
+            
+            if (!panel.contains(event.target) && !trigger) {
+                panel.classList.remove('active');
+            }
+        });
+
+        // Add to timeline
+        function addToTimeline(type, badge, title, content) {
+            const timeline = document.getElementById('patientTimeline');
+            const now = new Date();
+            const timeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} - ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            
+            const newItem = document.createElement('div');
+            newItem.className = `timeline-item ${type}`;
+            newItem.innerHTML = `
+                <div class="timeline-content">
+                    <div class="timeline-meta">
+                        <span class="timeline-date">${timeStr}</span>
+                        <span class="timeline-badge ${badge}">${badge.replace('badge-', '').toUpperCase()}</span>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>${title}</strong><br>
+                        ${content}
+                    </div>
+                </div>
+            `;
+            
+            timeline.insertBefore(newItem, timeline.firstChild);
+        }
+
+        // Add notification
+        function addNotification(icon, iconBg, iconColor, title, text, borderColor) {
+            const list = document.getElementById('notificationsList');
+            const newNotif = document.createElement('div');
+            newNotif.className = 'notification';
+            newNotif.style.borderLeftColor = borderColor;
+            newNotif.innerHTML = `
+                <div class="notification-icon" style="background: ${iconBg}; color: ${iconColor};">
+                    ${icon}
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-text">${text}</div>
+                    <div class="notification-time">À l'instant</div>
+                </div>
+            `;
+            
+            list.insertBefore(newNotif, list.firstChild);
+            
+            // Update counter
+            const count = parseInt(document.getElementById('notifCount').textContent) + 1;
+            document.getElementById('notifCount').textContent = count;
+            document.getElementById('notifCountPanel').textContent = count;
+        }
+
+        // Load X-ray
+        function loadXray() {
+            showLoading('Chargement de la radiographie...');
+            
+            setTimeout(() => {
+                // Simulate loading dental X-ray
+                const display = document.getElementById('xrayDisplay');
+                display.innerHTML = '<img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200&h=800&fit=crop" class="xray-image" alt="Dental X-Ray">';
+                
+                document.getElementById('xraySource').textContent = 'Planmeca ProMax';
+                document.getElementById('xrayType').textContent = 'Panoramique';
+                document.getElementById('xrayDate').textContent = new Date().toLocaleDateString('fr-BE');
+                document.getElementById('xrayStatus').textContent = 'Chargé';
+                document.getElementById('xrayStatus').style.color = 'var(--success)';
+                
+                currentXrayLoaded = true;
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('xray', 'badge-xray', 'Radio panoramique numérique importée', 
+                    'Capteur: Planmeca ProMax 3D · Résolution: 150μm · DICOM sync ✓');
+                
+                // Add notification
+                addNotification('📷', 'rgba(0, 200, 150, 0.15)', 'var(--secondary)', 
+                    'Radiographie chargée', 
+                    'La radiographie panoramique a été importée avec succès. Prête pour l\'analyse IA.',
+                    'var(--secondary)');
+            }, 2000);
+        }
+
+        // Open X-ray viewer
+        function openXrayViewer() {
+            document.getElementById('xrayViewer').scrollIntoView({ behavior: 'smooth' });
+            
+            if (!currentXrayLoaded) {
+                setTimeout(() => loadXray(), 500);
+            }
+        }
+
+        // Analyze with AI
+        function analyzeWithAI() {
+            if (!currentXrayLoaded) {
+                alert('⚠️ Veuillez d\'abord charger une radiographie');
+                return;
+            }
+            
+            showLoading('Analyse IA en cours...');
+            
+            setTimeout(() => {
+                document.getElementById('xrayStatus').textContent = '✓ Analysé';
+                document.getElementById('xrayStatus').style.color = 'var(--success)';
+                
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('ai-generated', 'badge-ai', 'Analyse radiographique IA', 
+                    'Détection automatique: carie proximale dent 36, perte osseuse marginale secteur postérieur. 3 recommandations générées.');
+                
+                // Add notification
+                addNotification('🤖', 'rgba(139, 92, 246, 0.15)', 'var(--purple)', 
+                    'Analyse IA terminée', 
+                    'L\'analyse de la radiographie est terminée. 3 recommandations disponibles.',
+                    'var(--purple)');
+                
+                // Scroll to AI panel
+                setTimeout(() => {
+                    document.querySelector('.ai-panel').scrollIntoView({ behavior: 'smooth' });
+                }, 500);
+            }, 3500);
+        }
+
+        // Certificate modal
+        function openCertificateModal() {
+            document.getElementById('certificateModal').classList.add('active');
+        }
+
+        function closeCertificate() {
+            document.getElementById('certificateModal').classList.remove('active');
+        }
+
+        function generateCertificate() {
+            const type = document.getElementById('certificateType').value;
+            const startDate = document.getElementById('certStartDate').value;
+            const endDate = document.getElementById('certEndDate').value;
+            const reason = document.getElementById('certReason').value;
+            
+            document.getElementById('certificateModal').classList.remove('active');
+            showLoading('Génération du certificat...');
+            
+            setTimeout(() => {
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('certificate', 'badge-certificate', 'Certificat d\'absence généré', 
+                    `Type: ${type}<br>Période: ${new Date(startDate).toLocaleDateString('fr-BE')} - ${new Date(endDate).toLocaleDateString('fr-BE')}<br>Envoyé par email au patient`);
+                
+                // Add notification
+                addNotification('📄', 'rgba(255, 149, 0, 0.15)', 'var(--warning)', 
+                    'Certificat généré', 
+                    `Le certificat d'absence a été généré et envoyé par email à Marie Dubois.`,
+                    'var(--warning)');
+                
+                alert('✅ Certificat généré avec succès et envoyé au patient par email!');
+            }, 2000);
+        }
+
+        // Send INAMI
+        function sendINAMI() {
+            showLoading('Envoi à l\'INAMI...');
+            
+            setTimeout(() => {
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('inami', 'badge-inami', 'Facturation INAMI envoyée', 
+                    'Nomenclature: 37413/00 - Consultation avec examen radiologique<br>Montant: €85.50<br>Statut: Transmis avec succès');
+                
+                // Add notification
+                addNotification('💳', 'rgba(52, 199, 89, 0.15)', 'var(--success)', 
+                    'Envoi INAMI confirmé', 
+                    'La facturation a été transmise avec succès à l\'INAMI. Référence: INM-2025-001547',
+                    'var(--success)');
+                
+                alert('✅ Facturation envoyée à l\'INAMI avec succès!');
+            }, 2500);
+        }
+
+        // AI PRESCRIPTION FUNCTIONS
+
+        async function generateAIPrescriptions() {
+            try {
+                AI_Dental.showAILoading('prescriptionText', 'Claude IA en cours de génération des prescriptions...');
+                document.getElementById('prescriptionSection').style.display = 'block';
+
+                // Get patient data
+                const patientData = {
+                    name: 'Marie Dubois',
+                    age: 42,
+                    weight: 65, // kg
+                    niss: '83.03.05-123.45',
+                    mutuelle: 'Mutualité Chrétienne',
+                    mutuelleCode: '300',
+                    bim: false,
+                    allergies: 'Pénicilline',
+                    medications: 'Aucune',
+                    conditions: 'Aucune'
+                };
+
+                // Get anamnesis
+                const anamnesis = document.getElementById('anamnesisText').textContent;
+
+                // Generate prescriptions with Claude AI
+                const prescriptions = await AI_Dental.generatePrescriptions(patientData, anamnesis);
+
+                // Display result
+                document.getElementById('prescriptionText').innerHTML = AI_Dental.renderMarkdownAnamnesis(prescriptions);
+
+                // Save to history
+                AI_Dental.savePrescriptionSuggestion(patientData.niss, prescriptions, []);
+
+                // Show success
+                AI_Dental.showNotification('✅ Prescriptions générées - À valider par Dr. Sialyen', 'success');
+
+                addToTimeline('ai-generated', 'badge-ai', 'Prescriptions IA générées',
+                    'Suggestions de prescriptions générées par Claude Sonnet 4.5 - Validation obligatoire');
+
+            } catch (error) {
+                console.error('Error generating prescriptions:', error);
+                AI_Dental.showNotification('❌ Erreur: ' + error.message, 'error');
+                document.getElementById('prescriptionText').innerHTML = `
+                    <div style="color: #FF3B30; padding: 20px; text-align: center;">
+                        <strong>Erreur lors de la génération</strong><br>
+                        ${error.message}<br><br>
+                        Vérifiez votre clé API Anthropic.
+                    </div>
+                `;
+            }
+        }
+
+        async function regeneratePrescriptions() {
+            await generateAIPrescriptions();
+        }
+
+        function editPrescriptions() {
+            const currentText = document.getElementById('prescriptionText').textContent;
+            const newText = prompt("Modifier les prescriptions:", currentText.substring(0, 200) + '...');
+
+            if (newText) {
+                document.getElementById('prescriptionText').textContent = newText;
+                AI_Dental.showNotification("✅ Prescriptions modifiées - N'oubliez pas de valider", 'success');
+            }
+        }
+
+        function openRecipePage() {
+            // Redirect to Recip-e prescription page with pre-filled data
+            AI_Dental.showNotification('📄 Ouverture du module Recip-e...', 'info');
+            setTimeout(() => {
+                window.location.href = 'prescriptions.html';
+            }, 1000);
+        }
+
+        // Check mutuelle
+        function checkMutuelle() {
+            showLoading('Vérification mutuelle...');
+            
+            setTimeout(() => {
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('', 'badge-manual', 'Vérification mutuelle effectuée', 
+                    'Mutuelle Chrétienne - N° 306-1234567-89<br>Statut: Actif ✓<br>Couverture: Dentaire complète<br>Plafond annuel: €1850 (utilisé: €420)');
+                
+                // Add notification
+                addNotification('🏥', 'rgba(0, 102, 255, 0.15)', 'var(--primary)', 
+                    'Vérification mutuelle OK', 
+                    'La mutuelle est active. Couverture disponible: €1430 restants cette année.',
+                    'var(--primary)');
+                
+                alert('✅ Mutuelle active - Couverture dentaire: €1430 disponibles');
+            }, 2000);
+        }
+
+        // Open scanner 3D
+        function openScanner3D() {
+            showLoading('Connexion au scanner 3D...');
+            
+            setTimeout(() => {
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('', 'badge-xray', 'Scanner 3D activé', 
+                    'iTero Element 5D Plus connecté<br>Mode: Empreinte complète arcade supérieure<br>Statut: Prêt pour acquisition');
+                
+                // Add notification
+                addNotification('🔬', 'rgba(0, 200, 150, 0.15)', 'var(--secondary)', 
+                    'Scanner 3D connecté', 
+                    'Le scanner iTero Element 5D Plus est connecté et prêt.',
+                    'var(--secondary)');
+                
+                alert('✅ Scanner 3D connecté - Prêt pour l\'acquisition');
+            }, 2000);
+        }
+
+        // New AI Analysis
+        function newAIAnalysis() {
+            showLoading('Génération nouvelle analyse IA...');
+            
+            setTimeout(() => {
+                hideLoading();
+                
+                // Add to timeline
+                addToTimeline('ai-generated', 'badge-ai', 'Nouvelle analyse IA demandée', 
+                    'Analyse complète du dossier patient initiée<br>Évaluation du risque global, planification traitement, prédictions à 12 mois');
+                
+                alert('✅ Nouvelle analyse IA lancée - Résultats dans 30 secondes');
+            }, 1500);
+        }
+
+        // Show history modal
+        function showHistory() {
+            document.getElementById('historyModal').classList.add('active');
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+
+        // Regenerate AI analysis
+        function regenerateAnalysis() {
+            showLoading('Régénération analyse IA...');
+            
+            setTimeout(() => {
+                hideLoading();
+                
+                addToTimeline('ai-generated', 'badge-ai', 'Analyse IA régénérée', 
+                    'Nouvelle version de l\'analyse avec paramètres mis à jour. Recommandations ajustées selon dernières données.');
+                
+                alert('✅ Nouvelle analyse IA générée avec succès!');
+            }, 3000);
+        }
+
+        // Edit analysis
+        function editAnalysis() {
+            const newAnalysis = prompt('Modifier l\'analyse IA:', 
+                'Détection de carie proximale dent 36 (stade précoce)...');
+            
+            if (newAnalysis) {
+                addToTimeline('ai-generated', 'badge-ai', 'Analyse IA modifiée manuellement',
+                    `Modification par Dr. Ismail Sialyen: ${newAnalysis.substring(0, 100)}...`);
+                
+                alert('✅ Analyse modifiée et ajoutée à l\'historique!');
+            }
+        }
+
+        // Loading overlay
+        function showLoading(text = 'Génération en cours...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const currentTheme = html.getAttribute('data-theme');
+
+            if (currentTheme === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                if (themeToggle) themeToggle.textContent = '☀️';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.textContent = '🌙';
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', loadTheme);
+
+        // Simulate real-time data updates
+        setInterval(() => {
+            const indicator = document.getElementById('lastUpdate');
+            const seconds = Math.floor(Math.random() * 10);
+            indicator.textContent = `Dernière MAJ: il y a ${seconds} sec`;
+        }, 5000);
+
+        // Close modals on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // ====================================================================
+        // SUPABASE INTEGRATION - K2 DENT CLOUD PERSISTENCE
+        // ====================================================================
+
+        let currentPatientId = null;
+        let currentPatientNISS = null;
+        let supabaseInitialized = false;
+
+        // Initialize Supabase on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                supabaseInitialized = initSupabase();
+                if (supabaseInitialized) {
+                    console.log('✅ K2 Dent Dashboard - Supabase initialized');
+
+                    // Load patient from URL parameter if provided
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const niss = urlParams.get('niss');
+                    if (niss) {
+                        await loadPatientByNISS(niss);
+                    }
+                } else {
+                    console.warn('⚠️ Supabase not configured - using local mode');
+                }
+            } catch (error) {
+                console.error('Error initializing Supabase:', error);
+            }
+        });
+
+        // Load patient data from Supabase by NISS
+        async function loadPatientByNISS(niss) {
+            if (!supabaseInitialized) return null;
+
+            try {
+                const patient = await DB.getPatientByNISS(niss);
+                if (patient) {
+                    currentPatientId = patient.id;
+                    currentPatientNISS = patient.niss;
+
+                    // Update patient info in UI
+                    updatePatientInfo(patient);
+
+                    // Load timeline
+                    await loadPatientTimeline(patient.id);
+
+                    console.log('✅ Patient loaded:', patient.first_name, patient.last_name);
+                    return patient;
+                }
+            } catch (error) {
+                console.error('Error loading patient:', error);
+            }
+            return null;
+        }
+
+        // Update patient info in the UI
+        function updatePatientInfo(patient) {
+            const patientName = `${patient.first_name} ${patient.last_name}`;
+            const patientAge = calculateAge(patient.date_of_birth);
+
+            // Update any patient name displays
+            document.querySelectorAll('.patient-name').forEach(el => {
+                el.textContent = patientName;
+            });
+
+            // Update header if exists
+            const header = document.querySelector('.page-header h2');
+            if (header) {
+                header.innerHTML = `🦷 Dashboard Patient - ${patientName}`;
+            }
+        }
+
+        // Calculate age from date of birth
+        function calculateAge(dateOfBirth) {
+            if (!dateOfBirth) return null;
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Load patient timeline from Supabase
+        async function loadPatientTimeline(patientId) {
+            if (!supabaseInitialized) return;
+
+            try {
+                const timeline = await DB.getPatientTimeline(patientId);
+                const timelineEl = document.getElementById('patientTimeline');
+                if (!timelineEl) return;
+
+                // Clear existing timeline
+                timelineEl.innerHTML = '';
+
+                // Add each event
+                timeline.forEach(event => {
+                    const eventDate = new Date(event.event_date);
+                    const timeStr = formatDateTime(eventDate);
+
+                    const newItem = document.createElement('div');
+                    newItem.className = `timeline-item ${event.event_type}`;
+                    newItem.innerHTML = `
+                        <div class="timeline-content">
+                            <div class="timeline-meta">
+                                <span class="timeline-date">${timeStr}</span>
+                                <span class="timeline-badge ${event.badge}">${event.badge.replace('badge-', '').toUpperCase()}</span>
+                            </div>
+                            <div class="timeline-text">
+                                <strong>${event.title}</strong><br>
+                                ${event.description || ''}
+                            </div>
+                        </div>
+                    `;
+                    timelineEl.appendChild(newItem);
+                });
+
+                console.log(`✅ Loaded ${timeline.length} timeline events`);
+            } catch (error) {
+                console.error('Error loading timeline:', error);
+            }
+        }
+
+        // Format date/time for timeline
+        function formatDateTime(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${day}/${month}/${year} - ${hours}:${minutes}`;
+        }
+
+        // Override saveAnamnesis to also save to Supabase
+        const originalSaveAnamnesis = window.saveAnamnesis;
+        window.saveAnamnesis = async function() {
+            // Call original function for UI updates
+            if (originalSaveAnamnesis) {
+                originalSaveAnamnesis();
+            }
+
+            // Save to Supabase if initialized
+            if (supabaseInitialized && currentPatientId) {
+                try {
+                    const anamnesisText = document.getElementById('anamnesisText')?.textContent || '';
+                    const transcriptionText = document.getElementById('transcriptionText')?.textContent || '';
+
+                    // Save anamnesis with auto-versioning
+                    const anamnesis = await DB.saveAnamnesis(
+                        currentPatientId,
+                        anamnesisText,
+                        'AI',
+                        transcriptionText,
+                        recordingSeconds
+                    );
+
+                    console.log(`✅ Anamnèse saved to Supabase - Version ${anamnesis.version}`);
+
+                    // Add timeline event
+                    await DB.addTimelineEvent(currentPatientId, {
+                        type: 'anamnesis',
+                        title: `Anamnèse IA v${anamnesis.version}`,
+                        description: `Générée automatiquement par IA. Durée: ${Math.floor(recordingSeconds / 60)}min ${recordingSeconds % 60}sec`,
+                        badge: 'badge-ai'
+                    });
+
+                } catch (error) {
+                    console.error('Error saving to Supabase:', error);
+                    alert('⚠️ Erreur lors de la sauvegarde dans le cloud: ' + error.message);
+                }
+            }
+        };
+
+        // Override addToTimeline to also save to Supabase
+        const originalAddToTimeline = window.addToTimeline;
+        window.addToTimeline = async function(type, badge, title, content) {
+            // Call original function for UI updates
+            if (originalAddToTimeline) {
+                originalAddToTimeline(type, badge, title, content);
+            }
+
+            // Save to Supabase if initialized
+            if (supabaseInitialized && currentPatientId) {
+                try {
+                    await DB.addTimelineEvent(currentPatientId, {
+                        type: type,
+                        title: title,
+                        description: content,
+                        badge: badge
+                    });
+                    console.log('✅ Timeline event saved to Supabase');
+                } catch (error) {
+                    console.error('Error saving timeline to Supabase:', error);
+                }
+            }
+        };
+
+        // Add patient selector UI (optional - for testing)
+        function showPatientSelector() {
+            const niss = prompt('Entrez le NISS du patient (format: XX.XX.XX-XXX.XX):');
+            if (niss) {
+                loadPatientByNISS(niss);
+            }
+        }
+
+        console.log('📦 K2 Dent Dashboard - Supabase integration loaded');
+
+    </script>
+
+    <!-- K2 Dent - Belgium Compliance & AI Integration -->
+    <script src="js/belgium.js"></script>
+    <script src="js/ai-dental.js"></script>
+</body>
+</html>

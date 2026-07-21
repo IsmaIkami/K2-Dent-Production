@@ -1,0 +1,98 @@
+# ============================================
+# K2 DENT - GITIGNORE
+# ============================================
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+*.env
+
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.cache/
+
+# Logs
+logs/
+*.log
+*.log.*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Sensitive data
+secrets/
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# Supabase
+.supabase/
+
+# Backups
+backups/
+*.backup
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+*.iml
+.project
+.classpath
+.settings/
+
+# Misc
+*.pid
+*.seed
+*.pid.lock

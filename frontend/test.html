@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Recording</title>
+    <style>
+        body {
+            padding: 50px;
+            font-family: Arial;
+            background: #0A0E1A;
+            color: white;
+        }
+        button {
+            padding: 20px 40px;
+            font-size: 18px;
+            cursor: pointer;
+            background: #FF3B30;
+            color: white;
+            border: none;
+            border-radius: 10px;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #141B2D;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Enregistrement</h1>
+    <button onclick="testRecording()">🎤 Démarrer l'enregistrement</button>
+    <div id="output"></div>
+
+    <script>
+        let recordingSeconds = 0;
+        let recordingTimer = null;
+
+        function testRecording() {
+            console.log('Button clicked!');
+            document.getElementById('output').innerHTML = '✅ Fonction appelée! Timer démarré...';
+
+            recordingSeconds = 0;
+            recordingTimer = setInterval(function() {
+                recordingSeconds++;
+                document.getElementById('output').innerHTML = '⏱️ Enregistrement en cours: ' + recordingSeconds + ' secondes';
+            }, 1000);
+
+            // Stop after 5 seconds
+            setTimeout(function() {
+                clearInterval(recordingTimer);
+                document.getElementById('output').innerHTML = '✅ Enregistrement terminé après ' + recordingSeconds + ' secondes!<br><br>Si vous voyez ce message, le JavaScript fonctionne correctement!';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

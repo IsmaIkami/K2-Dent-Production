@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parodontologie - DentalCockpit Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1A2235;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #232938;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF0;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-content {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--bg-hover);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-value.danger {
+            color: var(--danger);
+        }
+
+        .stat-value.warning {
+            color: var(--warning);
+        }
+
+        .stat-value.success {
+            color: var(--success);
+        }
+
+        /* Periodontal Chart */
+        .paro-chart {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .paro-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            min-width: 1400px;
+        }
+
+        .paro-table th {
+            background: var(--bg-hover);
+            padding: 8px 4px;
+            text-align: center;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .paro-table td {
+            padding: 4px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .paro-input {
+            width: 35px;
+            padding: 4px;
+            text-align: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 11px;
+        }
+
+        .paro-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .paro-input.warning {
+            background: rgba(255, 149, 0, 0.2);
+            border-color: var(--warning);
+        }
+
+        .paro-input.danger {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: var(--danger);
+        }
+
+        .bleeding-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .tooth-number-cell {
+            font-weight: 700;
+            font-size: 14px;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 15px;
+            background: var(--bg-hover);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .legend-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-family: inherit;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <div class="logo">
+                    <div class="logo-icon">🦷</div>
+                    <div class="logo-text">DentalCockpit Pro</div>
+                </div>
+
+                <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Dashboard Patient</span>
+                    </a>
+                    <a href="patients.html" class="nav-item">
+                        <span>👥</span>
+                        <span>Patients</span>
+                    </a>
+                    <a href="agenda.html" class="nav-item">
+                        <span>📅</span>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="treatment.html" class="nav-item">
+                        <span>🎯</span>
+                        <span>Plan de Traitement</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Clinique</div>
+                    <a href="dental-chart.html" class="nav-item">
+                        <span>🦷</span>
+                        <span>Schéma Dentaire</span>
+                    </a>
+                    <a href="paro.html" class="nav-item active">
+                        <span>📊</span>
+                        <span>Parodontologie</span>
+                    </a>
+                    <a href="ortho.html" class="nav-item">
+                        <span>🔧</span>
+                        <span>Orthodontie</span>
+                    </a>
+                    <a href="prescriptions.html" class="nav-item">
+                        <span>💊</span>
+                        <span>Prescriptions</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Imagerie Médicale</div>
+                    <a href="xrays.html" class="nav-item">
+                        <span>📷</span>
+                        <span>Radiographies X</span>
+                    </a>
+                    <a href="scanner3d.html" class="nav-item">
+                        <span>🔬</span>
+                        <span>Scanner 3D</span>
+                    </a>
+                    <a href="photos.html" class="nav-item">
+                        <span>🖼️</span>
+                        <span>Photos Intra-orales</span>
+                    </a>
+                    <a href="camera.html" class="nav-item">
+                        <span>📸</span>
+                        <span>Caméra Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Intelligence Artificielle</div>
+                    <a href="ai-analysis.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>Analyses IA</span>
+                    </a>
+                    <a href="ai-reports.html" class="nav-item">
+                        <span>📈</span>
+                        <span>Rapports Intelligents</span>
+                    </a>
+                    <a href="ai-history.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>Historique Complet IA</span>
+                    </a>
+                    <a href="ai-realtime.html" class="nav-item">
+                        <span>⚡</span>
+                        <span>IA Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Administration</div>
+                    <a href="inami.html" class="nav-item">
+                        <span>💳</span>
+                        <span>INAMI / e-Health</span>
+                    </a>
+                    <a href="mutuelles.html" class="nav-item">
+                        <span>🏥</span>
+                        <span>Mutuelles</span>
+                    </a>
+                    <a href="certificates.html" class="nav-item">
+                        <span>📄</span>
+                        <span>Certificats</span>
+                    </a>
+                    <a href="billing.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Facturation</span>
+                    </a>
+                </div>
+            </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div style="text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Design by</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Ismail Sialyen</div>
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Powered by</div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 2px;">RCE</div>
+                    <div style="font-size: 8px; color: var(--text-secondary); margin-top: 2px;">AI Engine</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="page-title">📊 Parodontologie - Marie Dubois</div>
+                <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
+                    🌙
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Indice Parodontal</div>
+                    <button class="btn btn-secondary" onclick="calculateStats()">
+                        🔄 Recalculer
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Profondeur Moyenne</div>
+                        <div class="stat-value" id="avgDepth">2.4 mm</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Sites avec Saignement</div>
+                        <div class="stat-value warning" id="bleedingSites">18%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Poches > 4mm</div>
+                        <div class="stat-value danger" id="deepPockets">4 sites</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Récession Moyenne</div>
+                        <div class="stat-value" id="avgRecession">0.8 mm</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Perte d'Attache</div>
+                        <div class="stat-value warning" id="attachment">3.2 mm</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Classification</div>
+                        <div class="stat-value success" id="classification">Stade I</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-indicator" style="background: rgba(52, 199, 89, 0.2); border-color: var(--success);"></div>
+                    <span>0-3mm: Sain</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-indicator" style="background: rgba(255, 149, 0, 0.2); border-color: var(--warning);"></div>
+                    <span>4-5mm: Parodontite modérée</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-indicator" style="background: rgba(255, 59, 48, 0.2); border-color: var(--danger);"></div>
+                    <span>≥6mm: Parodontite sévère</span>
+                </div>
+                <div class="legend-item">
+                    <span style="font-weight: 600;">BOP:</span>
+                    <span>Bleeding On Probing (Saignement au sondage)</span>
+                </div>
+            </div>
+
+            <!-- Periodontal Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Sondage Parodontal (6 points par dent)</div>
+                    <button class="btn btn-primary" onclick="savePerioChart()">
+                        💾 Enregistrer
+                    </button>
+                </div>
+
+                <div class="paro-chart">
+                    <table class="paro-table" id="perioTable">
+                        <!-- Table will be generated by JavaScript -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- Clinical Notes -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Notes Parodontales</div>
+                </div>
+                <textarea id="perioNotes" placeholder="Observations parodontales, inflammation, mobilité, furcation...">Examen parodontal du 12/11/2025
+
+Observations cliniques:
+- Gingivite légère à modérée généralisée
+- Saignement au sondage présent sur 18% des sites
+- Poches parodontales localisées: dents 16, 26, 36, 46
+- Récession gingivale modérée secteur antérieur inférieur
+- Accumulation de tartre sous-gingival secteurs postérieurs
+- Pas de mobilité dentaire détectée
+- Furcation: Classe I sur dent 16
+
+Diagnostic:
+Parodontite chronique généralisée - Stade I, Grade B
+
+Plan de traitement:
+1. Motivation à l'hygiène orale
+2. Détartrage-surfaçage radiculaire (4 séances)
+3. Réévaluation dans 6 semaines
+4. Envisager chirurgie parodontale si nécessaire
+5. Maintenance parodontale tous les 3-4 mois</textarea>
+                <button class="btn btn-primary" onclick="saveNotes()" style="margin-top: 12px;">
+                    💾 Enregistrer les notes
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const currentTheme = html.getAttribute('data-theme');
+
+            if (currentTheme === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                if (themeToggle) themeToggle.textContent = '☀️';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.textContent = '🌙';
+            }
+        }
+
+        // Teeth data (FDI notation)
+        const upperTeeth = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+        const lowerTeeth = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+
+        // Sample periodontal data
+        const perioData = {
+            // Format: tooth: { buccal: [distal, mid, mesial], lingual: [mesial, mid, distal], recession: [b_d, b_m, b_l, l_m, l_l, l_d], bleeding: [...] }
+            16: { buccal: [3, 2, 3], lingual: [3, 4, 3], recession: [0, 0, 0, 0, 1, 0], bleeding: [false, false, true, true, false, false] },
+            17: { buccal: [2, 2, 2], lingual: [2, 2, 2], recession: [0, 0, 0, 0, 0, 0], bleeding: [false, false, false, false, false, false] },
+            15: { buccal: [2, 2, 3], lingual: [2, 2, 2], recession: [0, 0, 0, 0, 0, 0], bleeding: [false, false, false, false, false, false] },
+            26: { buccal: [3, 3, 4], lingual: [3, 5, 3], recession: [0, 0, 1, 0, 1, 0], bleeding: [true, false, true, true, true, false] },
+            36: { buccal: [3, 2, 4], lingual: [3, 4, 3], recession: [1, 0, 0, 0, 1, 1], bleeding: [false, false, true, true, false, false] },
+            46: { buccal: [4, 3, 3], lingual: [3, 5, 4], recession: [0, 0, 0, 1, 1, 0], bleeding: [true, false, true, true, true, false] },
+            41: { buccal: [2, 2, 2], lingual: [2, 3, 2], recession: [1, 1, 1, 1, 1, 1], bleeding: [false, false, false, true, false, false] },
+            42: { buccal: [2, 2, 2], lingual: [2, 3, 2], recession: [1, 1, 1, 1, 1, 1], bleeding: [false, false, false, false, false, false] }
+        };
+
+        // Initialize periodontal chart
+        function initPerioChart() {
+            const table = document.getElementById('perioTable');
+            let html = '';
+
+            // Upper teeth
+            html += generateArchSection('upper', upperTeeth);
+            // Lower teeth
+            html += generateArchSection('lower', lowerTeeth);
+
+            table.innerHTML = html;
+
+            // Add event listeners to inputs
+            addInputListeners();
+        }
+
+        function generateArchSection(arch, teeth) {
+            let html = '';
+            const archLabel = arch === 'upper' ? 'ARCADE SUPÉRIEURE' : 'ARCADE INFÉRIEURE';
+
+            // Header
+            html += `<tr><th colspan="${teeth.length}" style="background: var(--primary); color: white; padding: 12px;">${archLabel}</th></tr>`;
+
+            // Recession row (for upper) or probing (for lower)
+            if (arch === 'upper') {
+                html += '<tr>';
+                teeth.forEach(tooth => {
+                    const data = perioData[tooth] || { recession: [0, 0, 0, 0, 0, 0] };
+                    html += `<td><input type="number" class="paro-input" min="0" max="15" value="${data.recession[0]}" data-tooth="${tooth}" data-type="rec-b-d"></td>`;
+                });
+                html += '</tr>';
+            }
+
+            // Buccal probing depths (3 points)
+            const bucPositions = ['distal', 'mid', 'mesial'];
+            bucPositions.forEach((pos, idx) => {
+                html += '<tr>';
+                teeth.forEach(tooth => {
+                    const data = perioData[tooth] || { buccal: [2, 2, 2] };
+                    const value = data.buccal[idx];
+                    const cssClass = value >= 6 ? 'danger' : (value >= 4 ? 'warning' : '');
+                    html += `<td><input type="number" class="paro-input ${cssClass}" min="0" max="15" value="${value}" data-tooth="${tooth}" data-type="buccal-${idx}"></td>`;
+                });
+                html += '</tr>';
+            });
+
+            // Tooth numbers
+            html += '<tr>';
+            teeth.forEach(tooth => {
+                html += `<td class="tooth-number-cell">${tooth}</td>`;
+            });
+            html += '</tr>';
+
+            // Bleeding on probing (checkboxes)
+            html += '<tr>';
+            teeth.forEach(tooth => {
+                const data = perioData[tooth] || { bleeding: [false, false, false, false, false, false] };
+                const hasAnyBleeding = data.bleeding.some(b => b);
+                html += `<td><input type="checkbox" class="bleeding-checkbox" ${hasAnyBleeding ? 'checked' : ''} data-tooth="${tooth}" data-type="bleeding"></td>`;
+            });
+            html += '</tr>';
+
+            // Lingual probing depths (3 points)
+            const lingPositions = ['mesial', 'mid', 'distal'];
+            lingPositions.forEach((pos, idx) => {
+                html += '<tr>';
+                teeth.forEach(tooth => {
+                    const data = perioData[tooth] || { lingual: [2, 2, 2] };
+                    const value = data.lingual[idx];
+                    const cssClass = value >= 6 ? 'danger' : (value >= 4 ? 'warning' : '');
+                    html += `<td><input type="number" class="paro-input ${cssClass}" min="0" max="15" value="${value}" data-tooth="${tooth}" data-type="lingual-${idx}"></td>`;
+                });
+                html += '</tr>';
+            });
+
+            // Recession row (for lower) or empty (for upper)
+            if (arch === 'lower') {
+                html += '<tr>';
+                teeth.forEach(tooth => {
+                    const data = perioData[tooth] || { recession: [0, 0, 0, 0, 0, 0] };
+                    html += `<td><input type="number" class="paro-input" min="0" max="15" value="${data.recession[3]}" data-tooth="${tooth}" data-type="rec-l-m"></td>`;
+                });
+                html += '</tr>';
+            }
+
+            return html;
+        }
+
+        function addInputListeners() {
+            // Update color on input change
+            document.querySelectorAll('.paro-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseInt(this.value) || 0;
+                    this.classList.remove('warning', 'danger');
+
+                    if (value >= 6) {
+                        this.classList.add('danger');
+                    } else if (value >= 4) {
+                        this.classList.add('warning');
+                    }
+
+                    calculateStats();
+                });
+            });
+        }
+
+        function calculateStats() {
+            const inputs = document.querySelectorAll('.paro-input[data-type^="buccal"], .paro-input[data-type^="lingual"]');
+            let total = 0;
+            let count = 0;
+            let deepPockets = 0;
+            let bleedingCount = 0;
+
+            inputs.forEach(input => {
+                const value = parseInt(input.value) || 0;
+                total += value;
+                count++;
+                if (value >= 4) deepPockets++;
+            });
+
+            document.querySelectorAll('.bleeding-checkbox:checked').forEach(cb => {
+                bleedingCount++;
+            });
+
+            const avgDepth = count > 0 ? (total / count).toFixed(1) : 0;
+            const bleedingPercent = count > 0 ? Math.round((bleedingCount / (count / 3)) * 100) : 0;
+
+            document.getElementById('avgDepth').textContent = avgDepth + ' mm';
+            document.getElementById('bleedingSites').textContent = bleedingPercent + '%';
+            document.getElementById('deepPockets').textContent = deepPockets + ' sites';
+
+            // Update color coding
+            const avgDepthEl = document.getElementById('avgDepth');
+            avgDepthEl.className = 'stat-value';
+            if (avgDepth >= 4) avgDepthEl.classList.add('danger');
+            else if (avgDepth >= 3) avgDepthEl.classList.add('warning');
+            else avgDepthEl.classList.add('success');
+
+            const bleedingEl = document.getElementById('bleedingSites');
+            bleedingEl.className = 'stat-value';
+            if (bleedingPercent >= 30) bleedingEl.classList.add('danger');
+            else if (bleedingPercent >= 15) bleedingEl.classList.add('warning');
+            else bleedingEl.classList.add('success');
+
+            console.log('Stats recalculées:', { avgDepth, bleedingPercent, deepPockets });
+        }
+
+        function savePerioChart() {
+            const chartData = {
+                patient: 'Marie Dubois',
+                date: new Date().toISOString(),
+                measurements: {}
+            };
+
+            document.querySelectorAll('.paro-input').forEach(input => {
+                const tooth = input.dataset.tooth;
+                const type = input.dataset.type;
+                const value = input.value;
+
+                if (!chartData.measurements[tooth]) {
+                    chartData.measurements[tooth] = {};
+                }
+                chartData.measurements[tooth][type] = value;
+            });
+
+            console.log('Charting parodontal sauvegardé:', chartData);
+            alert('✅ Charting parodontal enregistré avec succès!\n\nToutes les mesures ont été sauvegardées dans le dossier patient.');
+        }
+
+        function saveNotes() {
+            const notes = document.getElementById('perioNotes').value;
+            console.log('Notes parodontales sauvegardées:', notes);
+            alert('✅ Notes parodontales enregistrées avec succès!');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            initPerioChart();
+            calculateStats();
+        });
+    </script>
+</body>
+</html>

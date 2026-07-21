@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schéma Dentaire Professionnel - DentalCockpit Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --info: #007AFF;
+            --purple: #9333EA;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1A2235;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #232938;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF0;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .patient-info h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .patient-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Tools Panel */
+        .tools-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .tool-btn {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .tool-btn .color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid currentColor;
+        }
+
+        /* Odontogram */
+        .odontogram {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .arch-section {
+            margin-bottom: 40px;
+        }
+
+        .arch-label {
+            text-align: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .teeth-grid {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .tooth-container {
+            width: 65px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Extra spacing for central incisors */
+        .tooth-container.center-gap {
+            margin-left: 25px;
+        }
+
+        .tooth {
+            width: 60px;
+            height: 80px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .tooth:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+        }
+
+        .tooth.selected {
+            border-color: var(--primary);
+            border-width: 3px;
+        }
+
+        /* Tooth status colors */
+        .tooth.healthy {
+            background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-hover) 100%);
+        }
+
+        .tooth.caries {
+            background: linear-gradient(135deg, #FF3B30 0%, #CC2E26 100%);
+            border-color: var(--danger);
+        }
+
+        .tooth.filled {
+            background: linear-gradient(135deg, #FF9500 0%, #CC7700 100%);
+            border-color: var(--warning);
+        }
+
+        .tooth.crown {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-color: #FFD700;
+        }
+
+        .tooth.implant {
+            background: linear-gradient(135deg, #00C896 0%, #00A076 100%);
+            border-color: var(--secondary);
+        }
+
+        .tooth.missing {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--bg-main),
+                var(--bg-main) 10px,
+                var(--border) 10px,
+                var(--border) 20px
+            );
+            opacity: 0.5;
+        }
+
+        .tooth.root-canal {
+            background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+            border-color: var(--purple);
+        }
+
+        .tooth.bridge {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            border-color: #F59E0B;
+        }
+
+        .tooth-icon {
+            font-size: 28px;
+            margin-bottom: 2px;
+        }
+
+        .tooth-number {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .tooth.caries .tooth-number,
+        .tooth.filled .tooth-number,
+        .tooth.crown .tooth-number,
+        .tooth.implant .tooth-number,
+        .tooth.root-canal .tooth-number,
+        .tooth.bridge .tooth-number {
+            color: white;
+        }
+
+        .tooth-status-label {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 3px;
+            white-space: nowrap;
+            color: var(--text-secondary);
+        }
+
+        /* Quadrant labels */
+        .quadrant-info {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1000px;
+            margin: 0 auto 10px;
+            padding: 0 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+        }
+
+        /* Keyboard shortcuts */
+        .shortcuts {
+            padding: 15px 20px;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .shortcuts-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key {
+            background: var(--bg-card);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 700;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="patient-info">
+            <h1>🦷 Schéma Dentaire - Marie Dubois</h1>
+            <div class="patient-meta">NISS: 85.07.30-123.45 • Dernière visite: 12/11/2025</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="toggleTheme()" id="themeToggle">
+                🌙 Mode
+            </button>
+            <button class="btn btn-secondary" onclick="history.back()">
+                ← Retour
+            </button>
+            <button class="btn btn-primary" onclick="saveDentalChart()">
+                💾 Enregistrer
+            </button>
+        </div>
+    </div>
+
+    <!-- Tools Panel -->
+    <div class="tools-panel">
+        <button class="tool-btn" onclick="selectTreatment('healthy')" id="tool-healthy">
+            <div class="color-indicator" style="background: var(--bg-hover);"></div>
+            Sain
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('caries')" id="tool-caries">
+            <div class="color-indicator" style="background: var(--danger);"></div>
+            Carie
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('filled')" id="tool-filled">
+            <div class="color-indicator" style="background: var(--warning);"></div>
+            Obturation
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('crown')" id="tool-crown">
+            <div class="color-indicator" style="background: #FFD700;"></div>
+            Couronne
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('implant')" id="tool-implant">
+            <div class="color-indicator" style="background: var(--secondary);"></div>
+            Implant
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('missing')" id="tool-missing">
+            <div class="color-indicator" style="background: var(--border);"></div>
+            Absent
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('root-canal')" id="tool-root-canal">
+            <div class="color-indicator" style="background: var(--purple);"></div>
+            Canal
+        </button>
+        <button class="tool-btn" onclick="selectTreatment('bridge')" id="tool-bridge">
+            <div class="color-indicator" style="background: #F59E0B;"></div>
+            Bridge
+        </button>
+    </div>
+
+    <!-- Odontogram -->
+    <div class="odontogram">
+        <!-- Upper Arch -->
+        <div class="arch-section">
+            <div class="arch-label">▼ ARCADE SUPÉRIEURE - MAXILLAIRE ▼</div>
+            <div class="quadrant-info">
+                <span>QUADRANT 1 (Droit) →</span>
+                <span>← QUADRANT 2 (Gauche)</span>
+            </div>
+            <div class="teeth-grid" id="upper-teeth">
+                <!-- Teeth 18-11 and 21-28 will be generated here -->
+            </div>
+        </div>
+
+        <!-- Lower Arch -->
+        <div class="arch-section">
+            <div class="teeth-grid" id="lower-teeth">
+                <!-- Teeth 48-41 and 31-38 will be generated here -->
+            </div>
+            <div class="quadrant-info">
+                <span>QUADRANT 4 (Droit) →</span>
+                <span>← QUADRANT 3 (Gauche)</span>
+            </div>
+            <div class="arch-label">▲ ARCADE INFÉRIEURE - MANDIBULE ▲</div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-hover) 100%);"></div>
+            <span>Sain</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #FF3B30 0%, #CC2E26 100%);"></div>
+            <span>Carie</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #FF9500 0%, #CC7700 100%);"></div>
+            <span>Obturation</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);"></div>
+            <span>Couronne</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #00C896 0%, #00A076 100%);"></div>
+            <span>Implant</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);"></div>
+            <span>Canal Radiculaire</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);"></div>
+            <span>Bridge</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: repeating-linear-gradient(45deg, var(--bg-main), var(--bg-main) 5px, var(--border) 5px, var(--border) 10px);"></div>
+            <span>Absent/Extrait</span>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts -->
+    <div class="shortcuts">
+        <div class="shortcuts-title">⌨️ Raccourcis Clavier</div>
+        <div class="shortcuts-grid">
+            <div class="shortcut"><span class="key">C</span> Carie</div>
+            <div class="shortcut"><span class="key">O</span> Obturation</div>
+            <div class="shortcut"><span class="key">K</span> Couronne</div>
+            <div class="shortcut"><span class="key">I</span> Implant</div>
+            <div class="shortcut"><span class="key">M</span> Absent</div>
+            <div class="shortcut"><span class="key">R</span> Canal</div>
+            <div class="shortcut"><span class="key">S</span> Sain</div>
+            <div class="shortcut"><span class="key">Ctrl+S</span> Sauvegarder</div>
+        </div>
+    </div>
+
+    <script>
+        // Initial tooth statuses
+        const toothStatuses = {
+            16: 'caries',
+            26: 'filled',
+            36: 'crown',
+            46: 'implant',
+            18: 'missing',
+            28: 'missing',
+            38: 'missing',
+            48: 'missing'
+        };
+
+        let selectedTreatment = null;
+
+        // Tooth emoji icons
+        const toothIcons = {
+            molar: '🦷',
+            premolar: '🦷',
+            canine: '🦷',
+            incisor: '🦷'
+        };
+
+        // Initialize
+        function initDentalChart() {
+            // Upper teeth: 18-11 and 21-28
+            const upperTeeth = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+            const upperContainer = document.getElementById('upper-teeth');
+
+            upperTeeth.forEach(num => {
+                const container = document.createElement('div');
+                container.className = 'tooth-container';
+
+                // Add extra spacing between 11 and 21 (central incisors)
+                if (num === 21) {
+                    container.classList.add('center-gap');
+                }
+
+                const tooth = createTooth(num);
+                const label = document.createElement('div');
+                label.className = 'tooth-status-label';
+                label.id = 'label-' + num;
+                label.textContent = getStatusLabel(toothStatuses[num] || 'healthy');
+
+                container.appendChild(tooth);
+                container.appendChild(label);
+                upperContainer.appendChild(container);
+            });
+
+            // Lower teeth: 48-41 and 31-38
+            const lowerTeeth = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+            const lowerContainer = document.getElementById('lower-teeth');
+
+            lowerTeeth.forEach(num => {
+                const container = document.createElement('div');
+                container.className = 'tooth-container';
+
+                // Add extra spacing between 41 and 31 (central incisors)
+                if (num === 31) {
+                    container.classList.add('center-gap');
+                }
+
+                const tooth = createTooth(num);
+                const label = document.createElement('div');
+                label.className = 'tooth-status-label';
+                label.id = 'label-' + num;
+                label.textContent = getStatusLabel(toothStatuses[num] || 'healthy');
+
+                container.appendChild(tooth);
+                container.appendChild(label);
+                lowerContainer.appendChild(container);
+            });
+        }
+
+        function createTooth(number) {
+            const tooth = document.createElement('div');
+            tooth.className = 'tooth';
+            tooth.id = 'tooth-' + number;
+
+            const status = toothStatuses[number] || 'healthy';
+            if (status !== 'healthy') {
+                tooth.classList.add(status);
+            }
+
+            tooth.innerHTML = `
+                <div class="tooth-icon">🦷</div>
+                <div class="tooth-number">${number}</div>
+            `;
+
+            tooth.addEventListener('click', function() {
+                if (selectedTreatment) {
+                    applyTreatment(number, selectedTreatment);
+                }
+            });
+
+            return tooth;
+        }
+
+        function selectTreatment(treatment) {
+            selectedTreatment = treatment;
+
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('tool-' + treatment).classList.add('active');
+
+            console.log('Outil sélectionné:', treatment);
+        }
+
+        function applyTreatment(toothNumber, treatment) {
+            const tooth = document.getElementById('tooth-' + toothNumber);
+            const label = document.getElementById('label-' + toothNumber);
+
+            // Remove all status classes
+            tooth.classList.remove('healthy', 'caries', 'filled', 'crown', 'implant', 'missing', 'root-canal', 'bridge');
+
+            // Add new status
+            if (treatment !== 'healthy') {
+                tooth.classList.add(treatment);
+            }
+
+            // Update label
+            label.textContent = getStatusLabel(treatment);
+
+            // Store status
+            toothStatuses[toothNumber] = treatment;
+
+            console.log('Dent ' + toothNumber + ' → ' + treatment);
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'healthy': 'Sain',
+                'caries': 'Carie',
+                'filled': 'Obturé',
+                'crown': 'Couronne',
+                'implant': 'Implant',
+                'missing': 'Absent',
+                'root-canal': 'Canal',
+                'bridge': 'Bridge'
+            };
+            return labels[status] || 'Sain';
+        }
+
+        function saveDentalChart() {
+            const chartData = {
+                patient: 'Marie Dubois',
+                date: new Date().toISOString(),
+                teeth: toothStatuses
+            };
+
+            console.log('Schéma dentaire sauvegardé:', chartData);
+            alert('✅ Schéma dentaire enregistré avec succès!\n\n' + Object.keys(toothStatuses).length + ' dents documentées.');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const currentTheme = html.getAttribute('data-theme');
+
+            if (currentTheme === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '🌙 Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '☀️ Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                if (themeToggle) themeToggle.textContent = '☀️ Mode';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.textContent = '🌙 Mode';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveDentalChart();
+                return;
+            }
+
+            const key = e.key.toLowerCase();
+            const shortcuts = {
+                'c': 'caries',
+                'o': 'filled',
+                'k': 'crown',
+                'i': 'implant',
+                'm': 'missing',
+                'r': 'root-canal',
+                's': 'healthy'
+            };
+
+            if (shortcuts[key]) {
+                selectTreatment(shortcuts[key]);
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            initDentalChart();
+        });
+    </script>
+</body>
+</html>

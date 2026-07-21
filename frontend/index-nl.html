@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentalCockpit Pro - Kunstmatige Intelligentie voor Tandartsen | RCE AI</title>
+    <meta name="description" content="Nieuwe generatie tandheelkundige oplossing aangedreven door AI. Automatische anamnese, intelligente charting, Recip-e voorschriften. Ontdek de revolutie in tandartsenbeheer.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --secondary: #00C896;
+            --accent: #9333EA;
+            --dark: #0A0E1A;
+            --card: #141B2D;
+            --text: #FFFFFF;
+            --text-muted: #8B92A8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 20px 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .language-selector {
+            position: relative;
+        }
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .language-btn::after {
+            content: '▼';
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .language-selector.active .language-btn::after {
+            transform: rotate(180deg);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .language-selector.active .language-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .language-dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        .language-dropdown a:hover {
+            background: rgba(255, 255, 255, 0.05);
+            padding-left: 20px;
+        }
+
+        .language-dropdown a.active {
+            background: rgba(0, 102, 255, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .language-dropdown a.active::before {
+            content: '✓';
+            margin-right: -8px;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #0052CC 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 180px 40px 100px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--dark) 0%, #0D1221 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #8B92A8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 22px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .ai-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+
+        .ai-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Screenshot Section */
+        .screenshots {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, #0D1221 0%, var(--dark) 100%);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-bottom: 60px;
+        }
+
+        .screenshot-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .screenshot-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 102, 255, 0.2);
+        }
+
+        .screenshot-img {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(0, 200, 150, 0.1) 100%);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .screenshot-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .screenshot-card p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            background: var(--dark);
+        }
+
+        .features-grid {
+            max-width: 1400px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .feature-card {
+            cursor: pointer;
+        }
+
+        .feature-expand-btn {
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover .feature-expand-btn {
+            gap: 10px;
+        }
+
+        .feature-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            margin-top: 0;
+        }
+
+        .feature-details.active {
+            max-height: 800px;
+            margin-top: 20px;
+        }
+
+        .feature-details-content {
+            background: rgba(0, 102, 255, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .feature-benefit {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .feature-benefit:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-benefit-icon {
+            color: var(--secondary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .feature-roi {
+            background: linear-gradient(135deg, rgba(0, 200, 150, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* AI Technology Section */
+        .ai-tech {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, var(--dark) 0%, #0D1221 100%);
+            text-align: center;
+        }
+
+        .ai-models {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .ai-model-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .ai-model-card.rce {
+            border-color: rgba(0, 102, 255, 0.3);
+        }
+
+        .ai-model-card.rce::before {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .ai-model-card.gpt {
+            border-color: rgba(16, 163, 127, 0.3);
+        }
+
+        .ai-model-card.gpt::before {
+            background: linear-gradient(90deg, #10A37F 0%, #1A7F64 100%);
+        }
+
+        .ai-model-card.anthropic {
+            border-color: rgba(204, 142, 53, 0.3);
+        }
+
+        .ai-model-card.anthropic::before {
+            background: linear-gradient(90deg, #CC8E35 0%, #B67A2D 100%);
+        }
+
+        .ai-model-card.gemini {
+            border-color: rgba(66, 133, 244, 0.3);
+        }
+
+        .ai-model-card.gemini::before {
+            background: linear-gradient(90deg, #4285F4 0%, #34A853 100%);
+        }
+
+        .ai-model-card h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .ai-model-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .ai-model-card .tech-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, var(--dark) 0%, #0D1221 100%);
+        }
+
+        .pricing-grid {
+            max-width: 1600px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            align-items: start;
+        }
+
+        .pricing-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 102, 255, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 102, 255, 0.4);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .pricing-header h3 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .pricing-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .pricing-price {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pricing-price .price {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-price .period {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .pricing-description {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            color: var(--text);
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* Demo Section */
+        .demo {
+            padding: 100px 40px;
+            background: var(--dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 60px auto 0;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .demo-video {
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border-radius: 16px;
+            margin: 40px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .demo-btn {
+            font-size: 80px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .demo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 120px 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 48px;
+            margin-bottom: 25px;
+        }
+
+        .cta p {
+            font-size: 22px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 40px;
+            background: #050812;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .footer-credits {
+            font-size: 14px;
+            color: var(--text-muted);
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                🦷 DentalCockpit Pro
+            </div>
+            <div class="nav-links">
+                <a href="#features">Functionaliteiten</a>
+                <a href="#technology">AI Technologie</a>
+                <a href="#pricing">Prijzen</a>
+                <a href="#demo">Demo</a>
+                <div class="language-selector">
+                    <div class="language-btn">🇳🇱 NL</div>
+                    <div class="language-dropdown">
+                        <a href="index.html">🇫🇷 Français</a>
+                        <a href="index-nl.html" class="active">🇳🇱 Nederlands</a>
+                        <a href="index-en.html">🇬🇧 English</a>
+                        <a href="index-de.html">🇩🇪 Deutsch</a>
+                    </div>
+                </div>
+                <a href="dashboard.html" class="btn btn-primary">Toegang tot App →</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                ✨ Nieuwe Generatie • Aangedreven door AI
+            </div>
+            <h1>De Revolutie in<br>Tandartsenbeheer met AI</h1>
+            <p>
+                DentalCockpit Pro combineert geavanceerde kunstmatige intelligentie (GPT-4, Claude, Gemini)
+                met RCE om uw tandartspraktijk te automatiseren. Automatische anamnese, intelligente charting,
+                Recip-e voorschriften, en nog veel meer.
+            </p>
+            <div class="hero-cta">
+                <a href="dashboard.html" class="btn btn-primary" style="display: inline-block;">🚀 Gratis Uitproberen</a>
+                <a href="#demo" class="btn btn-secondary" style="display: inline-block;">▶️ Bekijk de Demo</a>
+            </div>
+
+            <div class="ai-badges">
+                <div class="ai-badge">🧠 RCE AI Engine</div>
+                <div class="ai-badge">🤖 GPT-4 Turbo</div>
+                <div class="ai-badge">⚡ Claude Sonnet</div>
+                <div class="ai-badge">✨ Gemini Pro</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="screenshots" id="screenshots">
+        <h2 class="section-title">Professionele Interface</h2>
+        <p class="section-subtitle">Schermen ontworpen voor uw dagelijkse workflow</p>
+
+        <div class="screenshot-grid">
+            <div class="screenshot-card">
+                <div class="screenshot-img">🎤</div>
+                <h3>AI Opname</h3>
+                <p>Neem het consult vocaal op. De AI transcribeert en genereert automatisch de volledige anamnese in enkele seconden.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">🦷</div>
+                <h3>Intelligent Tandschema</h3>
+                <p>Professionele charting met FDI, kleurgradiënten, sneltoetsen (C, O, K, I). Perfecte uitlijning, geoptimaliseerde workflow.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">📊</div>
+                <h3>Parodontale Charting</h3>
+                <p>6 punten sondering per tand, automatische berekening van indices, AAP classificatie. Professionele visualisatie.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">🔧</div>
+                <h3>Orthodontische Analyse</h3>
+                <p>Volledige cephalometrie (SNA, SNB, ANB, Wits), behandelplan per fase, duurrekeninstrument. Professioneel gereedschap.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">💊</div>
+                <h3>Recip-e Voorschriften</h3>
+                <p>Officiële Belgische elektronische voorschriften. Medicijndatabase, interactiecontrole, AI-suggesties.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">📈</div>
+                <h3>Patiënt Tijdlijn</h3>
+                <p>Volledige geschiedenis met visuele tijdlijn. Alle acties automatisch gelogd. Gemakkelijke navigatie.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Innovatieve Functionaliteiten</h2>
+        <p class="section-subtitle">Alles wat u nodig heeft om uw tandartspraktijk te beheren</p>
+
+        <div class="features-grid">
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">🎯</div>
+                <h3>Automatische Anamnese</h3>
+                <p>Neem het consult vocaal op. De AI transcribeert, analyseert en genereert onmiddellijk een gestructureerde professionele anamnese.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Enorme tijdsbesparing:</strong> Geen getik meer tijdens of na het consult - RCE legt alles automatisch vast</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Professionele kwaliteit:</strong> Anamnese gestructureerd volgens medische standaarden, geen enkel detail vergeten</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Volledige geschiedenis:</strong> Automatische versiebeheer, wijzigingen getraceerd, directe toegang tot oude versies</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Patiëntfocus:</strong> Behoud oogcontact en relatie, niet met de ogen op het scherm gericht</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Bespaar 15-20 min per consult = +3 patiënten/dag mogelijk
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">🦷</div>
+                <h3>Professioneel Tandschema</h3>
+                <p>FDI odontogram met gradiënten, sneltoetsen, perfecte uitlijning. Interface geïnspireerd door de beste software (CareStack, Dentrix).</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Ultrasnelle workflow:</strong> Sneltoetsen (C, O, K, I, M, R) voor directe invoer zonder klik</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Professioneel visueel:</strong> Kleurgradiënten, duidelijke visuele statussen, modern design dat indruk maakt</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Nul fouten:</strong> Standaard FDI-notatie, automatische opslag, onmogelijk om gegevens te verliezen</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Invoer 5x sneller dan klassieke software = directe productiviteitswinst
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📊</div>
+                <h3>Parodontologie</h3>
+                <p>6-punts charting, automatische berekening van indices, bloeding, recessie. Automatische AAP classificatie met aanbevelingen.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Klinische precisie:</strong> 6 metingen per tand, tracking bloeding/recessie, automatische evolutiegrafieken</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>AAP classificatie:</strong> RCE berekent automatisch stadium en graad, stelt gepaste behandeling voor</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Longitudinale follow-up:</strong> Vergelijking vorige sessies, waarschuwingen bij verslechtering, bewijs van verbetering</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Factureer parodontologie met solide klinisch bewijs + patiëntloyaliteit
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">🔧</div>
+                <h3>Orthodontie</h3>
+                <p>Volledige cephalometrische analyse, behandelplan per fase, duurcalculator, visualisatie tandbogen.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Intelligente cephalometrie:</strong> RCE analyseert teleradiografie, berekent automatisch alle hoeken en metingen</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Plan per fase:</strong> Structureer behandeling stap voor stap, geschatte duur, visuele voortgangsopvolging</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Visuele simulatie:</strong> 3D tandbogen, resultaatpreview, gemakkelijke patiëntcommunicatie</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Bied orthodontie aan zonder aparte software = nieuwe inkomstenstroom
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">💊</div>
+                <h3>Recip-e Voorschriften</h3>
+                <p>Geïntegreerd officieel Belgisch systeem. QR-codes, e-Health, medicijndatabase, interactiecontrole, contextuele AI-suggesties.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Wettelijke conformiteit:</strong> Officieel Belgisch Recip-e, geldige QR-codes, directe e-Health verzending</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Maximale veiligheid:</strong> RCE controleert geneesmiddelinteracties, patiëntallergieën, contra-indicaties</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Intelligente suggesties:</strong> Medicijnen aangepast aan diagnose, automatische dosering, alternatieven voorgesteld</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Nul voorschriftfouten = juridische bescherming + patiëntenvertrouwen
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📷</div>
+                <h3>Medische Beeldvorming</h3>
+                <p>Röntgenfoto's, 3D-scanner, intra-orale foto's, realtime camera. AI beeldanalyse met automatische detectie.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Automatische AI detectie:</strong> Cariës, botverlies, gecompromitteerde vullingen gedetecteerd in seconden</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Volledige centralisatie:</strong> Al uw afbeeldingen op één plek, directe toegang, vergemakkelijkte vergelijking</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Analyse-instrumenten:</strong> Zoom, contrast, metingen, annotaties, DICOM export</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Vroege detectie problemen = preventieve behandelplannen + facturering
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">💳</div>
+                <h3>RIZIV / e-Health</h3>
+                <p>Volledige integratie Belgisch RIZIV-systeem. Elektronische attesten, mutualiteiten, geautomatiseerde facturering.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Automatische facturering:</strong> Eén klik = RIZIV-attest verzonden, correcte nomenclatuur, gegarandeerde terugbetaling</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Mutualiteitscontrole:</strong> Patiëntstatus in realtime geverifieerd, rechten weergegeven, plafonds raadpleegbaar</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Automatische certificaten:</strong> Generatie afwezigheidscertificaat met geïntegreerde patiënt e-mail verzending</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Nul factureringsverlies + geoptimaliseerde cashflow = +15-20% teruggewonnen inkomsten
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📈</div>
+                <h3>Intelligente Rapporten</h3>
+                <p>Geavanceerde analytics, realtime KPI's, AI voorspellingen, gepersonaliseerde aanbevelingen om uw praktijk te optimaliseren.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Realtime KPI's:</strong> Omzet, bezettingsgraad, actieve patiënten, analyses per behandelaar/dienst</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>AI voorspellingen:</strong> RCE voorspelt uw inkomsten voor 3/6/12 maanden, identificeert groeikansen</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Uitvoerbare aanbevelingen:</strong> Te optimaliseren tijdslots, patiënten om te bellen, ondergebruikte diensten</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Planningsoptimalisatie + automatische herinneringen = +10-15% omzet zonder inspanning
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📅</div>
+                <h3>Intelligent Agendabeheer</h3>
+                <p>Automatische optimalisatie van tijdslots, patiëntherinneringen, conflictbeheer. RCE analyseert en stelt de optimale planning voor.</p>
+                <div class="feature-expand-btn">Meer weten →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>AI optimalisatie:</strong> RCE analyseert uw agenda en stelt de beste tijdslots voor volgens type zorg en duur</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Automatische herinneringen:</strong> SMS/E-mail automatisch verzonden 48u en 24u voor afspraak, 70% reductie no-shows</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Intelligent conflictbeheer:</strong> Dubbele boekingsdetectie, alternatieve suggesties, automatische reorganisatie</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Realtime statistieken:</strong> Bezettingsgraad, gemiddelde duur, vrije tijdslots, continue optimalisatie</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI: Bezettingsgraad +25% + reductie no-shows 70% = +€2000-3000/maand
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Technology Section -->
+    <section class="ai-tech" id="technology">
+        <h2 class="section-title">Aangedreven door RCE AI Engine</h2>
+        <p class="section-subtitle">
+            RCE (Relational Cognitive Engine) is onze eigen kunstmatige intelligentie-motor<br>
+            die intelligent meerdere AI-modellen orkestreert volgens de specifieke behoeften van elke taak
+        </p>
+
+        <div class="ai-models">
+            <div class="ai-model-card rce" style="grid-column: 1 / -1; max-width: 800px; margin: 0 auto;">
+                <h3>🧠 RCE - Relational Cognitive Engine</h3>
+                <p style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;">
+                    <strong>RCE</strong> is uw unieke toegangspunt tot kunstmatige intelligentie. Intern selecteert RCE automatisch
+                    het beste model (GPT-4 Turbo, Claude Sonnet, of Gemini Pro) volgens de taak:
+                    vocale transcriptie, medische analyse, radiografische beeldvorming, rapportgeneratie.
+                    <br><br>
+                    <strong>U gebruikt RCE, RCE orkestreert al het andere.</strong>
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                    <div class="tech-badge">Intelligente Orkestratie</div>
+                    <div class="tech-badge">GPT-4 Turbo Geïntegreerd</div>
+                    <div class="tech-badge">Claude Sonnet Geïntegreerd</div>
+                    <div class="tech-badge">Gemini Pro Geïntegreerd</div>
+                    <div class="tech-badge">Auto Optimalisatie</div>
+                    <div class="tech-badge">Medische Beveiliging</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Plannen & Abonnementen</h2>
+        <p class="section-subtitle">Kies de formule aangepast aan uw tandartspraktijk</p>
+
+        <div class="pricing-grid">
+            <!-- Plan Academic (Free) -->
+            <div class="pricing-card" style="border-color: var(--secondary);">
+                <div class="featured-badge" style="background: linear-gradient(135deg, var(--secondary) 0%, #00A578 100%);">🎓 Gratis</div>
+                <div class="pricing-header">
+                    <h3>Academisch</h3>
+                    <div class="pricing-icon">🎓</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price" style="background: linear-gradient(135deg, var(--secondary) 0%, #00A578 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GRATIS</span>
+                </div>
+                <p class="pricing-description">Voor tandheelkundestudenten met academische e-mail</p>
+                <ul class="pricing-features">
+                    <li>✓ 1 student</li>
+                    <li>✓ Tot 50 patiënten (fictief)</li>
+                    <li>✓ Alle Starter functionaliteiten</li>
+                    <li>✓ Volledig tandschema</li>
+                    <li>✓ Vocale AI opname</li>
+                    <li>✓ 5 AI analyses / maand</li>
+                    <li>✓ Trainingsmodus & oefeningen</li>
+                    <li>✓ Toegang tot tutorials</li>
+                    <li>✓ Geldig tijdens de studies</li>
+                    <li style="color: var(--secondary); font-weight: 600;">📧 E-mail @univ.edu vereist</li>
+                </ul>
+                <a href="dashboard.html" class="btn btn-secondary" style="width: 100%; display: block; text-align: center; background: var(--secondary); border-color: var(--secondary);">Inschrijven</a>
+            </div>
+
+            <!-- Plan Starter -->
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Starter</h3>
+                    <div class="pricing-icon">🌱</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price">€99</span>
+                    <span class="period">/maand</span>
+                </div>
+                <p class="pricing-description">Ideaal voor solo beoefenaars of kleine praktijken</p>
+                <ul class="pricing-features">
+                    <li>✓ 1 behandelaar</li>
+                    <li>✓ Tot 100 patiënten</li>
+                    <li>✓ Intelligent tandschema</li>
+                    <li>✓ Vocale AI opname</li>
+                    <li>✓ Automatische anamnese</li>
+                    <li>✓ Recip-e voorschriften</li>
+                    <li>✓ RIZIV / e-Health</li>
+                    <li>✓ 10 AI analyses / maand</li>
+                    <li>✓ E-mail ondersteuning</li>
+                </ul>
+                <a href="dashboard.html" class="btn btn-secondary" style="width: 100%; display: block; text-align: center;">Beginnen</a>
+            </div>
+
+            <!-- Plan Professional (Featured) -->
+            <div class="pricing-card featured">
+                <div class="featured-badge">⭐ Populair</div>
+                <div class="pricing-header">
+                    <h3>Professional</h3>
+                    <div class="pricing-icon">🚀</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price">€249</span>
+                    <span class="period">/maand</span>
+                </div>
+                <p class="pricing-description">Volledige oplossing voor gevestigde praktijken</p>
+                <ul class="pricing-features">
+                    <li>✓ Tot 3 behandelaars</li>
+                    <li>✓ Onbeperkt patiënten</li>
+                    <li>✓ Alle Starter functionaliteiten</li>
+                    <li>✓ 3D scanner & röntgenfoto's</li>
+                    <li>✓ Onbeperkte AI analyses</li>
+                    <li>✓ Geavanceerde parodontale charting</li>
+                    <li>✓ Orthodontie & cephalometrie</li>
+                    <li>✓ Intelligente rapporten</li>
+                    <li>✓ Farmacologie API</li>
+                    <li>✓ Volledige patiënt tijdlijn</li>
+                    <li>✓ Prioritaire ondersteuning 24/7</li>
+                </ul>
+                <a href="dashboard.html" class="btn btn-primary" style="width: 100%; display: block; text-align: center;">30 dagen proberen</a>
+            </div>
+
+            <!-- Plan Enterprise -->
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Enterprise</h3>
+                    <div class="pricing-icon">🏢</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price">Op maat</span>
+                </div>
+                <p class="pricing-description">Voor klinieken en praktijkgroepen</p>
+                <ul class="pricing-features">
+                    <li>✓ Onbeperkt behandelaars</li>
+                    <li>✓ Multi-locaties</li>
+                    <li>✓ Alle Pro functionaliteiten</li>
+                    <li>✓ Volledige personalisatie</li>
+                    <li>✓ Maatwerk integraties</li>
+                    <li>✓ Teamtraining inbegrepen</li>
+                    <li>✓ Toegewezen accountmanager</li>
+                    <li>✓ SLA gegarandeerd 99.9%</li>
+                    <li>✓ On-premise implementatie mogelijk</li>
+                    <li>✓ Geavanceerde AVG-naleving</li>
+                    <li>✓ Toegewezen ondersteuning 24/7</li>
+                </ul>
+                <a href="#" class="btn btn-secondary" style="width: 100%; display: block; text-align: center;" onclick="alert('Neem contact met ons op via contact@dentalcockpit.pro voor een gepersonaliseerde offerte'); return false;">Contact opnemen</a>
+            </div>
+        </div>
+
+        <!-- Academic Plan Info -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: linear-gradient(135deg, rgba(0, 200, 150, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%); border: 2px solid var(--secondary); border-radius: 16px; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <p style="font-size: 17px; line-height: 1.8; color: var(--text);">
+                🎓 <strong>Academisch Plan:</strong> Wij ondersteunen de opleiding van toekomstige tandartsen! Schrijf u gratis in met uw universitaire e-mail
+                (<em style="color: var(--secondary);">@uclouvain.be, @ulb.be, @ugent.be, @kuleuven.be, enz.</em>)
+                en profiteer van alle functionaliteiten tijdens uw studies. Perfect om te leren en te oefenen!
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding: 40px; background: rgba(0, 102, 255, 0.1); border-radius: 16px; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <p style="font-size: 18px; line-height: 1.8; color: var(--text-muted);">
+                💡 <strong>Alle plannen omvatten:</strong> Automatische updates, maximale medische beveiliging,
+                gecertificeerde cloud hosting, AVG-naleving, dagelijkse back-ups, en toegang tot alle nieuwe AI-functionaliteiten ontwikkeld door RCE
+            </p>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <h2 class="section-title">Ontdek DentalCockpit Pro</h2>
+        <p class="section-subtitle">Verken de interface en functionaliteiten live</p>
+
+        <div class="demo-container">
+            <h3 style="font-size: 32px; margin-bottom: 20px;">Interactieve Demo</h3>
+            <p style="color: var(--text-muted); font-size: 18px; margin-bottom: 30px;">
+                Klik hieronder om toegang te krijgen tot de volledige demo en alle functionaliteiten te testen
+            </p>
+
+            <div class="demo-video">
+                <div class="demo-btn" onclick="window.location.href='index.html'">
+                    ▶️
+                </div>
+            </div>
+
+            <a href="dashboard.html" class="btn btn-primary" style="display: inline-block; font-size: 18px; padding: 16px 40px;">
+                🚀 Volledige Demo Starten
+            </a>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Klaar om Uw Praktijk te Revolutioneren?</h2>
+        <p>Sluit u aan bij de tandartsen die al AI gebruiken om hun praktijk te verbeteren</p>
+        <div class="cta-buttons">
+            <a href="dashboard.html" class="btn btn-white" style="display: inline-block;">Nu beginnen →</a>
+            <a href="#" class="btn btn-secondary" style="display: inline-block; border-color: white; color: white;">Plan een Demo</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">🦷 DentalCockpit Pro</div>
+            <p class="footer-text">
+                Nieuwe generatie tandheelkundige oplossing aangedreven door kunstmatige intelligentie.<br>
+                Breng uw praktijk naar het volgende niveau.
+            </p>
+            <div class="footer-credits" style="margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="font-size: 14px; margin-bottom: 15px;">
+                    <strong style="font-size: 16px;">Ontwikkeling en Design door Ismail Sialyen</strong>
+                </div>
+                <div style="font-size: 15px; margin-bottom: 10px;">
+                    Aangedreven door <a href="https://ismaikami.github.io/rce-website/" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--primary); padding-bottom: 2px; transition: all 0.3s;">RCE</a> <span style="color: var(--text-muted);">(AI Engine)</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 20px;">
+                    © 2025 DentalCockpit Pro. Alle rechten voorbehouden.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Language selector toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageBtn = document.querySelector('.language-btn');
+
+            if (languageBtn) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    languageSelector.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!languageSelector.contains(e.target)) {
+                        languageSelector.classList.remove('active');
+                    }
+                });
+
+                // Close dropdown when selecting a language
+                const languageLinks = document.querySelectorAll('.language-dropdown a');
+                languageLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        languageSelector.classList.remove('active');
+                    });
+                });
+            }
+        });
+
+        // Toggle feature card details
+        function toggleFeature(card) {
+            const details = card.querySelector('.feature-details');
+            const btn = card.querySelector('.feature-expand-btn');
+
+            // Close all other cards first
+            document.querySelectorAll('.feature-details.active').forEach(detail => {
+                if (detail !== details) {
+                    detail.classList.remove('active');
+                    detail.parentElement.querySelector('.feature-expand-btn').textContent = 'Meer weten →';
+                }
+            });
+
+            // Toggle current card
+            if (details.classList.contains('active')) {
+                details.classList.remove('active');
+                btn.textContent = 'Meer weten →';
+            } else {
+                details.classList.add('active');
+                btn.textContent = 'Sluiten ✕';
+            }
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(10, 14, 26, 0.98)';
+            } else {
+                nav.style.background = 'rgba(10, 14, 26, 0.95)';
+            }
+        });
+    </script>
+</body>
+</html>

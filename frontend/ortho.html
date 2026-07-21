@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orthodontie - DentalCockpit Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1A2235;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #232938;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF0;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-content {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--bg-hover);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-value.danger {
+            color: var(--danger);
+        }
+
+        .stat-value.warning {
+            color: var(--warning);
+        }
+
+        .stat-value.success {
+            color: var(--success);
+        }
+
+        .stat-value.primary {
+            color: var(--primary);
+        }
+
+        /* Cephalometric Analysis Grid */
+        .cephalo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cephalo-section {
+            background: var(--bg-hover);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .cephalo-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .measurement-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .measurement-row:last-child {
+            border-bottom: none;
+        }
+
+        .measurement-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .measurement-value {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .value-number {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .value-normal {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+        }
+
+        .value-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .value-badge.normal {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+        }
+
+        .value-badge.warning {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .value-badge.danger {
+            background: rgba(255, 59, 48, 0.2);
+            color: var(--danger);
+        }
+
+        /* Treatment Phases */
+        .phases-container {
+            display: grid;
+            gap: 15px;
+        }
+
+        .phase-card {
+            background: var(--bg-hover);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .phase-card:hover {
+            border-color: var(--primary);
+        }
+
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .phase-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-status {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .phase-status.completed {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+        }
+
+        .phase-status.in-progress {
+            background: rgba(0, 102, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .phase-status.pending {
+            background: rgba(139, 146, 168, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .phase-duration {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .phase-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
+        /* Appliance Selection */
+        .appliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .appliance-card {
+            background: var(--bg-hover);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .appliance-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .appliance-card.selected {
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.1);
+        }
+
+        .appliance-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .appliance-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .appliance-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--bg-card);
+        }
+
+        .timeline-dot.completed {
+            background: var(--success);
+        }
+
+        .timeline-dot.pending {
+            background: var(--text-secondary);
+        }
+
+        .timeline-content {
+            background: var(--bg-hover);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .timeline-img {
+            width: 100%;
+            height: 120px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* Duration Calculator */
+        .calculator {
+            background: var(--bg-hover);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        select.input-field {
+            cursor: pointer;
+        }
+
+        .calculation-result {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Dental Arch Visualization */
+        .arch-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .arch-visualization {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .arch-svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .arch-label {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .crowding-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .indicator-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <div class="logo">
+                    <div class="logo-icon">🦷</div>
+                    <div class="logo-text">DentalCockpit Pro</div>
+                </div>
+
+                <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Dashboard Patient</span>
+                    </a>
+                    <a href="patients.html" class="nav-item">
+                        <span>👥</span>
+                        <span>Patients</span>
+                    </a>
+                    <a href="agenda.html" class="nav-item">
+                        <span>📅</span>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="treatment.html" class="nav-item">
+                        <span>🎯</span>
+                        <span>Plan de Traitement</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Clinique</div>
+                    <a href="dental-chart.html" class="nav-item">
+                        <span>🦷</span>
+                        <span>Schéma Dentaire</span>
+                    </a>
+                    <a href="paro.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Parodontologie</span>
+                    </a>
+                    <a href="ortho.html" class="nav-item active">
+                        <span>🔧</span>
+                        <span>Orthodontie</span>
+                    </a>
+                    <a href="prescriptions.html" class="nav-item">
+                        <span>💊</span>
+                        <span>Prescriptions</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Imagerie Médicale</div>
+                    <a href="xrays.html" class="nav-item">
+                        <span>📷</span>
+                        <span>Radiographies X</span>
+                    </a>
+                    <a href="scanner3d.html" class="nav-item">
+                        <span>🔬</span>
+                        <span>Scanner 3D</span>
+                    </a>
+                    <a href="photos.html" class="nav-item">
+                        <span>🖼️</span>
+                        <span>Photos Intra-orales</span>
+                    </a>
+                    <a href="camera.html" class="nav-item">
+                        <span>📸</span>
+                        <span>Caméra Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Intelligence Artificielle</div>
+                    <a href="ai-analysis.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>Analyses IA</span>
+                    </a>
+                    <a href="ai-reports.html" class="nav-item">
+                        <span>📈</span>
+                        <span>Rapports Intelligents</span>
+                    </a>
+                    <a href="ai-history.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>Historique Complet IA</span>
+                    </a>
+                    <a href="ai-realtime.html" class="nav-item">
+                        <span>⚡</span>
+                        <span>IA Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Administration</div>
+                    <a href="inami.html" class="nav-item">
+                        <span>💳</span>
+                        <span>INAMI / e-Health</span>
+                    </a>
+                    <a href="mutuelles.html" class="nav-item">
+                        <span>🏥</span>
+                        <span>Mutuelles</span>
+                    </a>
+                    <a href="certificates.html" class="nav-item">
+                        <span>📄</span>
+                        <span>Certificats</span>
+                    </a>
+                    <a href="billing.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Facturation</span>
+                    </a>
+                </div>
+            </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div style="text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Design by</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Ismail Sialyen</div>
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Powered by</div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 2px;">RCE</div>
+                    <div style="font-size: 8px; color: var(--text-secondary); margin-top: 2px;">AI Engine</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="page-title">🔧 Orthodontie - Marie Dubois</div>
+                <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
+                    🌙
+                </div>
+            </div>
+
+            <!-- Patient Overview Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Vue d'Ensemble du Traitement</div>
+                    <button class="btn btn-secondary" onclick="refreshStats()">
+                        🔄 Actualiser
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Durée Estimée</div>
+                        <div class="stat-value primary">18-24 mois</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Progression</div>
+                        <div class="stat-value success">42%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Classe d'Angle</div>
+                        <div class="stat-value">Classe II Div. 1</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Encombrement</div>
+                        <div class="stat-value warning">Modéré (4mm)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Prochaine Visite</div>
+                        <div class="stat-value">14 jours</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Aligneurs Utilisés</div>
+                        <div class="stat-value primary">12/28</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cephalometric Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Analyse Céphalométrique</div>
+                    <button class="btn btn-primary" onclick="saveCephalometrics()">
+                        💾 Enregistrer
+                    </button>
+                </div>
+
+                <div class="cephalo-grid">
+                    <!-- Sagittal Analysis -->
+                    <div class="cephalo-section">
+                        <div class="cephalo-section-title">Analyse Sagittale</div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">SNA</span>
+                            <div class="measurement-value">
+                                <span class="value-number">84.5°</span>
+                                <span class="value-normal">N: 82±2°</span>
+                                <span class="value-badge warning">↑</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">SNB</span>
+                            <div class="measurement-value">
+                                <span class="value-number">78.0°</span>
+                                <span class="value-normal">N: 80±2°</span>
+                                <span class="value-badge warning">↓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">ANB</span>
+                            <div class="measurement-value">
+                                <span class="value-number">6.5°</span>
+                                <span class="value-normal">N: 2±2°</span>
+                                <span class="value-badge danger">↑↑</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Wits Appraisal</span>
+                            <div class="measurement-value">
+                                <span class="value-number">4.2 mm</span>
+                                <span class="value-normal">N: -1±2mm</span>
+                                <span class="value-badge danger">↑↑</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Convexité Faciale</span>
+                            <div class="measurement-value">
+                                <span class="value-number">8.5°</span>
+                                <span class="value-normal">N: 0±4°</span>
+                                <span class="value-badge warning">↑</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Analysis -->
+                    <div class="cephalo-section">
+                        <div class="cephalo-section-title">Analyse Verticale</div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">FMA (Frankfort-Mandibulaire)</span>
+                            <div class="measurement-value">
+                                <span class="value-number">26.5°</span>
+                                <span class="value-normal">N: 25±5°</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">SN-GoGn</span>
+                            <div class="measurement-value">
+                                <span class="value-number">32.0°</span>
+                                <span class="value-normal">N: 32±5°</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Hauteur Faciale Ant.</span>
+                            <div class="measurement-value">
+                                <span class="value-number">118 mm</span>
+                                <span class="value-normal">N: 115-125mm</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Hauteur Faciale Post.</span>
+                            <div class="measurement-value">
+                                <span class="value-number">82 mm</span>
+                                <span class="value-normal">N: 75-85mm</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Ratio HFP/HFA</span>
+                            <div class="measurement-value">
+                                <span class="value-number">69.5%</span>
+                                <span class="value-normal">N: 62-68%</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dental Analysis -->
+                    <div class="cephalo-section">
+                        <div class="cephalo-section-title">Analyse Dentaire</div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Incisive Sup./SN</span>
+                            <div class="measurement-value">
+                                <span class="value-number">112°</span>
+                                <span class="value-normal">N: 103±6°</span>
+                                <span class="value-badge warning">↑</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Incisive Inf./Mand.</span>
+                            <div class="measurement-value">
+                                <span class="value-number">95°</span>
+                                <span class="value-normal">N: 90±5°</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Angle Interincisif</span>
+                            <div class="measurement-value">
+                                <span class="value-number">122°</span>
+                                <span class="value-normal">N: 131±6°</span>
+                                <span class="value-badge warning">↓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Overjet</span>
+                            <div class="measurement-value">
+                                <span class="value-number">7.2 mm</span>
+                                <span class="value-normal">N: 2-4mm</span>
+                                <span class="value-badge danger">↑↑</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Overbite</span>
+                            <div class="measurement-value">
+                                <span class="value-number">4.5 mm</span>
+                                <span class="value-normal">N: 2-4mm</span>
+                                <span class="value-badge warning">↑</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soft Tissue Analysis -->
+                    <div class="cephalo-section">
+                        <div class="cephalo-section-title">Analyse Tissus Mous</div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Angle Nasolabial</span>
+                            <div class="measurement-value">
+                                <span class="value-number">102°</span>
+                                <span class="value-normal">N: 90-110°</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Ligne E (Lèvre Sup.)</span>
+                            <div class="measurement-value">
+                                <span class="value-number">2.5 mm</span>
+                                <span class="value-normal">N: -2±2mm</span>
+                                <span class="value-badge warning">↑</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Ligne E (Lèvre Inf.)</span>
+                            <div class="measurement-value">
+                                <span class="value-number">0.5 mm</span>
+                                <span class="value-normal">N: 0±2mm</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Protrusion Lèvre Sup.</span>
+                            <div class="measurement-value">
+                                <span class="value-number">4.8 mm</span>
+                                <span class="value-normal">N: 3-5mm</span>
+                                <span class="value-badge normal">✓</span>
+                            </div>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Angle Z (Merrifield)</span>
+                            <div class="measurement-value">
+                                <span class="value-number">72°</span>
+                                <span class="value-normal">N: 75-80°</span>
+                                <span class="value-badge warning">↓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Plan Phases & Duration Calculator -->
+            <div class="grid-2">
+                <!-- Treatment Phases -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Phases du Traitement</div>
+                    </div>
+                    <div class="phases-container">
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">
+                                    <span>1️⃣</span>
+                                    <span>Alignement Initial</span>
+                                </div>
+                                <span class="phase-status completed">Terminé</span>
+                            </div>
+                            <div class="phase-duration">Durée: 6 mois</div>
+                            <div class="phase-description">
+                                Alignement des dents antérieures et nivellement des arcades. Correction de la rotation des incisives latérales supérieures.
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">
+                                    <span>2️⃣</span>
+                                    <span>Fermeture des Espaces</span>
+                                </div>
+                                <span class="phase-status in-progress">En cours</span>
+                            </div>
+                            <div class="phase-duration">Durée: 8-10 mois</div>
+                            <div class="phase-description">
+                                Fermeture des espaces d'extraction (14, 24). Rétraction des incisives supérieures pour réduction de l'overjet. Utilisation de mini-vis d'ancrage.
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">
+                                    <span>3️⃣</span>
+                                    <span>Finition et Détails</span>
+                                </div>
+                                <span class="phase-status pending">À venir</span>
+                            </div>
+                            <div class="phase-duration">Durée: 4-6 mois</div>
+                            <div class="phase-description">
+                                Optimisation de l'occlusion, coordination des arcades, parallélisme radiculaire. Ajustements des torques et angulations.
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">
+                                    <span>4️⃣</span>
+                                    <span>Contention</span>
+                                </div>
+                                <span class="phase-status pending">À venir</span>
+                            </div>
+                            <div class="phase-duration">Durée: Permanente</div>
+                            <div class="phase-description">
+                                Contention fixe linguale 33-43. Gouttière de contention nocturne maxillaire. Suivi à long terme recommandé.
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Duration Calculator -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Calculateur de Durée</div>
+                    </div>
+                    <div class="calculator">
+                        <div class="input-group">
+                            <label class="input-label">Type de Malocclusion</label>
+                            <select class="input-field" id="malocclusion" onchange="calculateDuration()">
+                                <option value="class1">Classe I (Normo-occlusion)</option>
+                                <option value="class2-div1" selected>Classe II Division 1</option>
+                                <option value="class2-div2">Classe II Division 2</option>
+                                <option value="class3">Classe III</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Sévérité de l'Encombrement</label>
+                            <select class="input-field" id="crowding" onchange="calculateDuration()">
+                                <option value="mild">Léger (1-3mm)</option>
+                                <option value="moderate" selected>Modéré (4-6mm)</option>
+                                <option value="severe">Sévère (>6mm)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Extractions Nécessaires</label>
+                            <select class="input-field" id="extractions" onchange="calculateDuration()">
+                                <option value="0">Aucune</option>
+                                <option value="2" selected>2 prémolaires</option>
+                                <option value="4">4 prémolaires</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Âge du Patient</label>
+                            <select class="input-field" id="age" onchange="calculateDuration()">
+                                <option value="child">Enfant (7-12 ans)</option>
+                                <option value="teen" selected>Adolescent (13-18 ans)</option>
+                                <option value="adult">Adulte (>18 ans)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Compliance Prévue</label>
+                            <select class="input-field" id="compliance" onchange="calculateDuration()">
+                                <option value="excellent" selected>Excellente</option>
+                                <option value="good">Bonne</option>
+                                <option value="fair">Moyenne</option>
+                                <option value="poor">Faible</option>
+                            </select>
+                        </div>
+
+                        <div class="calculation-result">
+                            <div class="result-label">Durée Estimée du Traitement</div>
+                            <div class="result-value" id="estimatedDuration">18-24 mois</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appliance Selection -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Sélection de l'Appareillage</div>
+                    <button class="btn btn-primary" onclick="saveAppliance()">
+                        💾 Confirmer
+                    </button>
+                </div>
+                <div class="appliance-grid">
+                    <div class="appliance-card" onclick="selectAppliance('braces')">
+                        <div class="appliance-icon">🦷</div>
+                        <div class="appliance-name">Brackets Métalliques</div>
+                        <div class="appliance-desc">
+                            Appareil fixe traditionnel. Contrôle précis des mouvements. Idéal pour les cas complexes. Durable et économique.
+                        </div>
+                    </div>
+
+                    <div class="appliance-card selected" onclick="selectAppliance('invisalign')">
+                        <div class="appliance-icon">📱</div>
+                        <div class="appliance-name">Aligneurs Invisibles (Invisalign)</div>
+                        <div class="appliance-desc">
+                            Gouttières transparentes amovibles. Esthétique optimal. Hygiène facilitée. 22h/jour recommandé. Changement tous les 7-14 jours.
+                        </div>
+                    </div>
+
+                    <div class="appliance-card" onclick="selectAppliance('ceramic')">
+                        <div class="appliance-icon">💎</div>
+                        <div class="appliance-name">Brackets Céramiques</div>
+                        <div class="appliance-desc">
+                            Appareil fixe esthétique. Brackets couleur dent. Moins visible que le métal. Bon compromis esthétique/efficacité.
+                        </div>
+                    </div>
+
+                    <div class="appliance-card" onclick="selectAppliance('lingual')">
+                        <div class="appliance-icon">🔒</div>
+                        <div class="appliance-name">Orthodontie Linguale</div>
+                        <div class="appliance-desc">
+                            Brackets fixés face interne des dents. Totalement invisible. Technique spécialisée. Période d'adaptation plus longue.
+                        </div>
+                    </div>
+
+                    <div class="appliance-card" onclick="selectAppliance('functional')">
+                        <div class="appliance-icon">⚙️</div>
+                        <div class="appliance-name">Appareils Fonctionnels</div>
+                        <div class="appliance-desc">
+                            Twin-block, Activateur, Herbst. Correction des décalages squelettiques. Idéal en période de croissance. Souvent en Phase 1.
+                        </div>
+                    </div>
+
+                    <div class="appliance-card" onclick="selectAppliance('expansion')">
+                        <div class="appliance-icon">🔄</div>
+                        <div class="appliance-name">Expansion Palatine</div>
+                        <div class="appliance-desc">
+                            Quad-helix ou disjoncteur. Élargissement de l'arcade maxillaire. Traitement des occlusions croisées. Phase préparatoire.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Chronologie et Suivi Photographique</div>
+                    <button class="btn btn-secondary" onclick="addTimelineEvent()">
+                        ➕ Ajouter Événement
+                    </button>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">15 Mars 2024</div>
+                            <div class="timeline-title">📋 Bilan Initial & Records</div>
+                            <div class="timeline-desc">
+                                Empreintes numériques, téléradiographie de profil, panoramique, photos intra et extra-orales. Analyse céphalométrique complète.
+                            </div>
+                            <div class="timeline-img">[Photos initiales - Vue frontale, latérale, occlusale]</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">22 Mars 2024</div>
+                            <div class="timeline-title">🦷 Extractions Prémolaires</div>
+                            <div class="timeline-desc">
+                                Extractions des prémolaires 14 et 24 sous anesthésie locale. Cicatrisation normale. Début alignement dans 2 semaines.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">5 Avril 2024</div>
+                            <div class="timeline-title">📱 Pose Aligneurs - Série 1</div>
+                            <div class="timeline-desc">
+                                Début du traitement Invisalign. Attachements posés sur 11, 21, 16, 26. Instructions port 22h/jour. Première série: 8 aligneurs.
+                            </div>
+                            <div class="timeline-img">[Photos T0 - Début traitement]</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">3 Juillet 2024</div>
+                            <div class="timeline-title">📊 Contrôle 3 mois</div>
+                            <div class="timeline-desc">
+                                Alignement satisfaisant secteur antérieur. Rotation 12 et 22 corrigée. Overjet réduit de 2mm. Compliance excellente. Passage série 2.
+                            </div>
+                            <div class="timeline-img">[Photos T+3 mois - Progression visible]</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">15 Octobre 2024</div>
+                            <div class="timeline-title">⚙️ Pose Mini-vis d'Ancrage</div>
+                            <div class="timeline-desc">
+                                Mini-vis entre 15-16 et 25-26 pour ancrage postérieur renforcé. Élastiques de Classe II ajoutés. Phase de rétraction active.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot in-progress"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">12 Novembre 2024 (Aujourd'hui)</div>
+                            <div class="timeline-title">🔄 Évaluation à Mi-Parcours</div>
+                            <div class="timeline-desc">
+                                Aligneur 12/28. Fermeture espaces 60% complète. Overjet réduit à 4.5mm. Occlusion s'améliore. Planification refinement.
+                            </div>
+                            <div class="timeline-img">[Photos actuelles - Progression 42%]</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Février 2025 (Prévu)</div>
+                            <div class="timeline-title">✨ Fin Série Initiale</div>
+                            <div class="timeline-desc">
+                                Fin des 28 aligneurs. Nouvelles empreintes pour évaluation. Probable refinement 6-8 aligneurs supplémentaires.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Juin 2025 (Prévu)</div>
+                            <div class="timeline-title">🎯 Fin de Traitement Actif</div>
+                            <div class="timeline-desc">
+                                Débaguage, photos finales, radiographies de contrôle. Pose contention fixe linguale. Gouttières de contention nocturnes.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dental Arch Visualization -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Visualisation des Arcades Dentaires</div>
+                    <button class="btn btn-primary" onclick="toggleArchView()">
+                        🔄 Changer Vue
+                    </button>
+                </div>
+                <div class="arch-container">
+                    <!-- Upper Arch -->
+                    <div class="arch-visualization">
+                        <div class="arch-label">ARCADE SUPÉRIEURE</div>
+                        <svg class="arch-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Arch outline -->
+                            <path d="M 50,180 Q 50,50 200,30 Q 350,50 350,180"
+                                  fill="none"
+                                  stroke="var(--border)"
+                                  stroke-width="2"
+                                  stroke-dasharray="5,5"/>
+
+                            <!-- Teeth positions with crowding indicators -->
+                            <!-- Right side -->
+                            <circle cx="70" cy="150" r="12" fill="var(--text-primary)" opacity="0.3"/>
+                            <circle cx="85" cy="120" r="12" fill="var(--text-primary)" opacity="0.3"/>
+                            <circle cx="100" cy="95" r="12" fill="var(--warning)"/>
+                            <circle cx="118" cy="75" r="10" fill="var(--danger)"/>
+                            <circle cx="140" cy="62" r="10" fill="var(--danger)"/>
+                            <circle cx="165" cy="55" r="10" fill="var(--success)"/>
+                            <circle cx="190" cy="52" r="10" fill="var(--success)"/>
+
+                            <!-- Left side -->
+                            <circle cx="210" cy="52" r="10" fill="var(--success)"/>
+                            <circle cx="235" cy="55" r="10" fill="var(--success)"/>
+                            <circle cx="260" cy="62" r="10" fill="var(--danger)"/>
+                            <circle cx="282" cy="75" r="10" fill="var(--danger)"/>
+                            <circle cx="300" cy="95" r="12" fill="var(--warning)"/>
+                            <circle cx="315" cy="120" r="12" fill="var(--text-primary)" opacity="0.3"/>
+                            <circle cx="330" cy="150" r="12" fill="var(--text-primary)" opacity="0.3"/>
+
+                            <!-- Crowding/spacing indicators -->
+                            <line x1="118" y1="75" x2="132" y2="68" stroke="var(--danger)" stroke-width="2"/>
+                            <line x1="132" y1="68" x2="140" y2="62" stroke="var(--danger)" stroke-width="2"/>
+                            <text x="125" y="90" fill="var(--danger)" font-size="10">-2mm</text>
+
+                            <line x1="260" y1="62" x2="268" y2="68" stroke="var(--danger)" stroke-width="2"/>
+                            <line x1="268" y1="68" x2="282" y2="75" stroke="var(--danger)" stroke-width="2"/>
+                            <text x="265" y="90" fill="var(--danger)" font-size="10">-2mm</text>
+
+                            <!-- Extraction spaces -->
+                            <rect x="95" y="88" width="15" height="15" fill="none" stroke="var(--warning)" stroke-width="2" stroke-dasharray="3,3"/>
+                            <text x="95" y="110" fill="var(--warning)" font-size="9">Ext. 14</text>
+
+                            <rect x="290" y="88" width="15" height="15" fill="none" stroke="var(--warning)" stroke-width="2" stroke-dasharray="3,3"/>
+                            <text x="285" y="110" fill="var(--warning)" font-size="9">Ext. 24</text>
+                        </svg>
+                        <div class="crowding-indicator">
+                            <div class="indicator-item">
+                                <div class="indicator-dot" style="background: var(--success);"></div>
+                                <span>Aligné</span>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-dot" style="background: var(--danger);"></div>
+                                <span>Encombrement</span>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-dot" style="background: var(--warning);"></div>
+                                <span>Espace Extraction</span>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-dot" style="background: var(--text-primary); opacity: 0.3;"></div>
+                                <span>Sagesse</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lower Arch -->
+                    <div class="arch-visualization">
+                        <div class="arch-label">ARCADE INFÉRIEURE</div>
+                        <svg class="arch-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Arch outline -->
+                            <path d="M 50,20 Q 50,150 200,170 Q 350,150 350,20"
+                                  fill="none"
+                                  stroke="var(--border)"
+                                  stroke-width="2"
+                                  stroke-dasharray="5,5"/>
+
+                            <!-- Teeth positions -->
+                            <!-- Right side -->
+                            <circle cx="70" cy="50" r="12" fill="var(--text-primary)" opacity="0.3"/>
+                            <circle cx="85" cy="80" r="12" fill="var(--text-primary)" opacity="0.3"/>
+                            <circle cx="100" cy="105" r="12" fill="var(--success)"/>
+                            <circle cx="118" cy="125" r="10" fill="var(--success)"/>
+                            <circle cx="142" cy="138" r="10" fill="var(--warning)"/>
+                            <circle cx="168" cy="145" r="10" fill="var(--warning)"/>
+                            <circle cx="192" cy="148" r="10" fill="var(--success)"/>
+
+                            <!-- Left side -->
+                            <circle cx="208" cy="148" r="10" fill="var(--success)"/>
+                            <circle cx="232" cy="145" r="10" fill="var(--warning)"/>
+                            <circle cx="258" cy="138" r="10" fill="var(--warning)"/>
+                            <circle cx="282" cy="125" r="10" fill="var(--success)"/>
+                            <circle cx="300" cy="105" r="12" fill="var(--success)"/>
+                            <circle cx="315" cy="80" r="12" fill="var(--text-primary)" opacity="0.3"/>
+                            <circle cx="330" cy="50" r="12" fill="var(--text-primary)" opacity="0.3"/>
+
+                            <!-- Mild crowding indicator -->
+                            <line x1="142" y1="138" x2="155" y2="141" stroke="var(--warning)" stroke-width="2"/>
+                            <line x1="155" y1="141" x2="168" y2="145" stroke="var(--warning)" stroke-width="2"/>
+                            <text x="148" y="130" fill="var(--warning)" font-size="10">-1mm</text>
+
+                            <line x1="232" y1="145" x2="245" y2="141" stroke="var(--warning)" stroke-width="2"/>
+                            <line x1="245" y1="141" x2="258" y2="138" stroke="var(--warning)" stroke-width="2"/>
+                            <text x="235" y="130" fill="var(--warning)" font-size="10">-1mm</text>
+                        </svg>
+                        <div class="crowding-indicator">
+                            <div class="indicator-item">
+                                <span style="font-size: 12px; color: var(--text-secondary);">
+                                    Encombrement total: 4mm (2mm maxillaire après extractions, 2mm mandibulaire)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Notes -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Notes Orthodontiques</div>
+                </div>
+                <textarea id="orthoNotes" placeholder="Observations orthodontiques, objectifs de traitement, notes cliniques...">Dossier orthodontique - Marie Dubois
+Date: 12/11/2024
+
+DIAGNOSTIC:
+- Classe II squelettique et dentaire Division 1
+- Malocclusion de Classe II d'Angle (relation molaire 1/2 unité Classe II)
+- Overjet augmenté: 7.2mm (Norme: 2-4mm)
+- Overbite augmenté: 4.5mm
+- Encombrement modéré maxillaire: 4mm
+- Encombrement léger mandibulaire: 2mm
+- Proalvéolie supérieure
+- Rétromandibulie relative (SNB: 78°)
+- Dents 18, 28 (absentes/extraites)
+
+ÉTIOLOGIE:
+- Composante squelettique modérée (ANB: 6.5°)
+- Composante dento-alvéolaire significative
+- Respiration buccale partielle (historique)
+- Déglutition atypique résiduelle
+
+OBJECTIFS DE TRAITEMENT:
+1. Correction relation Classe II vers Classe I
+2. Réduction overjet à 2-3mm
+3. Normalisation overbite
+4. Alignement des arcades
+5. Amélioration du profil facial
+6. Établissement d'une occlusion fonctionnelle stable
+7. Amélioration esthétique du sourire
+
+PLAN DE TRAITEMENT:
+- Extractions: 14, 24 (réalisées)
+- Alignement initial: Invisalign (complété)
+- Rétraction antérieure maxillaire avec ancrage mini-vis
+- Mécanique de Classe II: élastiques intermaxillaires
+- Durée estimée: 18-24 mois
+- Contention: fixe linguale + gouttières nocturnes
+
+PROGRESSION ACTUELLE (Mois 8):
+- Alignement satisfaisant
+- Fermeture espaces extraction: 60%
+- Overjet: 4.5mm (amélioration de 2.7mm)
+- Compliance élastiques: excellente
+- Hygiène: très bonne
+- Confort: aucune plainte
+
+PROCHAINES ÉTAPES:
+1. Continuer rétraction antérieure (4 mois)
+2. Phase de finition et coordination (4-6 mois)
+3. Refinement si nécessaire (6-8 aligneurs)
+4. Débaguage et contention
+
+OBSERVATIONS:
+- Patient très motivée et coopérative
+- Port aligneurs: 22h/jour respecté
+- Élastiques portés correctement
+- Mini-vis stables, aucune inflammation
+- Résultats conformes aux prévisions ClinCheck
+
+Prochain RDV: 26/11/2024 - Contrôle routine + photos
+RDV suivant: 10/12/2024 - Changement série aligneurs</textarea>
+                <button class="btn btn-primary" onclick="saveNotes()" style="margin-top: 12px;">
+                    💾 Enregistrer les notes
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const currentTheme = html.getAttribute('data-theme');
+
+            if (currentTheme === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                if (themeToggle) themeToggle.textContent = '☀️';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.textContent = '🌙';
+            }
+        }
+
+        // Duration Calculator
+        function calculateDuration() {
+            const malocclusion = document.getElementById('malocclusion').value;
+            const crowding = document.getElementById('crowding').value;
+            const extractions = parseInt(document.getElementById('extractions').value);
+            const age = document.getElementById('age').value;
+            const compliance = document.getElementById('compliance').value;
+
+            let baseMonths = 12;
+
+            // Malocclusion impact
+            const malocclusionImpact = {
+                'class1': 0,
+                'class2-div1': 6,
+                'class2-div2': 4,
+                'class3': 8
+            };
+            baseMonths += malocclusionImpact[malocclusion];
+
+            // Crowding impact
+            const crowdingImpact = {
+                'mild': 2,
+                'moderate': 4,
+                'severe': 8
+            };
+            baseMonths += crowdingImpact[crowding];
+
+            // Extractions impact
+            baseMonths += extractions * 3;
+
+            // Age impact
+            const ageImpact = {
+                'child': -2,
+                'teen': 0,
+                'adult': 4
+            };
+            baseMonths += ageImpact[age];
+
+            // Compliance impact
+            const complianceImpact = {
+                'excellent': 0,
+                'good': 2,
+                'fair': 4,
+                'poor': 8
+            };
+            baseMonths += complianceImpact[compliance];
+
+            // Calculate range
+            const minMonths = Math.max(6, baseMonths - 3);
+            const maxMonths = baseMonths + 6;
+
+            document.getElementById('estimatedDuration').textContent = `${minMonths}-${maxMonths} mois`;
+        }
+
+        // Appliance Selection
+        let selectedApplianceType = 'invisalign';
+
+        function selectAppliance(type) {
+            selectedApplianceType = type;
+
+            // Remove all selected classes
+            document.querySelectorAll('.appliance-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            event.currentTarget.classList.add('selected');
+
+            console.log('Appareillage sélectionné:', type);
+        }
+
+        function saveAppliance() {
+            const applianceNames = {
+                'braces': 'Brackets Métalliques',
+                'invisalign': 'Aligneurs Invisibles (Invisalign)',
+                'ceramic': 'Brackets Céramiques',
+                'lingual': 'Orthodontie Linguale',
+                'functional': 'Appareils Fonctionnels',
+                'expansion': 'Expansion Palatine'
+            };
+
+            alert(`✅ Appareillage confirmé!\n\nType sélectionné: ${applianceNames[selectedApplianceType]}\n\nLes informations ont été enregistrées dans le plan de traitement.`);
+            console.log('Appareillage sauvegardé:', selectedApplianceType);
+        }
+
+        // Cephalometrics
+        function saveCephalometrics() {
+            const cephaloData = {
+                patient: 'Marie Dubois',
+                date: new Date().toISOString(),
+                measurements: {
+                    sagittal: {
+                        SNA: 84.5,
+                        SNB: 78.0,
+                        ANB: 6.5,
+                        Wits: 4.2,
+                        facialConvexity: 8.5
+                    },
+                    vertical: {
+                        FMA: 26.5,
+                        SNGoGn: 32.0,
+                        anteriorFacialHeight: 118,
+                        posteriorFacialHeight: 82,
+                        ratio: 69.5
+                    },
+                    dental: {
+                        upperIncisorSN: 112,
+                        lowerIncisorMand: 95,
+                        interincisal: 122,
+                        overjet: 7.2,
+                        overbite: 4.5
+                    },
+                    softTissue: {
+                        nasolabial: 102,
+                        upperLipE: 2.5,
+                        lowerLipE: 0.5,
+                        upperLipProtrusion: 4.8,
+                        zAngle: 72
+                    }
+                }
+            };
+
+            console.log('Analyse céphalométrique sauvegardée:', cephaloData);
+            alert('✅ Analyse céphalométrique enregistrée avec succès!\n\nToutes les mesures ont été sauvegardées dans le dossier patient.');
+        }
+
+        // Timeline
+        function addTimelineEvent() {
+            alert('📸 Fonction d\'ajout d\'événement\n\nPermettra d\'ajouter:\n- Nouvelle date\n- Description de l\'événement\n- Upload de photos/radiographies\n- Notes cliniques');
+            console.log('Ajout événement timeline');
+        }
+
+        // Arch Visualization
+        let archViewMode = 'occlusal';
+
+        function toggleArchView() {
+            archViewMode = archViewMode === 'occlusal' ? 'frontal' : 'occlusal';
+            alert(`🔄 Vue changée: ${archViewMode === 'occlusal' ? 'Vue Occlusale' : 'Vue Frontale'}\n\nDans une implémentation complète, cela afficherait différentes perspectives des arcades dentaires.`);
+            console.log('Vue des arcades:', archViewMode);
+        }
+
+        // Notes
+        function saveNotes() {
+            const notes = document.getElementById('orthoNotes').value;
+            console.log('Notes orthodontiques sauvegardées:', notes);
+            alert('✅ Notes orthodontiques enregistrées avec succès!');
+        }
+
+        // Refresh Stats
+        function refreshStats() {
+            console.log('Statistiques actualisées');
+            alert('🔄 Statistiques actualisées!\n\nLes données ont été mises à jour avec les dernières mesures.');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            calculateDuration();
+        });
+    </script>
+</body>
+</html>

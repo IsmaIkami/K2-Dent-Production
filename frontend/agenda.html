@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda - DentalCockpit Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --purple: #8B5CF6;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1E2740;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #2A3347;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF1;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            width: 280px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .content {
+            padding: 32px;
+            display: grid;
+            gap: 24px;
+        }
+
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+        }
+
+        .calendar-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+        }
+
+        .appointment-item {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .appointment-item:hover {
+            background: var(--bg-hover);
+            border-left-color: var(--secondary);
+        }
+
+        .appointment-time {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .appointment-patient {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .appointment-type {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .stats-mini {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-mini {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-mini-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-mini-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .ai-reminder {
+            background: var(--bg-main);
+            border-left: 3px solid var(--purple);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .ai-reminder-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .ai-reminder-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .agenda-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🦷</div>
+                <div class="logo-text">DentalCockpit Pro</div>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Dashboard Patient</span>
+                    </a>
+                    <a href="patients.html" class="nav-item">
+                        <span>👥</span>
+                        <span>Patients</span>
+                    </a>
+                    <a href="agenda.html" class="nav-item active">
+                        <span>📅</span>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="treatment.html" class="nav-item">
+                        <span>🎯</span>
+                        <span>Plan de Traitement</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Imagerie Médicale</div>
+                    <a href="xrays.html" class="nav-item">
+                        <span>📷</span>
+                        <span>Radiographies X</span>
+                    </a>
+                    <a href="scanner3d.html" class="nav-item">
+                        <span>🔬</span>
+                        <span>Scanner 3D</span>
+                    </a>
+                    <a href="photos.html" class="nav-item">
+                        <span>🖼️</span>
+                        <span>Photos Intra-orales</span>
+                    </a>
+                    <a href="camera.html" class="nav-item">
+                        <span>📸</span>
+                        <span>Caméra Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Intelligence Artificielle</div>
+                    <a href="ai-analysis.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>Analyses IA</span>
+                    </a>
+                    <a href="ai-reports.html" class="nav-item">
+                        <span>📈</span>
+                        <span>Rapports Intelligents</span>
+                    </a>
+                    <a href="ai-history.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>Historique Complet IA</span>
+                    </a>
+                    <a href="ai-realtime.html" class="nav-item">
+                        <span>⚡</span>
+                        <span>IA Temps Réel</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Administration</div>
+                    <a href="inami.html" class="nav-item">
+                        <span>💳</span>
+                        <span>INAMI / e-Health</span>
+                    </a>
+                    <a href="mutuelles.html" class="nav-item">
+                        <span>🏥</span>
+                        <span>Mutuelles</span>
+                    </a>
+                    <a href="certificates.html" class="nav-item">
+                        <span>📄</span>
+                        <span>Certificats</span>
+                    </a>
+                    <a href="billing.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Facturation</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Rechercher rendez-vous, patient...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
+                        🌙
+                    </div>
+                    <div class="icon-btn">
+                        🔔
+                        <span class="badge">5</span>
+                    </div>
+                    <div class="icon-btn">⚙️</div>
+                    <div class="icon-btn">👤</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 8px;">📅 Agenda</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 32px;">Gestion intelligente de vos rendez-vous</p>
+
+                <div class="agenda-grid">
+                    <div class="calendar-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Mardi 12 Novembre 2025</div>
+                            <button class="btn btn-primary" onclick="alert('Nouveau RDV')">
+                                ➕ Nouveau RDV
+                            </button>
+                        </div>
+
+                        <div class="appointment-item">
+                            <div class="appointment-time">🕘 09:00 - 09:45</div>
+                            <div class="appointment-patient">Sophie Laurent</div>
+                            <div class="appointment-type">Consultation de contrôle</div>
+                        </div>
+
+                        <div class="appointment-item">
+                            <div class="appointment-time">🕥 10:30 - 11:30</div>
+                            <div class="appointment-patient">Jean Martin</div>
+                            <div class="appointment-type">Traitement endodontique dent 16</div>
+                        </div>
+
+                        <div class="appointment-item">
+                            <div class="appointment-time">🕑 14:00 - 15:00</div>
+                            <div class="appointment-patient">Marie Dubois</div>
+                            <div class="appointment-type">Radiographie panoramique + consultation</div>
+                        </div>
+
+                        <div style="margin-top: 24px; text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <div style="font-size: 48px; margin-bottom: 12px;">📋</div>
+                            <div>3 rendez-vous planifiés aujourd'hui</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="sidebar-panel">
+                            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">📊 Statistiques du Jour</h3>
+
+                            <div class="stats-mini">
+                                <div class="stat-mini">
+                                    <div class="stat-mini-value" style="color: var(--primary);">12</div>
+                                    <div class="stat-mini-label">Total RDV</div>
+                                </div>
+                                <div class="stat-mini">
+                                    <div class="stat-mini-value" style="color: var(--success);">10</div>
+                                    <div class="stat-mini-label">Confirmés</div>
+                                </div>
+                                <div class="stat-mini">
+                                    <div class="stat-mini-value" style="color: var(--warning);">2</div>
+                                    <div class="stat-mini-label">En attente</div>
+                                </div>
+                                <div class="stat-mini">
+                                    <div class="stat-mini-value" style="color: var(--secondary);">87%</div>
+                                    <div class="stat-mini-label">Occupation</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-panel" style="margin-top: 20px;">
+                            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">🤖 Rappels IA</h3>
+
+                            <div class="ai-reminder">
+                                <div class="ai-reminder-title">Marie Dubois - 14:00</div>
+                                <div class="ai-reminder-text">⚠️ Patient diabétique - Prévoir contrôle glycémie avant anesthésie</div>
+                            </div>
+
+                            <div class="ai-reminder">
+                                <div class="ai-reminder-title">Jean Martin - 10:30</div>
+                                <div class="ai-reminder-text">📋 Matériel endodontie préparé - Traitement long (60min)</div>
+                            </div>
+
+                            <div class="ai-reminder">
+                                <div class="ai-reminder-title">Sophie Laurent - 09:00</div>
+                                <div class="ai-reminder-text">✓ Contrôle post-traitement - RDV de suivi programmé</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const currentTheme = html.getAttribute('data-theme');
+
+            if (currentTheme === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                if (themeToggle) themeToggle.textContent = '☀️';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.textContent = '🌙';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTheme);
+    </script>
+</body>
+</html>
