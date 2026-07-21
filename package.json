@@ -1,9 +1,10 @@
 {
   "name": "k2-dent-production",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
-    "start": "cd backend && node server.js",
+    "start": "node server.js",
     "dev": "cd backend && npm run dev"
   },
   "author": "Ismail Sialyen <is.sialyen@gmail.com>",

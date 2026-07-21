@@ -9,4 +9,4 @@ cmds = ["cd backend && npm ci"]
 [phases.build]
 
 [start]
-cmd = "npm start"
+cmd = "node server.js"
