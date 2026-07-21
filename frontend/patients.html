@@ -423,10 +423,135 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--hover);
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: border 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 
     <!-- Supabase Client -->
+    <!-- K2 Dent Configuration -->
+    <script src="config.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- K2 Dent Configuration -->
+    <script src="config.js"></script>
+
     <script src="js/supabase-client.js"></script>
 </head>
 <body>
@@ -606,9 +731,72 @@
                 <div class="patients-panel">
                     <div class="panel-header">
                         <div class="panel-title">📋 Liste des Patients</div>
-                        <button class="btn btn-primary" onclick="alert('Ajouter nouveau patient')">
+                        <button class="btn btn-primary" onclick="showNewPatientModal()">
                             ➕ Nouveau Patient
                         </button>
+                    </div>
+
+                    <!-- Modal Nouveau Patient -->
+                    <div id="newPatientModal" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2>➕ Nouveau Patient</h2>
+                                <button class="modal-close" onclick="closeNewPatientModal()">&times;</button>
+                            </div>
+                            <form id="newPatientForm" onsubmit="createNewPatient(event)">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Prénom *</label>
+                                        <input type="text" name="first_name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nom *</label>
+                                        <input type="text" name="last_name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>NISS *</label>
+                                        <input type="text" name="niss" required pattern="[0-9]{11}" placeholder="00000000000" maxlength="11">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Date de naissance *</label>
+                                        <input type="date" name="date_of_birth" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" name="email" placeholder="patient@email.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Téléphone</label>
+                                        <input type="tel" name="phone" placeholder="+32 475 00 00 00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Adresse</label>
+                                        <input type="text" name="address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Code Mutuelle</label>
+                                        <select name="mutuelle_code">
+                                            <option value="">-- Sélectionner --</option>
+                                            <option value="306">306 - Mutualité Chrétienne</option>
+                                            <option value="307">307 - Mutualité Socialiste</option>
+                                            <option value="309">309 - Mutualité Neutre</option>
+                                            <option value="311">311 - Mutualité Libérale</option>
+                                            <option value="313">313 - Mutualité Libre</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" name="is_bim" value="true">
+                                            BIM (Bénéficiaire Intervention Majorée)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="modal-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="closeNewPatientModal()">Annuler</button>
+                                    <button type="submit" class="btn btn-primary">✅ Créer Patient</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <div class="patient-item" onclick="window.location.href='index.html'">
@@ -662,6 +850,9 @@
             </div>
         </main>
     </div>
+
+    <!-- K2 Dent Configuration -->
+    <script src="config.js"></script>
 
     <script>
         // Theme Management
@@ -921,6 +1112,66 @@
         const searchInput = document.querySelector('input[placeholder*="Chercher"]');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => searchPatients(e.target.value));
+        }
+
+        // =====================================================================
+        // NEW PATIENT MODAL FUNCTIONS
+        // =====================================================================
+
+        function showNewPatientModal() {
+            const modal = document.getElementById('newPatientModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.getElementById('newPatientForm').reset();
+            }
+        }
+
+        function closeNewPatientModal() {
+            const modal = document.getElementById('newPatientModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        async function createNewPatient(event) {
+            event.preventDefault();
+
+            if (!supabaseInitialized) {
+                alert('⚠️ Supabase non configuré');
+                return;
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            const patientData = {
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                niss: formData.get('niss'),
+                date_of_birth: formData.get('date_of_birth'),
+                email: formData.get('email') || null,
+                phone: formData.get('phone') || null,
+                address: formData.get('address') || null,
+                mutuelle_code: formData.get('mutuelle_code') || null,
+                is_bim: formData.get('is_bim') === 'true'
+            };
+
+            try {
+                const savedPatient = await DB.savePatient(patientData);
+
+                if (savedPatient) {
+                    alert(`✅ Patient créé avec succès !\n\n${patientData.first_name} ${patientData.last_name}\nNISS: ${patientData.niss}`);
+                    closeNewPatientModal();
+
+                    // Reload patients list
+                    loadPatients();
+                } else {
+                    alert('❌ Erreur lors de la création du patient');
+                }
+            } catch (error) {
+                console.error('Error creating patient:', error);
+                alert('❌ Erreur: ' + error.message);
+            }
         }
 
         console.log('📦 K2 Dent Patients - Supabase integration loaded');

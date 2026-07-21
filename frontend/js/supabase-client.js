@@ -12,9 +12,14 @@
 // CONFIGURATION
 // ============================================================================
 
+// Use configuration from config.js (window.K2_CONFIG)
 const SUPABASE_CONFIG = {
-  url: '', // TO FILL: https://YOUR-PROJECT.supabase.co
-  anonKey: '', // TO FILL: Your anon/public key
+  get url() {
+    return window.K2_CONFIG?.SUPABASE_URL || '';
+  },
+  get anonKey() {
+    return window.K2_CONFIG?.SUPABASE_ANON_KEY || '';
+  },
   options: {
     auth: {
       autoRefreshToken: true,

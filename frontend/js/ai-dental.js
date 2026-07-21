@@ -586,7 +586,6 @@ if (typeof window !== 'undefined') {
     renderMarkdownAnamnesis,
 
     // Config
-    getAnthropicAPIKey,
     AI_CONFIG
   };
 }
