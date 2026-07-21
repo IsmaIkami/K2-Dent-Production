@@ -230,3 +230,26 @@ COMMENT ON FUNCTION create_medical_history_version IS 'Crée une nouvelle versio
 -- Grant permissions (adjust based on your roles)
 GRANT SELECT ON patient_complete_view TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION create_medical_history_version TO authenticated;
+
+-- ============================================================================
+-- ROW LEVEL SECURITY - MEDICAL HISTORY
+-- ============================================================================
+
+-- Enable RLS on medical_history
+ALTER TABLE medical_history ENABLE ROW LEVEL SECURITY;
+
+-- Politique pour utilisateurs authentifiés (dentistes)
+CREATE POLICY "Authenticated users full access to medical_history"
+ON medical_history
+FOR ALL
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+-- Politique pour utilisateurs anonymes (pour démo/dev)
+CREATE POLICY "Anon users full access to medical_history"
+ON medical_history
+FOR ALL
+TO anon
+USING (true)
+WITH CHECK (true);
