@@ -13,46 +13,44 @@
 // CONFIGURATION
 // ============================================================================
 
+/**
+ * Get backend URL from config.js or fallback to localhost
+ * Config is loaded from config.js which must be included before this script
+ */
+function getBackendUrl() {
+  // Check if K2_API is defined from config.js
+  if (typeof window.K2_API !== 'undefined') {
+    return {
+      anamnesis: window.K2_API.ANAMNESIS,
+      prescription: window.K2_API.PRESCRIPTION,
+      health: window.K2_API.HEALTH
+    };
+  }
+
+  // Fallback for backward compatibility
+  console.warn('[K2 Dent] config.js not loaded, using fallback backend URL');
+  return {
+    anamnesis: 'http://localhost:3000/api/ai/anamnesis',
+    prescription: 'http://localhost:3000/api/ai/prescription',
+    health: 'http://localhost:3000/health'
+  };
+}
+
 const AI_CONFIG = {
-  apiUrl: 'https://api.anthropic.com/v1/messages',
   model: 'claude-sonnet-4-20250514',
   maxTokens: {
     anamnesis: 1500,
     prescriptions: 1200,
     diagnosis: 1000
   },
-  temperature: 0.3, // Low temperature for medical accuracy
-  version: '2023-06-01'
+  temperature: 0.3 // Low temperature for medical accuracy
 };
 
 /**
- * Get API key from environment or prompt user
- * For production: store in secure backend
- * For MVP: prompt once and store in localStorage (encrypted)
+ * NOTE: API key is now stored securely in the backend
+ * No need to prompt user or store in localStorage anymore
+ * The backend handles authentication with Anthropic API
  */
-function getAnthropicAPIKey() {
-  let apiKey = localStorage.getItem('anthropic_api_key');
-
-  if (!apiKey) {
-    apiKey = prompt(
-      '🔑 K2 Dent - Configuration IA\n\n' +
-      'Pour activer l\'assistant IA (anamnèse, prescriptions),\n' +
-      'veuillez entrer votre clé API Anthropic:\n\n' +
-      '(Vous pouvez l\'obtenir sur: https://console.anthropic.com/)\n\n' +
-      'La clé sera stockée localement de manière sécurisée.'
-    );
-
-    if (apiKey && apiKey.startsWith('sk-ant-')) {
-      localStorage.setItem('anthropic_api_key', apiKey);
-      showNotification('✅ Clé API enregistrée - IA activée', 'success');
-    } else {
-      showNotification('⚠️ Clé API invalide - IA désactivée', 'warning');
-      return null;
-    }
-  }
-
-  return apiKey;
-}
 
 // ============================================================================
 // AI ANAMNESIS GENERATION
@@ -65,11 +63,6 @@ function getAnthropicAPIKey() {
  * @returns {Promise<string>} - Generated anamnesis (markdown format)
  */
 async function generateAnamnesis(patientData, transcription = '') {
-  const apiKey = getAnthropicAPIKey();
-  if (!apiKey) {
-    throw new Error('API key not configured');
-  }
-
   const systemPrompt = `Tu es l'assistant IA du cabinet dentaire de Dr. Ekaterina SIALYEN, Dentiste Généraliste, INAMI 3-02462-81-001, à Zaventem (Belgique).
 
 **MISSION:**
@@ -153,44 +146,46 @@ Génère l'anamnèse complète en suivant le format imposé.
 Si certaines informations manquent, indique "[À compléter par Dr. Sialyen]".`;
 
   try {
-    const response = await fetch(AI_CONFIG.apiUrl, {
+    const backendUrl = getBackendUrl();
+
+    const response = await fetch(backendUrl.anamnesis, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': AI_CONFIG.version
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: AI_CONFIG.model,
-        max_tokens: AI_CONFIG.maxTokens.anamnesis,
-        temperature: AI_CONFIG.temperature,
-        system: systemPrompt,
-        messages: [{
-          role: 'user',
-          content: userPrompt
-        }]
+        patientData: patientData,
+        transcription: transcription,
+        systemPrompt: systemPrompt,
+        maxTokens: AI_CONFIG.maxTokens.anamnesis
       })
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`API Error: ${error.error?.message || response.statusText}`);
+      throw new Error(`Backend Error: ${error.error || response.statusText}`);
     }
 
     const data = await response.json();
-    const anamnesis = data.content[0].text;
+
+    if (!data.success) {
+      throw new Error(data.error || 'Unknown error from backend');
+    }
+
+    const anamnesis = data.content;
 
     // Log for debugging
-    console.log('[AI Anamnesis] Generated successfully:', {
+    console.log('[AI Anamnesis] Generated successfully via backend:', {
       patient: patientData.name,
-      tokens: data.usage,
-      length: anamnesis.length
+      length: anamnesis.length,
+      backend: backendUrl.anamnesis
     });
 
     return anamnesis;
 
   } catch (error) {
     console.error('[AI Anamnesis] Error:', error);
+    showNotification(`❌ Erreur IA: ${error.message}`, 'error');
     throw error;
   }
 }
@@ -206,11 +201,6 @@ Si certaines informations manquent, indique "[À compléter par Dr. Sialyen]".`;
  * @returns {Promise<string>} - Prescription suggestions (markdown format)
  */
 async function generatePrescriptions(patientData, anamnesis) {
-  const apiKey = getAnthropicAPIKey();
-  if (!apiKey) {
-    throw new Error('API key not configured');
-  }
-
   const systemPrompt = `Tu es l'assistant de prescription du cabinet dentaire de Dr. Ekaterina SIALYEN, Dentiste Généraliste, INAMI 3-02462-81-001 (Belgique).
 
 **MISSION:**
@@ -308,43 +298,45 @@ Si patient BIM → privilégier médicaments remboursés.
 Si patient ≥65 ans → adapter posologies (insuffisance rénale potentielle).`;
 
   try {
-    const response = await fetch(AI_CONFIG.apiUrl, {
+    const backendUrl = getBackendUrl();
+
+    const response = await fetch(backendUrl.prescription, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': AI_CONFIG.version
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: AI_CONFIG.model,
-        max_tokens: AI_CONFIG.maxTokens.prescriptions,
-        temperature: AI_CONFIG.temperature,
-        system: systemPrompt,
-        messages: [{
-          role: 'user',
-          content: userPrompt
-        }]
+        patientData: patientData,
+        anamnesis: anamnesis,
+        systemPrompt: systemPrompt,
+        maxTokens: AI_CONFIG.maxTokens.prescriptions
       })
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`API Error: ${error.error?.message || response.statusText}`);
+      throw new Error(`Backend Error: ${error.error || response.statusText}`);
     }
 
     const data = await response.json();
-    const prescriptions = data.content[0].text;
 
-    console.log('[AI Prescriptions] Generated successfully:', {
+    if (!data.success) {
+      throw new Error(data.error || 'Unknown error from backend');
+    }
+
+    const prescriptions = data.content;
+
+    console.log('[AI Prescriptions] Generated successfully via backend:', {
       patient: patientData.name,
-      tokens: data.usage,
-      length: prescriptions.length
+      length: prescriptions.length,
+      backend: backendUrl.prescription
     });
 
     return prescriptions;
 
   } catch (error) {
     console.error('[AI Prescriptions] Error:', error);
+    showNotification(`❌ Erreur IA Prescriptions: ${error.message}`, 'error');
     throw error;
   }
 }
