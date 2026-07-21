@@ -432,7 +432,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
             z-index: 10000;
             justify-content: center;
             align-items: center;
@@ -440,14 +441,15 @@
         }
 
         .modal-content {
-            background: var(--surface);
+            background: #1a1d2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 32px;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.3s;
         }
 
@@ -743,6 +745,24 @@
                                 <h2>➕ Nouveau Patient</h2>
                                 <button class="modal-close" onclick="closeNewPatientModal()">&times;</button>
                             </div>
+
+                            <div style="margin-bottom: 24px; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <span style="font-size: 24px;">🪪</span>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: var(--primary);">Lecture automatique carte d'identité</div>
+                                        <div style="font-size: 13px; color: var(--text-secondary);">Remplissage automatique des informations depuis la carte eID belge</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="scanBelgianEID()" style="width: 100%;">
+                                    📡 Scanner Carte d'Identité Belge
+                                </button>
+                            </div>
+
+                            <div style="text-align: center; margin-bottom: 20px; color: var(--text-secondary); font-size: 13px;">
+                                OU remplir manuellement
+                            </div>
+
                             <form id="newPatientForm" onsubmit="createNewPatient(event)">
                                 <div class="form-grid">
                                     <div class="form-group">
@@ -1123,6 +1143,39 @@
             if (modal) {
                 modal.style.display = 'flex';
                 document.getElementById('newPatientForm').reset();
+            }
+        }
+
+        async function scanBelgianEID() {
+            // Belgian eID card reader integration
+            alert('🪪 Fonctionnalité de lecture carte eID\n\n' +
+                  'Pour activer la lecture automatique de carte d\'identité belge :\n\n' +
+                  '1. Installez le middleware eID : https://eid.belgium.be/\n' +
+                  '2. Branchez votre lecteur de carte\n' +
+                  '3. Insérez la carte d\'identité\n\n' +
+                  'Le système remplira automatiquement :\n' +
+                  '- Nom et prénom\n' +
+                  '- NISS (numéro de registre national)\n' +
+                  '- Date de naissance\n' +
+                  '- Adresse\n\n' +
+                  '⚙️ Configuration middleware en cours de développement...');
+
+            // TODO: Integrate with Belgium eID middleware
+            // This would use the Belgium eID JavaScript library to read card data
+            // Example integration points:
+            // - https://github.com/Fedict/eid-mw (official Belgium eID middleware)
+            // - Web extension or native messaging for card reader access
+
+            // Mock data for demonstration (REMOVE IN PRODUCTION)
+            if (confirm('Utiliser des données de test pour démonstration ?')) {
+                const form = document.getElementById('newPatientForm');
+                form.first_name.value = 'Jean';
+                form.last_name.value = 'Dupont';
+                form.niss.value = '85051822334';
+                form.date_of_birth.value = '1985-05-18';
+                form.address.value = 'Rue de la Loi 123, 1000 Bruxelles';
+
+                alert('✅ Données eID chargées (TEST)\n\nVeuillez vérifier et compléter les informations manquantes.');
             }
         }
 
