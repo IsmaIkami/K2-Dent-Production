@@ -3,8 +3,7 @@
 # IMPORTANT: Node.js 22+ required for Supabase WebSocket support
 
 [phases.setup]
-nixPkgs = ["nodejs-22_x"]
-nixLibs = []
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
 cmds = [
