@@ -1229,9 +1229,9 @@
                 date_of_birth: formData.get('date_of_birth'),
                 email: formData.get('email') || null,
                 phone: formData.get('phone') || null,
-                address: formData.get('address') || null,
+                address_street: formData.get('address') || null,
                 mutuelle_code: formData.get('mutuelle_code') || null,
-                is_bim: formData.get('is_bim') === 'true'
+                bim: formData.get('is_bim') === 'true'
             };
 
             try {
