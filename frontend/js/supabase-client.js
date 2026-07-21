@@ -35,8 +35,8 @@ const SUPABASE_CONFIG = {
   }
 };
 
-// Initialize Supabase client
-let supabase = null;
+// Initialize Supabase client (renamed to avoid Safari error with global 'supabase')
+let supabaseClient = null;
 
 /**
  * Initialize Supabase connection
@@ -49,7 +49,7 @@ function initSupabase() {
   }
 
   try {
-    supabase = window.supabase.createClient(
+    supabaseClient = window.supabase.createClient(
       SUPABASE_CONFIG.url,
       SUPABASE_CONFIG.anonKey,
       SUPABASE_CONFIG.options
@@ -78,7 +78,7 @@ const DB = {
    */
   async getAllPatients() {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('patients')
         .select('*')
         .order('last_name', { ascending: true });
@@ -98,7 +98,7 @@ const DB = {
    */
   async getPatient(id) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('patients')
         .select('*')
         .eq('id', id)
@@ -119,7 +119,7 @@ const DB = {
    */
   async getPatientByNISS(niss) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('patients')
         .select('*')
         .eq('niss', niss)
@@ -142,7 +142,7 @@ const DB = {
     try {
       if (patient.id) {
         // Update existing
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('patients')
           .update(patient)
           .eq('id', patient.id)
@@ -153,7 +153,7 @@ const DB = {
         return data;
       } else {
         // Create new
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('patients')
           .insert([patient])
           .select()
@@ -174,7 +174,7 @@ const DB = {
    */
   async deletePatient(id) {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('patients')
         .delete()
         .eq('id', id);
@@ -193,7 +193,7 @@ const DB = {
    */
   async searchPatients(query) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('patients')
         .select('*')
         .or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,niss.ilike.%${query}%`)
@@ -223,7 +223,7 @@ const DB = {
    */
   async saveAnamnesis(patientId, content, type = 'AI', transcription = null, duration = null) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('anamnesis')
         .insert([{
           patient_id: patientId,
@@ -250,7 +250,7 @@ const DB = {
    */
   async getPatientAnamnesis(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('anamnesis')
         .select('*')
         .eq('patient_id', patientId)
@@ -271,7 +271,7 @@ const DB = {
    */
   async getLatestAnamnesis(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('anamnesis')
         .select('*')
         .eq('patient_id', patientId)
@@ -299,7 +299,7 @@ const DB = {
    */
   async addTimelineEvent(patientId, event) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('timeline_events')
         .insert([{
           patient_id: patientId,
@@ -328,7 +328,7 @@ const DB = {
    */
   async getPatientTimeline(patientId, limit = 100) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('timeline_events')
         .select('*')
         .eq('patient_id', patientId)
@@ -354,7 +354,7 @@ const DB = {
    */
   async getDentalChart(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('dental_charts')
         .select('*')
         .eq('patient_id', patientId)
@@ -382,7 +382,7 @@ const DB = {
    */
   async saveDentalChart(patientId, chartData) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('dental_charts')
         .upsert({
           patient_id: patientId,
@@ -409,7 +409,7 @@ const DB = {
    */
   async saveToothTreatment(treatment) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('tooth_treatments')
         .insert([treatment])
         .select()
@@ -430,7 +430,7 @@ const DB = {
    */
   async getPatientTreatments(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('tooth_treatments')
         .select('*')
         .eq('patient_id', patientId)
@@ -455,7 +455,7 @@ const DB = {
    */
   async saveINAMIAct(act) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('inami_acts')
         .insert([act])
         .select()
@@ -476,7 +476,7 @@ const DB = {
    */
   async getPatientINAMIActs(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('inami_acts')
         .select('*')
         .eq('patient_id', patientId)
@@ -497,7 +497,7 @@ const DB = {
    */
   async getAllINAMIActs(limit = 100) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('inami_acts')
         .select(`
           *,
@@ -529,7 +529,7 @@ const DB = {
    */
   async savePrescription(prescription) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('prescriptions')
         .insert([prescription])
         .select()
@@ -550,7 +550,7 @@ const DB = {
    */
   async getPatientPrescriptions(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('prescriptions')
         .select('*')
         .eq('patient_id', patientId)
@@ -570,7 +570,7 @@ const DB = {
    */
   async getAllPrescriptions() {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('prescriptions')
         .select(`
           *,
@@ -605,7 +605,7 @@ const DB = {
    */
   async saveCertificate(certificate) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('certificates')
         .insert([certificate])
         .select()
@@ -626,7 +626,7 @@ const DB = {
    */
   async getPatientCertificates(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('certificates')
         .select('*')
         .eq('patient_id', patientId)
@@ -653,7 +653,7 @@ const DB = {
     try {
       if (appointment.id) {
         // Update
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('appointments')
           .update(appointment)
           .eq('id', appointment.id)
@@ -664,7 +664,7 @@ const DB = {
         return data;
       } else {
         // Create
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('appointments')
           .insert([appointment])
           .select()
@@ -686,7 +686,7 @@ const DB = {
    */
   async getAppointmentsByDate(date) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('appointments')
         .select(`
           *,
@@ -715,7 +715,7 @@ const DB = {
    */
   async getPatientAppointments(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('appointments')
         .select('*')
         .eq('patient_id', patientId)
@@ -749,7 +749,7 @@ const DB = {
    */
   async saveXray(xray) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('xrays')
         .insert([xray])
         .select()
@@ -770,7 +770,7 @@ const DB = {
    */
   async getPatientXrays(patientId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('xrays')
         .select('*')
         .eq('patient_id', patientId)
@@ -795,9 +795,9 @@ const DB = {
   async getDashboardStats() {
     try {
       const [patientsResult, appointmentsResult, actsResult] = await Promise.all([
-        supabase.from('patients').select('*', { count: 'exact', head: true }),
-        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('appointment_date', new Date().toISOString().split('T')[0]),
-        supabase.from('inami_acts').select('*', { count: 'exact', head: true }).gte('act_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        supabaseClient.from('patients').select('*', { count: 'exact', head: true }),
+        supabaseClient.from('appointments').select('*', { count: 'exact', head: true }).eq('appointment_date', new Date().toISOString().split('T')[0]),
+        supabaseClient.from('inami_acts').select('*', { count: 'exact', head: true }).gte('act_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
       ]);
 
       return {
@@ -826,7 +826,7 @@ const Realtime = {
    * @param {function} callback - Called when patient data changes
    */
   subscribeToPatients(callback) {
-    return supabase
+    return supabaseClient
       .channel('patients-changes')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'patients' },
@@ -841,7 +841,7 @@ const Realtime = {
    */
   subscribeToTodaysAppointments(callback) {
     const today = new Date().toISOString().split('T')[0];
-    return supabase
+    return supabaseClient
       .channel('appointments-today')
       .on('postgres_changes',
         {
@@ -860,7 +860,7 @@ const Realtime = {
    * @param {Object} subscription - Subscription object
    */
   unsubscribe(subscription) {
-    return supabase.removeChannel(subscription);
+    return supabaseClient.removeChannel(subscription);
   }
 };
 
