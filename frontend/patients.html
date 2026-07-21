@@ -546,14 +546,14 @@
         }
     </style>
 
-    <!-- K2 Dent Configuration (MUST load first) -->
-    <script src="config.js"></script>
+    <!-- K2 Dent Configuration (MUST load first, no cache) -->
+    <script src="config.js?v=20260721"></script>
 
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- K2 Dent Supabase Integration -->
-    <script src="js/supabase-client.js"></script>
+    <script src="js/supabase-client.js?v=20260721"></script>
 </head>
 <body>
     <div class="app-container">
@@ -928,6 +928,11 @@
                     // Wait a bit for config.js to load
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
+
+                // Debug configuration
+                console.log('🔍 DEBUG - window.K2_CONFIG:', window.K2_CONFIG);
+                console.log('🔍 DEBUG - SUPABASE_URL:', window.K2_CONFIG?.SUPABASE_URL);
+                console.log('🔍 DEBUG - ANON_KEY length:', window.K2_CONFIG?.SUPABASE_ANON_KEY?.length);
 
                 supabaseInitialized = initSupabase();
                 console.log('Supabase init result:', supabaseInitialized);
