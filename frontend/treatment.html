@@ -1418,12 +1418,12 @@
         document.addEventListener('DOMContentLoaded', async function() {
             // Wait for Supabase client to be ready
             let attempts = 0;
-            while (!window.window.supabaseClient && attempts < 50) {
+            while (!window.supabaseClient && attempts < 50) {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 attempts++;
             }
 
-            if (!window.window.supabaseClient) {
+            if (!window.supabaseClient) {
                 console.error('❌ Supabase client not available after waiting');
                 showNotification('Erreur: Impossible de se connecter à la base de données', 'error');
                 return;
@@ -1444,11 +1444,11 @@
         // Load Patients
         async function loadPatients() {
             try {
-                if (!window.window.supabaseClient) {
+                if (!window.supabaseClient) {
                     throw new Error('Supabase client not initialized');
                 }
 
-                const { data, error } = await window.window.supabaseClient
+                const { data, error } = await window.supabaseClient
                     .from('patients')
                     .select('*')
                     .order('last_name', { ascending: true });
