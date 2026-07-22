@@ -287,6 +287,75 @@
             text-decoration: underline;
         }
 
+        /* Sign Up Section */
+        .signup-section {
+            text-align: center;
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(0, 102, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 102, 255, 0.2);
+        }
+
+        .signup-section p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .signup-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--secondary), #00A578);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 200, 150, 0.3);
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 200, 150, 0.4);
+        }
+
+        /* Divider */
+        .divider-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 32px 0 24px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider-text {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 0 8px;
+        }
+
+        /* Quick Login Title */
+        .quick-login-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .quick-login-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* Profile Grid */
         .profile-grid {
             display: grid;
@@ -467,15 +536,70 @@
             </div>
 
             <div class="welcome-text">
-                <h2>Sélectionnez votre profil</h2>
-                <p>Choisissez votre profil et entrez le mot de passe</p>
+                <h2>Bienvenue</h2>
+                <p>Connectez-vous à votre espace professionnel</p>
             </div>
 
             <div class="error-message" id="errorMessage">
-                ❌ Mot de passe incorrect. Veuillez réessayer.
+                ❌ Identifiants incorrects. Veuillez réessayer.
             </div>
 
-            <!-- Profile Selection Grid -->
+            <!-- Classic Login Form -->
+            <form id="classicLoginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Identifiant</label>
+                    <input
+                        type="text"
+                        id="username"
+                        class="form-input"
+                        placeholder="Votre identifiant"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Mot de passe</label>
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-input"
+                            placeholder="••••••••"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span>Se connecter</span>
+                </button>
+            </form>
+
+            <!-- Sign Up Button -->
+            <div class="signup-section">
+                <p>Pas encore de compte ?</p>
+                <a href="#signup" class="signup-btn" onclick="alert('Contactez-nous à contact@dentalcockpit.pro pour créer un compte'); return false;">
+                    S'inscrire
+                </a>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider-section">
+                <div class="divider-line"></div>
+                <div class="divider-text">OU</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Quick Login with Profiles -->
+            <div class="quick-login-title">
+                <p>Connexion rapide</p>
+            </div>
+
             <div class="profile-grid" id="profileGrid">
                 <div class="profile-card" data-username="Dr. Sialyen" data-role="Dentiste Principal">
                     <div class="profile-avatar">👨‍⚕️</div>
@@ -509,39 +633,6 @@
                 </div>
             </div>
 
-            <!-- Password Form (hidden initially) -->
-            <form id="loginForm" style="display: none;">
-                <div class="selected-profile-info" id="selectedProfileInfo">
-                    <div class="selected-avatar" id="selectedAvatar"></div>
-                    <div>
-                        <div class="selected-name" id="selectedName"></div>
-                        <div class="selected-role" id="selectedRole"></div>
-                    </div>
-                    <button type="button" class="change-profile-btn" onclick="changeProfile()">Changer</button>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="password">Mot de passe</label>
-                    <div class="password-wrapper">
-                        <input
-                            type="password"
-                            id="password"
-                            class="form-input"
-                            placeholder="••••••••"
-                            autocomplete="current-password"
-                            required
-                        >
-                        <button type="button" class="toggle-password" onclick="togglePassword()">
-                            👁️
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="login-btn" id="loginBtn">
-                    <span>Se connecter</span>
-                </button>
-            </form>
-
             <div class="footer-text">
                 <p>Développé par <a href="mailto:is.sialyen@gmail.com">Ismail Sialyen</a></p>
                 <p style="margin-top: 8px; font-size: 11px;">Powered by RCE AI Engine</p>
@@ -553,66 +644,6 @@
         // Configuration - Tous les profils utilisent le même mot de passe
         const MASTER_PASSWORD = 'dentalcockpitk2';
         const REDIRECT_URL = 'frontend/dashboard.html';
-
-        let selectedUsername = null;
-        let selectedAvatar = null;
-        let selectedRole = null;
-
-        // Profile selection handler
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileCards = document.querySelectorAll('.profile-card');
-            const profileGrid = document.getElementById('profileGrid');
-            const loginForm = document.getElementById('loginForm');
-
-            profileCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Remove previous selection
-                    profileCards.forEach(c => c.classList.remove('selected'));
-
-                    // Select this card
-                    this.classList.add('selected');
-
-                    // Get profile data
-                    selectedUsername = this.dataset.username;
-                    selectedRole = this.dataset.role;
-                    selectedAvatar = this.querySelector('.profile-avatar').textContent;
-
-                    // Show password form
-                    profileGrid.style.display = 'none';
-                    loginForm.style.display = 'block';
-
-                    // Update selected profile info
-                    document.getElementById('selectedAvatar').textContent = selectedAvatar;
-                    document.getElementById('selectedName').textContent = selectedUsername;
-                    document.getElementById('selectedRole').textContent = selectedRole;
-
-                    // Focus on password field
-                    setTimeout(() => {
-                        document.getElementById('password').focus();
-                    }, 100);
-                });
-            });
-        });
-
-        // Change profile function
-        function changeProfile() {
-            const profileGrid = document.getElementById('profileGrid');
-            const loginForm = document.getElementById('loginForm');
-            const errorMessage = document.getElementById('errorMessage');
-
-            // Hide form, show profiles
-            loginForm.style.display = 'none';
-            profileGrid.style.display = 'grid';
-
-            // Clear password and errors
-            document.getElementById('password').value = '';
-            errorMessage.classList.remove('show');
-
-            // Clear selection
-            selectedUsername = null;
-            selectedAvatar = null;
-            selectedRole = null;
-        }
 
         // Toggle password visibility
         function togglePassword() {
@@ -628,10 +659,11 @@
             }
         }
 
-        // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Handle classic form submission
+        document.getElementById('classicLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
             const loginBtn = document.getElementById('loginBtn');
@@ -647,9 +679,9 @@
                 if (password === MASTER_PASSWORD) {
                     // Success - Store session
                     sessionStorage.setItem('dental_authenticated', 'true');
-                    sessionStorage.setItem('dental_user', selectedUsername);
-                    sessionStorage.setItem('dental_user_role', selectedRole);
-                    sessionStorage.setItem('dental_user_avatar', selectedAvatar);
+                    sessionStorage.setItem('dental_user', username);
+                    sessionStorage.setItem('dental_user_role', 'Utilisateur');
+                    sessionStorage.setItem('dental_user_avatar', '👤');
                     sessionStorage.setItem('dental_login_time', new Date().toISOString());
 
                     // Redirect to dashboard
@@ -659,15 +691,53 @@
                     loginBtn.classList.remove('loading');
                     errorMessage.classList.add('show');
 
-                    // Shake the password field
+                    // Shake the input fields
+                    document.getElementById('username').style.animation = 'shake 0.5s';
                     document.getElementById('password').style.animation = 'shake 0.5s';
 
                     setTimeout(() => {
+                        document.getElementById('username').style.animation = '';
                         document.getElementById('password').style.animation = '';
                     }, 500);
                 }
             }, 800);
         });
+
+        // Handle profile quick login
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileCards = document.querySelectorAll('.profile-card');
+
+            profileCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const username = this.dataset.username;
+                    const role = this.dataset.role;
+                    const avatar = this.querySelector('.profile-avatar').textContent;
+
+                    // Prompt for password
+                    const password = prompt(`🔐 Mot de passe pour ${username}:`);
+
+                    if (password === null) return; // User cancelled
+
+                    if (password === MASTER_PASSWORD) {
+                        // Success - Store session
+                        sessionStorage.setItem('dental_authenticated', 'true');
+                        sessionStorage.setItem('dental_user', username);
+                        sessionStorage.setItem('dental_user_role', role);
+                        sessionStorage.setItem('dental_user_avatar', avatar);
+                        sessionStorage.setItem('dental_login_time', new Date().toISOString());
+
+                        // Redirect to dashboard
+                        window.location.href = REDIRECT_URL;
+                    } else {
+                        // Error
+                        alert('❌ Mot de passe incorrect');
+                    }
+                });
+            });
+        });
+
+        // Auto-focus on username field
+        document.getElementById('username').focus();
     </script>
 </body>
 </html>
