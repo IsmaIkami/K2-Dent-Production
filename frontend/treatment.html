@@ -13,56 +13,90 @@
         }
 
         :root {
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --secondary-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --dark-bg: #0f172a;
-            --card-bg: #1e293b;
-            --card-hover: #334155;
-            --border-color: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --success-color: #22c55e;
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --purple: #8B5CF6;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1E2740;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #2A3347;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF1;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-main);
             color: var(--text-primary);
             overflow-x: hidden;
         }
 
-        .container {
-            display: flex;
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
 
         /* Sidebar */
         .sidebar {
-            width: 260px;
-            background: var(--card-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 20px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
             position: fixed;
             height: 100vh;
+            width: 280px;
             overflow-y: auto;
-            z-index: 100;
+        }
+
+        .sidebar-content {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 30px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding: 8px 12px;
+            margin-bottom: 32px;
         }
 
-        .nav-menu {
-            list-style: none;
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 19px;
+            font-weight: 700;
         }
 
         .nav-section {
@@ -93,20 +127,24 @@
         }
 
         .nav-item:hover {
-            background: var(--card-hover);
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
 
         .nav-item.active {
-            background: var(--primary-color);
-            color: white;
+            background: var(--primary);
+            color: var(--text-primary);
         }
 
         /* Main Content */
         .main-content {
-            flex: 1;
-            margin-left: 260px;
+            margin-left: 280px;
             padding: 30px;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
         }
 
         .header {
@@ -143,32 +181,32 @@
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background: var(--primary);
             color: white;
         }
 
         .btn-primary:hover {
-            background: var(--primary-hover);
+            background: var(--primary-dark);
             transform: translateY(-2px);
         }
 
         .btn-secondary {
-            background: var(--card-bg);
+            background: var(--bg-card);
             color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: var(--card-hover);
+            background: var(--bg-hover);
         }
 
         .btn-success {
-            background: var(--success-color);
+            background: var(--success);
             color: white;
         }
 
         .btn-danger {
-            background: var(--danger-color);
+            background: var(--danger);
             color: white;
         }
 
@@ -180,8 +218,8 @@
         .search-box {
             width: 100%;
             padding: 14px 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 14px;
@@ -204,15 +242,15 @@
 
         /* Cards */
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px;
             transition: all 0.3s ease;
         }
 
         .card:hover {
-            border-color: var(--primary-color);
+            border-color: var(--primary);
             transform: translateY(-2px);
         }
 
@@ -233,8 +271,8 @@
 
         /* Dental Chart */
         .dental-chart {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
@@ -259,7 +297,7 @@
         .tooth {
             aspect-ratio: 1;
             border-radius: 8px;
-            border: 2px solid var(--border-color);
+            border: 2px solid var(--border);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -326,7 +364,7 @@
             flex-wrap: wrap;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
         }
 
         .legend-item {
@@ -344,8 +382,8 @@
 
         /* AI Recommendations */
         .ai-section {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid var(--primary-color);
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--primary);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
@@ -361,7 +399,7 @@
         .ai-icon {
             width: 32px;
             height: 32px;
-            background: var(--primary-color);
+            background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -375,7 +413,7 @@
 
         .recommendation-item {
             background: rgba(30, 41, 59, 0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 12px;
@@ -386,7 +424,7 @@
         }
 
         .recommendation-item:hover {
-            border-color: var(--primary-color);
+            border-color: var(--primary);
             transform: translateX(4px);
         }
 
@@ -396,7 +434,7 @@
 
         .recommendation-tooth {
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary);
             margin-bottom: 4px;
         }
 
@@ -438,8 +476,8 @@
 
         /* Treatment Plan */
         .phase-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
@@ -464,7 +502,7 @@
         .phase-total {
             font-size: 18px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
         .treatment-list {
@@ -473,7 +511,7 @@
 
         .treatment-item {
             background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 8px;
@@ -498,7 +536,7 @@
 
         .treatment-price {
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary);
             margin-right: 12px;
         }
 
@@ -512,7 +550,7 @@
             height: 32px;
             border: none;
             border-radius: 6px;
-            background: var(--card-hover);
+            background: var(--bg-hover);
             color: var(--text-primary);
             cursor: pointer;
             display: flex;
@@ -522,14 +560,14 @@
         }
 
         .icon-btn:hover {
-            background: var(--primary-color);
+            background: var(--primary);
             color: white;
         }
 
         /* Financial Summary */
         .financial-summary {
-            background: linear-gradient(135deg, var(--card-bg), rgba(59, 130, 246, 0.05));
-            border: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--bg-card), rgba(0, 102, 255, 0.05));
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
@@ -540,14 +578,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
         }
 
         .financial-row:last-child {
             border-bottom: none;
             margin-top: 8px;
             padding-top: 16px;
-            border-top: 2px solid var(--primary-color);
+            border-top: 2px solid var(--primary);
         }
 
         .financial-label {
@@ -568,7 +606,7 @@
 
         .financial-row:last-child .financial-value {
             font-size: 24px;
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
         /* Modal */
@@ -591,8 +629,8 @@
         }
 
         .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 32px;
             max-width: 600px;
@@ -630,7 +668,7 @@
             height: 36px;
             border: none;
             border-radius: 50%;
-            background: var(--card-hover);
+            background: var(--bg-hover);
             color: var(--text-primary);
             cursor: pointer;
             font-size: 20px;
@@ -640,7 +678,7 @@
         }
 
         .close-btn:hover {
-            background: var(--danger-color);
+            background: var(--danger);
         }
 
         .form-group {
@@ -660,7 +698,7 @@
             width: 100%;
             padding: 12px;
             background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 14px;
@@ -670,7 +708,7 @@
         .form-select:focus,
         .form-textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--primary);
         }
 
         .form-textarea {
@@ -693,7 +731,7 @@
 
         .patient-item {
             background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 12px;
@@ -705,13 +743,13 @@
         }
 
         .patient-item:hover {
-            border-color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.1);
         }
 
         .patient-item.selected {
-            border-color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.2);
         }
 
         .patient-info h4 {
@@ -747,8 +785,8 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--border-color);
-            border-top-color: var(--primary-color);
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -762,8 +800,8 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px 20px;
             min-width: 300px;
@@ -787,15 +825,15 @@
         }
 
         .notification.success {
-            border-left: 4px solid var(--success-color);
+            border-left: 4px solid var(--success);
         }
 
         .notification.error {
-            border-left: 4px solid var(--danger-color);
+            border-left: 4px solid var(--danger);
         }
 
         .notification.warning {
-            border-left: 4px solid var(--warning-color);
+            border-left: 4px solid var(--warning);
         }
 
         /* Status Badge */
@@ -830,7 +868,7 @@
         /* Pricing Breakdown */
         .pricing-breakdown {
             background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 16px;
             margin-top: 16px;
@@ -845,8 +883,8 @@
 
         .pricing-row.highlight {
             font-weight: 600;
-            color: var(--primary-color);
-            border-top: 1px solid var(--border-color);
+            color: var(--primary);
+            border-top: 1px solid var(--border);
             margin-top: 8px;
             padding-top: 12px;
         }
@@ -890,8 +928,8 @@
         /* Tooltip */
         .tooltip {
             position: absolute;
-            background: var(--dark-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-main);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;
             font-size: 12px;
@@ -929,30 +967,30 @@
         .code-selector {
             max-height: 300px;
             overflow-y: auto;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 8px;
             margin-top: 12px;
         }
 
         .code-item {
             padding: 12px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .code-item:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(0, 102, 255, 0.1);
         }
 
         .code-item.selected {
-            background: rgba(59, 130, 246, 0.2);
-            border-left: 4px solid var(--primary-color);
+            background: rgba(0, 102, 255, 0.2);
+            border-left: 4px solid var(--primary);
         }
 
         .code-number {
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary);
             margin-bottom: 4px;
         }
 
@@ -970,13 +1008,16 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                DentalCockpit Pro
-            </div>
-            <nav>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="logo">
+                    <div class="logo-icon">🦷</div>
+                    <div class="logo-text">DentalCockpit Pro</div>
+                </div>
+
+                <nav>
                 <div class="nav-section">
                     <div class="nav-title">Navigation</div>
                     <a href="dashboard.html" class="nav-item">
@@ -1077,6 +1118,17 @@
                     </a>
                 </div>
             </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div style="text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Design by</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Ismail Sialyen</div>
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Powered by</div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 2px;">RCE</div>
+                    <div style="font-size: 8px; color: var(--text-secondary); margin-top: 2px;">AI Engine</div>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -1178,7 +1230,7 @@
                     </div>
                     <div class="financial-row">
                         <span class="financial-label">Remboursement mutuelle</span>
-                        <span class="financial-value" id="reimbursedAmount" style="color: var(--success-color);">0.00 €</span>
+                        <span class="financial-value" id="reimbursedAmount" style="color: var(--success);">0.00 €</span>
                     </div>
                     <div class="financial-row">
                         <span class="financial-label">Part patient</span>
@@ -1248,7 +1300,7 @@
                     </div>
                     <div class="pricing-row">
                         <span>Remboursement mutuelle</span>
-                        <span id="breakdownReimb" style="color: var(--success-color);">0.00 €</span>
+                        <span id="breakdownReimb" style="color: var(--success);">0.00 €</span>
                     </div>
                     <div class="pricing-row highlight">
                         <span>Part patient</span>
@@ -1489,7 +1541,7 @@
                     ${patient.allergies ? `
                     <div style="grid-column: span 3;">
                         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">⚠️ Allergies</div>
-                        <div style="font-weight: 600; color: var(--danger-color);">${patient.allergies}</div>
+                        <div style="font-weight: 600; color: var(--danger);">${patient.allergies}</div>
                     </div>
                     ` : ''}
                 </div>
@@ -1679,7 +1731,7 @@
 
                 const codeInfo = INAMI_CODES[rec.code];
                 const contraIndication = hasAllergies ?
-                    `<div style="color: var(--warning-color); font-size: 11px; margin-top: 4px;">⚠️ Vérifier contre-indications (allergies)</div>` : '';
+                    `<div style="color: var(--warning); font-size: 11px; margin-top: 4px;">⚠️ Vérifier contre-indications (allergies)</div>` : '';
 
                 item.innerHTML = `
                     <div class="recommendation-info">
