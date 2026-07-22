@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "name": "dentalcockpit-pro",
+  "buildCommand": "echo 'No build needed for static site'",
+  "outputDirectory": ".",
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "/frontend/dashboard.html"
+    },
+    {
+      "src": "/patients",
+      "dest": "/frontend/patients.html"
+    },
+    {
+      "src": "/calendar",
+      "dest": "/frontend/calendar.html"
+    },
+    {
+      "src": "/treatment",
+      "dest": "/frontend/treatment.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}
