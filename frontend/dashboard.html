@@ -2894,8 +2894,17 @@
         async function loadTodaysPatients() {
             const today = new Date().toISOString().split('T')[0];
             console.log('🔍 Loading appointments for:', today);
+            console.log('🔍 window.supabaseClient:', window.supabaseClient);
+            console.log('🔍 typeof window.supabaseClient:', typeof window.supabaseClient);
+
+            if (!window.supabaseClient) {
+                console.error('❌ window.supabaseClient is null or undefined!');
+                displayTodaysPatients([]);
+                return;
+            }
 
             try {
+                console.log('🔄 Starting query...');
                 // First, let's check ALL appointments to debug
                 const { data: allAppts, error: allError } = await window.supabaseClient
                     .from('appointments')
@@ -2904,6 +2913,7 @@
                     .limit(10);
 
                 console.log('📊 Latest 10 appointments in DB:', allAppts);
+                if (allError) console.error('❌ Error fetching all appointments:', allError);
 
                 const { data, error } = await window.supabaseClient
                     .from('appointments')
