@@ -2896,6 +2896,15 @@
             console.log('🔍 Loading appointments for:', today);
 
             try {
+                // First, let's check ALL appointments to debug
+                const { data: allAppts, error: allError } = await window.supabaseClient
+                    .from('appointments')
+                    .select('id, appointment_date, start_time, patient_id')
+                    .order('appointment_date', { ascending: false })
+                    .limit(10);
+
+                console.log('📊 Latest 10 appointments in DB:', allAppts);
+
                 const { data, error } = await window.supabaseClient
                     .from('appointments')
                     .select(`
@@ -2908,6 +2917,12 @@
                 if (error) throw error;
 
                 console.log('✅ Today appointments loaded:', data);
+                console.log('📈 Count:', data?.length || 0);
+
+                if (data && data.length > 0) {
+                    console.log('📋 First appointment:', data[0]);
+                }
+
                 displayTodaysPatients(data || []);
             } catch (error) {
                 console.error('❌ Error loading today patients:', error);
