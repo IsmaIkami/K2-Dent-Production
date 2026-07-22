@@ -521,11 +521,12 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 16px;
             transition: all 0.3s ease;
         }
 
@@ -536,6 +537,7 @@
 
         .recommendation-info {
             flex: 1;
+            min-width: 0;
         }
 
         .recommendation-tooth {
@@ -555,11 +557,12 @@
         }
 
         .urgency-badge {
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            margin-right: 12px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .urgency-urgent {
@@ -1184,16 +1187,16 @@
             <!-- Content -->
             <div class="content">
                 <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border);">
                     <div>
-                        <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">🦷 Plan de Traitement</h1>
+                        <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 12px;">🦷 Plan de Traitement</h1>
                         <p style="font-size: 14px; color: var(--text-secondary);">Planification intelligente avec recommandations IA et codes INAMI</p>
                     </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn btn-secondary" onclick="exportToPDF()">
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <button class="btn btn-secondary" onclick="exportToPDF()" style="padding: 14px 24px;">
                             📄 Exporter PDF
                         </button>
-                        <button class="btn btn-primary" onclick="showNewTreatmentModal()">
+                        <button class="btn btn-primary" onclick="showNewTreatmentModal()" style="padding: 14px 24px;">
                             ➕ Nouveau Traitement
                         </button>
                     </div>
@@ -1214,14 +1217,26 @@
 
                 <!-- Selected Patient Section -->
                 <div id="selectedPatientSection" style="display: none;">
-                    <div class="card">
+                    <div class="card" style="margin-bottom: 24px;">
                         <div class="card-header">
-                            <h3 class="card-title">👤 Patient Sélectionné</h3>
+                            <h3 class="card-title">👤 Informations Patient</h3>
                             <button class="btn btn-secondary" onclick="clearPatientSelection()">
                                 Changer de patient
                             </button>
                         </div>
                         <div id="selectedPatientInfo"></div>
+                    </div>
+
+                    <!-- Patient Treatment History -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h3 class="card-title">📋 Historique des Traitements</h3>
+                        </div>
+                        <div id="patientHistory" style="padding: 20px;">
+                            <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                                Chargement de l'historique...
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Dental Chart -->
@@ -1556,26 +1571,55 @@
             // Display patient info
             const infoElement = document.getElementById('selectedPatientInfo');
             const isBIM = patient.bim_status === true;
+            const age = patient.date_of_birth ? new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() : null;
+            const birthDate = patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('fr-BE') : 'Non renseignée';
+
             infoElement.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px;">
                     <div>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Patient</div>
-                        <div style="font-weight: 600;">${patient.first_name} ${patient.last_name}</div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Patient</div>
+                        <div style="font-weight: 600; font-size: 16px;">${patient.first_name} ${patient.last_name}</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Mutuelle</div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Âge / Date de naissance</div>
+                        <div style="font-weight: 600;">${age ? age + ' ans' : 'N/A'} (${birthDate})</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Téléphone</div>
+                        <div style="font-weight: 600;">${patient.phone || patient.mobile || 'Non renseigné'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Email</div>
+                        <div style="font-weight: 600; font-size: 14px;">${patient.email || 'Non renseigné'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Mutuelle</div>
                         <div style="font-weight: 600;">${patient.mutuelle || 'Non renseignée'}</div>
                     </div>
                     <div>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Statut BIM</div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">N° National</div>
+                        <div style="font-weight: 600; font-family: monospace;">${patient.national_number || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Statut BIM</div>
                         <div style="font-weight: 600; color: ${isBIM ? 'var(--success)' : 'var(--text-secondary)'};">
-                            ${isBIM ? '✓ Actif' : '✗ Non actif'}
+                            ${isBIM ? '✓ Actif (+15% remb.)' : '✗ Non actif'}
                         </div>
                     </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Adresse</div>
+                        <div style="font-weight: 600; font-size: 13px;">${patient.address || 'Non renseignée'}</div>
+                    </div>
                     ${patient.allergies ? `
-                    <div style="grid-column: span 3;">
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">⚠️ Allergies</div>
-                        <div style="font-weight: 600; color: var(--danger);">${patient.allergies}</div>
+                    <div style="grid-column: span 4; background: rgba(255, 59, 48, 0.1); border-left: 4px solid var(--danger); padding: 16px; border-radius: 8px; margin-top: 8px;">
+                        <div style="font-size: 12px; color: var(--danger); margin-bottom: 6px; font-weight: 700;">⚠️ ALLERGIES IMPORTANTES</div>
+                        <div style="font-weight: 600; color: var(--danger); font-size: 14px;">${patient.allergies}</div>
+                    </div>
+                    ` : ''}
+                    ${patient.medical_notes ? `
+                    <div style="grid-column: span 4; background: rgba(255, 149, 0, 0.1); border-left: 4px solid var(--warning); padding: 16px; border-radius: 8px; margin-top: 8px;">
+                        <div style="font-size: 12px; color: var(--warning); margin-bottom: 6px; font-weight: 700;">📋 NOTES MÉDICALES</div>
+                        <div style="font-weight: 500; color: var(--text-primary); font-size: 13px;">${patient.medical_notes}</div>
                     </div>
                     ` : ''}
                 </div>
@@ -1583,6 +1627,7 @@
 
             // Load patient treatments
             await loadPatientTreatments(patient.id);
+            await displayPatientHistory(patient.id);
             updateDentalChart();
             generateAIRecommendations();
             displayTreatmentPhases();
@@ -1613,6 +1658,119 @@
             } catch (error) {
                 console.error('Error loading treatments:', error);
                 currentTreatments = [];
+            }
+        }
+
+        // Display Patient Treatment History
+        async function displayPatientHistory(patientId) {
+            const historyElement = document.getElementById('patientHistory');
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('tooth_treatments')
+                    .select('*')
+                    .eq('patient_id', patientId)
+                    .order('treatment_date', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    historyElement.innerHTML = `
+                        <div style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+                            <div style="font-size: 16px; font-weight: 500;">Aucun traitement antérieur</div>
+                            <div style="font-size: 13px; margin-top: 8px;">Ce patient n'a pas encore d'historique de traitements</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Group by status
+                const completed = data.filter(t => t.status === 'completed');
+                const inProgress = data.filter(t => t.status === 'in_progress');
+                const planned = data.filter(t => t.status === 'planned');
+                const cancelled = data.filter(t => t.status === 'cancelled');
+
+                const totalSpent = completed.reduce((sum, t) => sum + (parseFloat(t.price_total) || 0), 0);
+                const totalReimbursed = completed.reduce((sum, t) => sum + (parseFloat(t.price_insurance) || 0), 0);
+
+                let historyHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                        <div style="background: rgba(52, 199, 89, 0.1); border: 1px solid rgba(52, 199, 89, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Traitements terminés</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--success);">${completed.length}</div>
+                        </div>
+                        <div style="background: rgba(0, 102, 255, 0.1); border: 1px solid rgba(0, 102, 255, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">En cours</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--primary);">${inProgress.length}</div>
+                        </div>
+                        <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Total dépensé</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--purple);">${totalSpent.toFixed(2)} €</div>
+                        </div>
+                        <div style="background: rgba(0, 200, 150, 0.1); border: 1px solid rgba(0, 200, 150, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Remboursé</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--secondary);">${totalReimbursed.toFixed(2)} €</div>
+                        </div>
+                    </div>
+
+                    <div style="max-height: 400px; overflow-y: auto;">
+                `;
+
+                // Display treatments chronologically
+                data.forEach(treatment => {
+                    const statusColors = {
+                        'completed': 'var(--success)',
+                        'in_progress': 'var(--primary)',
+                        'planned': 'var(--warning)',
+                        'cancelled': 'var(--text-secondary)'
+                    };
+                    const statusLabels = {
+                        'completed': '✓ Terminé',
+                        'in_progress': '⏳ En cours',
+                        'planned': '📅 Planifié',
+                        'cancelled': '✗ Annulé'
+                    };
+
+                    historyHTML += `
+                        <div style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">
+                                        🦷 Dent ${treatment.tooth_number || 'Multiple'} - ${treatment.treatment_type}
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">
+                                        INAMI: ${treatment.inami_code} | 📅 ${formatDate(treatment.treatment_date)}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 11px; padding: 4px 10px; background: ${statusColors[treatment.status]}20; color: ${statusColors[treatment.status]}; border-radius: 12px; margin-bottom: 6px; font-weight: 600;">
+                                        ${statusLabels[treatment.status]}
+                                    </div>
+                                    <div style="font-size: 16px; font-weight: 700; color: var(--primary);">
+                                        ${parseFloat(treatment.price_total).toFixed(2)} €
+                                    </div>
+                                </div>
+                            </div>
+                            ${treatment.notes ? `
+                            <div style="font-size: 12px; color: var(--text-secondary); padding: 8px 12px; background: var(--bg-main); border-radius: 6px; margin-top: 8px;">
+                                💬 ${treatment.notes}
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                historyHTML += '</div>';
+                historyElement.innerHTML = historyHTML;
+
+            } catch (error) {
+                console.error('Error loading patient history:', error);
+                historyElement.innerHTML = `
+                    <div style="text-align: center; color: var(--danger); padding: 20px;">
+                        ❌ Erreur lors du chargement de l'historique
+                    </div>
+                `;
             }
         }
 
