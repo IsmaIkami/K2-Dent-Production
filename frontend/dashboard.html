@@ -1232,6 +1232,30 @@
 
             <!-- Content -->
             <div class="content">
+                <!-- Patients du Jour - Vue Cabinet -->
+                <div class="card" id="todayPatientsSection" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h2 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
+                                📋 Patients du Jour
+                            </h2>
+                            <p style="font-size: 13px; color: var(--text-secondary);">
+                                Rendez-vous d'aujourd'hui avec points d'attention
+                            </p>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.location.href='patients.html'">
+                            ➕ Nouveau Patient
+                        </button>
+                    </div>
+
+                    <div id="todayPatientsList">
+                        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📅</div>
+                            <div style="font-size: 16px;">Chargement des rendez-vous...</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Patient Cockpit Layout -->
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
                     <!-- Patient Info Card -->
@@ -2838,6 +2862,9 @@
                 if (supabaseInitialized) {
                     console.log('✅ K2 Dent Dashboard - Supabase initialized');
 
+                    // Load today's patients list (always visible)
+                    await loadTodaysPatients();
+
                     // Load patient from URL parameter if provided
                     const urlParams = new URLSearchParams(window.location.search);
                     const niss = urlParams.get('niss');
@@ -2851,6 +2878,97 @@
                 console.error('Error initializing Supabase:', error);
             }
         });
+
+        // =================================================================
+        // PATIENTS DU JOUR - VUE CABINET
+        // =================================================================
+
+        async function loadTodaysPatients() {
+            const today = new Date().toISOString().split('T')[0];
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('appointments')
+                    .select(`
+                        *,
+                        patient:patients(*)
+                    `)
+                    .eq('appointment_date', today)
+                    .order('appointment_time', { ascending: true });
+
+                if (error) throw error;
+
+                displayTodaysPatients(data || []);
+            } catch (error) {
+                console.error('Error loading today patients:', error);
+                displayTodaysPatients([]);
+            }
+        }
+
+        function displayTodaysPatients(appointments) {
+            const container = document.getElementById('todayPatientsList');
+
+            if (appointments.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+                        <div style="font-size: 16px; font-weight: 600;">Aucun rendez-vous aujourd'hui</div>
+                        <div style="font-size: 13px; margin-top: 8px;">Profitez-en pour mettre à jour les dossiers patients</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+
+            appointments.forEach(appt => {
+                const patient = appt.patient;
+                if (!patient) return;
+
+                // Calculate risk indicators
+                const risks = [];
+                if (patient.anticoagulant_therapy) risks.push({ icon: '💊', text: 'Anticoagulants', color: 'var(--danger)' });
+                if (patient.heart_disease) risks.push({ icon: '❤️', text: 'Cardiaque', color: 'var(--danger)' });
+                if (patient.diabetes) risks.push({ icon: '🩺', text: 'Diabète', color: 'var(--warning)' });
+                if (patient.smoker) risks.push({ icon: '🚬', text: 'Fumeur', color: 'var(--warning)' });
+                if (patient.hypertension) risks.push({ icon: '💔', text: 'HTA', color: 'var(--warning)' });
+                if (patient.pregnant) risks.push({ icon: '🤰', text: 'Grossesse', color: 'var(--primary)' });
+
+                const riskBadge = risks.length > 0 ?
+                    `<span style="background: rgba(255, 149, 0, 0.2); color: var(--warning); padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">⚠️ ${risks.length} alerte${risks.length > 1 ? 's' : ''}</span>` :
+                    `<span style="background: rgba(52, 199, 89, 0.2); color: var(--success); padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">✓ OK</span>`;
+
+                html += `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;"
+                         onclick="window.location.href='dashboard.html?niss=${patient.niss}'"
+                         onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,102,255,0.15)';"
+                         onmouseout="this.style.borderColor='var(--border)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                        <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
+                            <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+                                ${patient.gender === 'F' ? '👩' : patient.gender === 'M' ? '👨' : '👤'}
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
+                                    ${patient.first_name} ${patient.last_name}
+                                </div>
+                                <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                    <span style="display: flex; align-items: center; gap: 4px;">🕒 ${appt.appointment_time || 'Non défini'}</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;">📞 ${patient.phone || 'N/A'}</span>
+                                    ${risks.length > 0 ? `<span style="color: ${risks[0].color}; font-weight: 500;">${risks[0].icon} ${risks[0].text}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            ${riskBadge}
+                            <div style="font-size: 20px; color: var(--text-secondary);">→</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
 
         // Load patient data from Supabase by NISS
         async function loadPatientByNISS(niss) {

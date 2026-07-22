@@ -3,7 +3,7 @@
 -- ============================================================================
 -- Ajoute des champs structurés pour les données médicales courantes
 -- utilisées dans les cabinets dentaires
--- Version: 1.0 - Safe to re-run (uses IF NOT EXISTS)
+-- Version: 1.1 - Safe to re-run + RLS enabled
 -- ============================================================================
 
 -- Ajouter champs médicaux manquants à la table patients (safe - IF NOT EXISTS)
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS medical_history (
   patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
 
   -- Données médicales structurées
-  allergies TEXT[], -- Array pour faciliter la recherche
+  allergies TEXT[],
   medications TEXT[],
   medical_conditions TEXT[],
   surgical_history TEXT[],
@@ -132,74 +132,39 @@ DECLARE
   v_new_version INTEGER;
   v_new_id UUID;
 BEGIN
-  -- Get latest version
   SELECT id, version INTO v_parent_id, v_new_version
   FROM medical_history
   WHERE patient_id = p_patient_id
   ORDER BY created_at DESC
   LIMIT 1;
 
-  -- Increment version or start at 1
   IF v_new_version IS NULL THEN
     v_new_version := 1;
   ELSE
     v_new_version := v_new_version + 1;
   END IF;
 
-  -- Insert new version
   INSERT INTO medical_history (
-    patient_id,
-    allergies,
-    medications,
-    medical_conditions,
-    surgical_history,
-    dental_concerns,
-    previous_dental_treatments,
-    dental_anxiety_level,
-    brushing_frequency,
-    flossing_frequency,
-    mouthwash_use,
-    practitioner_notes,
-    version,
-    created_by,
-    parent_version_id
+    patient_id, allergies, medications, medical_conditions,
+    surgical_history, dental_concerns, previous_dental_treatments,
+    dental_anxiety_level, brushing_frequency, flossing_frequency,
+    mouthwash_use, practitioner_notes, version,
+    created_by, parent_version_id
   ) VALUES (
-    p_patient_id,
-    p_allergies,
-    p_medications,
-    p_medical_conditions,
-    p_surgical_history,
-    p_dental_concerns,
-    p_previous_dental_treatments,
-    p_dental_anxiety_level,
-    p_brushing_frequency,
-    p_flossing_frequency,
-    p_mouthwash_use,
-    p_practitioner_notes,
-    v_new_version,
-    p_created_by,
-    v_parent_id
+    p_patient_id, p_allergies, p_medications, p_medical_conditions,
+    p_surgical_history, p_dental_concerns, p_previous_dental_treatments,
+    p_dental_anxiety_level, p_brushing_frequency, p_flossing_frequency,
+    p_mouthwash_use, p_practitioner_notes, v_new_version,
+    p_created_by, v_parent_id
   ) RETURNING id INTO v_new_id;
 
-  -- Create timeline event
   INSERT INTO timeline_events (
-    patient_id,
-    type,
-    title,
-    description,
-    badge,
-    related_id,
-    related_type,
-    created_by
+    patient_id, type, title, description, badge,
+    related_id, related_type, created_by
   ) VALUES (
-    p_patient_id,
-    'note',
-    'Mise à jour données médicales',
+    p_patient_id, 'note', 'Mise à jour données médicales',
     'Historique médical mis à jour (version ' || v_new_version || ')',
-    'badge-info',
-    v_new_id,
-    'medical_history',
-    p_created_by
+    'badge-info', v_new_id, 'medical_history', p_created_by
   );
 
   RETURN v_new_id;
@@ -215,19 +180,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Drop trigger if exists, then create
 DROP TRIGGER IF EXISTS update_patients_updated_at ON patients;
 CREATE TRIGGER update_patients_updated_at
   BEFORE UPDATE ON patients
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
--- Commentaires pour documentation
+-- Commentaires
 COMMENT ON TABLE medical_history IS 'Historique versionné des données médicales du patient';
 COMMENT ON VIEW patient_complete_view IS 'Vue complète du patient avec dernières données médicales';
 COMMENT ON FUNCTION create_medical_history_version IS 'Crée une nouvelle version de l''historique médical avec événement timeline';
 
--- Grant permissions (adjust based on your roles)
+-- Permissions
 GRANT SELECT ON patient_complete_view TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION create_medical_history_version TO authenticated;
 
@@ -235,21 +199,12 @@ GRANT EXECUTE ON FUNCTION create_medical_history_version TO authenticated;
 -- ROW LEVEL SECURITY - MEDICAL HISTORY
 -- ============================================================================
 
--- Enable RLS on medical_history
 ALTER TABLE medical_history ENABLE ROW LEVEL SECURITY;
 
--- Politique pour utilisateurs authentifiés (dentistes)
 CREATE POLICY "Authenticated users full access to medical_history"
-ON medical_history
-FOR ALL
-TO authenticated
-USING (true)
-WITH CHECK (true);
+ON medical_history FOR ALL TO authenticated
+USING (true) WITH CHECK (true);
 
--- Politique pour utilisateurs anonymes (pour démo/dev)
 CREATE POLICY "Anon users full access to medical_history"
-ON medical_history
-FOR ALL
-TO anon
-USING (true)
-WITH CHECK (true);
+ON medical_history FOR ALL TO anon
+USING (true) WITH CHECK (true);
