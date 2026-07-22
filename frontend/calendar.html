@@ -589,6 +589,17 @@
             50% { opacity: 0.7; }
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .more-appointments {
             font-size: 11px;
             color: var(--text-secondary);
@@ -1805,49 +1816,114 @@
         }
 
         // Render list view
-        function renderListView() {
+        function renderListView(filterDate = null) {
             const container = document.getElementById('appointmentsList');
             container.innerHTML = '';
 
-            const monthAppointments = appointments.filter(a => {
-                const date = new Date(a.appointment_date);
-                return date.getMonth() === currentDate.getMonth() &&
-                       date.getFullYear() === currentDate.getFullYear();
+            // Filter appointments
+            let filteredAppointments;
+            if (filterDate) {
+                // Show only appointments for specific date (TODAY mode)
+                const dateStr = filterDate.toISOString().split('T')[0];
+                filteredAppointments = appointments.filter(a => a.appointment_date === dateStr);
+            } else {
+                // Show appointments for entire month
+                filteredAppointments = appointments.filter(a => {
+                    const date = new Date(a.appointment_date);
+                    return date.getMonth() === currentDate.getMonth() &&
+                           date.getFullYear() === currentDate.getFullYear();
+                });
+            }
+
+            // Sort by time
+            filteredAppointments.sort((a, b) => {
+                const timeA = a.start_time || '00:00';
+                const timeB = b.start_time || '00:00';
+                return timeA.localeCompare(timeB);
             });
 
-            if (monthAppointments.length === 0) {
-                container.innerHTML = '<div class="loading">Aucun rendez-vous ce mois-ci</div>';
+            // Header if showing today
+            if (filterDate) {
+                const headerDiv = document.createElement('div');
+                headerDiv.style.cssText = 'margin-bottom: 24px; padding: 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; color: white;';
+                headerDiv.innerHTML = `
+                    <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">
+                        📅 Planning du ${filterDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                    </h2>
+                    <p style="font-size: 14px; opacity: 0.9;">
+                        ${filteredAppointments.length} rendez-vous prévu${filteredAppointments.length > 1 ? 's' : ''}
+                    </p>
+                `;
+                container.appendChild(headerDiv);
+            }
+
+            if (filteredAppointments.length === 0) {
+                const emptyMsg = filterDate ?
+                    '✅ Aucun rendez-vous aujourd\'hui' :
+                    'Aucun rendez-vous ce mois-ci';
+                container.innerHTML += `<div class="loading">${emptyMsg}</div>`;
                 return;
             }
 
-            monthAppointments.forEach(apt => {
+            filteredAppointments.forEach((apt, index) => {
+                const patient = apt.patients || apt.patient;
+
                 const item = document.createElement('div');
                 item.className = 'appointment-list-item';
+                item.style.cssText = 'animation: slideIn 0.3s ease-out forwards; animation-delay: ' + (index * 0.05) + 's; opacity: 0;';
+
+                // Calculate risk badges
+                const risks = [];
+                if (patient?.anticoagulant_therapy) risks.push({ icon: '💊', text: 'Anticoagulants', color: '#FF3B30' });
+                if (patient?.heart_disease) risks.push({ icon: '❤️', text: 'Cardiaque', color: '#FF3B30' });
+                if (patient?.diabetes) risks.push({ icon: '🩺', text: 'Diabète', color: '#FF9500' });
+                if (patient?.pregnant) risks.push({ icon: '🤰', text: 'Grossesse', color: '#007AFF' });
+                if (patient?.smoker) risks.push({ icon: '🚬', text: 'Fumeur', color: '#FF9500' });
+                if (patient?.hypertension) risks.push({ icon: '💔', text: 'HTA', color: '#FF9500' });
 
                 const timeDiv = document.createElement('div');
                 timeDiv.className = 'appointment-time';
                 timeDiv.innerHTML = `
-                    <div class="appointment-time-hour">${apt.start_time?.slice(0,5) || ''}</div>
+                    <div class="appointment-time-hour">${apt.start_time?.slice(0,5) || 'N/A'}</div>
                     <div class="appointment-time-duration">${apt.duration_minutes || 30} min</div>
+                    ${apt.status === 'completed' ? '<div style="font-size: 10px; color: #34C759; font-weight: 600; margin-top: 4px;">✓ Terminé</div>' : ''}
+                    ${apt.status === 'cancelled' ? '<div style="font-size: 10px; color: #FF3B30; font-weight: 600; margin-top: 4px;">✕ Annulé</div>' : ''}
                 `;
 
                 const detailsDiv = document.createElement('div');
                 detailsDiv.className = 'appointment-details';
                 detailsDiv.innerHTML = `
-                    <h3>${apt.patient?.first_name || ''} ${apt.patient?.last_name || ''}</h3>
-                    <p>${apt.type || 'Consultation'} - ${new Date(apt.appointment_date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-                    <div class="appointment-tags">
-                        ${apt.patient?.anticoagulant_therapy ? '<span class="tag tag-risk">⚠️ Anticoagulant</span>' : ''}
-                        ${apt.patient?.heart_disease ? '<span class="tag tag-risk">❤️ Cardiaque</span>' : ''}
+                    <h3>${patient?.first_name || 'Inconnu'} ${patient?.last_name || ''}</h3>
+                    <p style="margin: 4px 0 8px 0; color: var(--text-secondary);">
+                        ${apt.type || 'Consultation'} ${filterDate ? '' : '- ' + new Date(apt.appointment_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                    </p>
+
+                    ${patient ? `
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
+                            ${patient.phone ? `<span>📞 ${patient.phone}</span>` : ''}
+                            ${patient.email ? `<span>✉️ ${patient.email}</span>` : ''}
+                            ${patient.blood_type ? `<span style="background: rgba(255,59,48,0.1); padding: 2px 8px; border-radius: 4px; color: #FF3B30;">🩸 ${patient.blood_type}</span>` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="appointment-tags" style="margin-top: 12px;">
+                        ${risks.map(r => `<span class="tag tag-risk" style="background: ${r.color}15; color: ${r.color};">${r.icon} ${r.text}</span>`).join('')}
                         ${apt.type && apt.type.toLowerCase().includes('urgence') ? '<span class="tag tag-priority">🚨 Urgence</span>' : ''}
+                        ${apt.notes ? `<span class="tag" style="background: var(--bg-secondary);">📝 Notes</span>` : ''}
                     </div>
+
+                    ${apt.notes ? `
+                        <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px; font-size: 13px; color: var(--text-secondary); border-left: 3px solid var(--primary);">
+                            <strong>📝 Notes:</strong> ${apt.notes}
+                        </div>
+                    ` : ''}
                 `;
 
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'appointment-actions';
                 actionsDiv.innerHTML = `
                     <button class="action-btn" onclick='editAppointment(${JSON.stringify(apt).replace(/'/g, "\\'")})'>✏️ Modifier</button>
-                    <button class="action-btn" onclick="viewPatient('${apt.patient_id}')">👤 Dossier</button>
+                    <button class="action-btn" onclick="window.location.href='dashboard.html?niss=${patient?.niss || ''}'">👤 Dossier</button>
                 `;
 
                 item.appendChild(timeDiv);
@@ -2103,28 +2179,26 @@
             });
 
             document.getElementById('todayBtn').addEventListener('click', () => {
-                console.log('📅 Bouton "Aujourd\'hui" cliqué');
+                console.log('📅 Bouton "Aujourd\'hui" cliqué - Affichage vue détaillée du jour');
                 currentDate = new Date();
-                currentView = 'month'; // Force month view
+                currentView = 'list'; // Force list view to show details
 
                 // Update view buttons
                 document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelector('[data-view="month"]')?.classList.add('active');
+                document.querySelector('[data-view="list"]')?.classList.add('active');
+
+                // Hide month view, show list view
+                document.getElementById('monthView').style.display = 'none';
+                document.getElementById('listView').style.display = 'block';
 
                 renderMiniCalendar();
-                renderMainCalendar();
+                renderListView(new Date()); // Pass today's date to filter
                 updateStats();
 
-                // Scroll to today's date cell
-                setTimeout(() => {
-                    const todayCell = document.querySelector('.calendar-day.today');
-                    if (todayCell) {
-                        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        todayCell.style.animation = 'pulse 1s ease-in-out 2';
-                    }
-                }, 100);
+                // Smooth scroll to top
+                document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
 
-                console.log('✅ Navigation vers aujourd\'hui terminée');
+                console.log('✅ Vue détaillée du jour affichée');
             });
 
             document.getElementById('miniPrev').addEventListener('click', () => {
