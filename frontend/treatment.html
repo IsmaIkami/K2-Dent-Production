@@ -311,7 +311,7 @@
 
         .tooth:hover {
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
             z-index: 10;
         }
 
@@ -1535,7 +1535,7 @@
                     </div>
                     <div>
                         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Statut BIM</div>
-                        <div style="font-weight: 600; color: ${isBIM ? 'var(--success-color)' : 'var(--text-secondary)'};">
+                        <div style="font-weight: 600; color: ${isBIM ? 'var(--success)' : 'var(--text-secondary)'};">
                             ${isBIM ? '✓ Actif' : '✗ Non actif'}
                         </div>
                     </div>
@@ -1888,6 +1888,11 @@
 
         // Open Treatment Modal
         function openTreatmentModal(toothNum) {
+            if (!currentPatient) {
+                showNotification('Veuillez d\'abord sélectionner un patient', 'warning');
+                return;
+            }
+
             selectedTooth = toothNum;
             document.getElementById('modalTitle').textContent = `Traitement - Dent ${toothNum}`;
             document.getElementById('toothNumber').value = toothNum;
@@ -2214,11 +2219,11 @@
                     <style>
                         body { font-family: Arial, sans-serif; padding: 40px; }
                         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
-                        .practice { font-size: 24px; font-weight: bold; color: #3b82f6; }
+                        .practice { font-size: 24px; font-weight: bold; color: #0066FF; }
                         .patient-info { margin: 20px 0; }
                         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
                         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                        th { background-color: #3b82f6; color: white; }
+                        th { background-color: #0066FF; color: white; }
                         .total-row { font-weight: bold; background-color: #f0f0f0; }
                         .signature { margin-top: 60px; }
                     </style>
