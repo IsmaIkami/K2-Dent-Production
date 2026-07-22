@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan de Traitement - DentalCockpit Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,27 +14,17 @@
         :root {
             --primary: #0066FF;
             --primary-dark: #0052CC;
-            --primary-color: #0066FF;
-            --primary-hover: #0052CC;
             --secondary: #00C896;
-            --secondary-color: #00C896;
             --danger: #FF3B30;
-            --danger-color: #FF3B30;
             --warning: #FF9500;
-            --warning-color: #FF9500;
             --success: #34C759;
-            --success-color: #34C759;
             --purple: #8B5CF6;
             --bg-main: #0A0E1A;
-            --dark-bg: #0A0E1A;
             --bg-card: #141B2D;
-            --card-bg: #141B2D;
             --bg-hover: #1E2740;
-            --card-hover: #1E2740;
             --text-primary: #FFFFFF;
             --text-secondary: #8B92A8;
             --border: #2A3347;
-            --border-color: #2A3347;
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
@@ -62,175 +51,197 @@
             min-height: 100vh;
         }
 
-        .container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-        }
-
         /* Sidebar */
         .sidebar {
-            width: 280px;
-            background: var(--card-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 20px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
             position: fixed;
             height: 100vh;
+            width: 280px;
             overflow-y: auto;
-            z-index: 100;
+        }
+
+        .sidebar-content {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-menu {
-            list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 8px;
-        }
-
-        .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            padding: 8px 12px;
+            margin-bottom: 32px;
         }
 
-        .nav-link:hover {
-            background: var(--card-hover);
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
 
-        .nav-link.active {
-            background: var(--primary-color);
-            color: white;
+        .nav-item.active {
+            background: var(--primary);
+            color: var(--text-primary);
         }
 
         /* Main Content */
         .main-content {
-            flex: 1;
             margin-left: 280px;
-            padding: 30px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .header {
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
             font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
         }
 
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
             transform: translateY(-2px);
         }
 
-        .btn-secondary {
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--card-hover);
-        }
-
-        .btn-success {
-            background: var(--success-color);
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
             color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        /* Search Bar */
-        .search-section {
-            margin-bottom: 24px;
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 14px 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-
-        /* Grid Layout */
-        .grid {
+        /* Content Area */
+        .content {
+            padding: 32px;
             display: grid;
             gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(3, 1fr);
         }
 
         /* Cards */
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 24px;
             transition: all 0.3s ease;
         }
 
         .card:hover {
-            border-color: var(--primary-color);
+            border-color: var(--primary);
             transform: translateY(-2px);
         }
 
@@ -242,18 +253,132 @@
         }
 
         .card-title {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-main);
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #2EA350;
+            transform: translateY(-2px);
+        }
+
+        /* Search Box */
+        .search-box {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Patient List */
+        .patient-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .patient-item {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .patient-item:hover {
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.1);
+        }
+
+        .patient-item.selected {
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.2);
+        }
+
+        .patient-info h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .patient-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .patient-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .patient-badge.bim {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34C759;
+        }
+
         /* Dental Chart */
         .dental-chart {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 24px;
         }
@@ -276,8 +401,8 @@
 
         .tooth {
             aspect-ratio: 1;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            border: 2px solid var(--border);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -287,11 +412,12 @@
             position: relative;
             font-size: 11px;
             font-weight: 600;
+            background: var(--bg-main);
         }
 
         .tooth:hover {
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
             z-index: 10;
         }
 
@@ -301,39 +427,34 @@
             margin-bottom: 2px;
         }
 
-        .tooth-status {
-            font-size: 8px;
-            margin-top: 2px;
-        }
-
         .tooth.healthy {
-            background: rgba(34, 197, 94, 0.2);
-            border-color: #22c55e;
+            background: rgba(52, 199, 89, 0.2);
+            border-color: #34C759;
         }
 
         .tooth.watch {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: #f59e0b;
+            background: rgba(255, 149, 0, 0.2);
+            border-color: #FF9500;
         }
 
         .tooth.needs-treatment {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: #ef4444;
+            background: rgba(255, 59, 48, 0.2);
+            border-color: #FF3B30;
         }
 
         .tooth.planned {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: #3b82f6;
+            background: rgba(0, 102, 255, 0.2);
+            border-color: #0066FF;
         }
 
         .tooth.completed {
-            background: rgba(148, 163, 184, 0.2);
-            border-color: #94a3b8;
+            background: rgba(139, 163, 184, 0.2);
+            border-color: #8BA3B8;
         }
 
         .tooth.missing {
-            background: rgba(15, 23, 42, 0.5);
-            border-color: #1e293b;
+            background: rgba(10, 14, 26, 0.5);
+            border-color: var(--border);
             color: var(--text-secondary);
             cursor: not-allowed;
         }
@@ -344,7 +465,7 @@
             flex-wrap: wrap;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
         }
 
         .legend-item {
@@ -360,11 +481,11 @@
             border-radius: 4px;
         }
 
-        /* AI Recommendations */
+        /* AI Section */
         .ai-section {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid var(--primary-color);
-            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--primary);
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 24px;
         }
@@ -374,12 +495,14 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 16px;
+            font-size: 20px;
+            font-weight: 700;
         }
 
         .ai-icon {
             width: 32px;
             height: 32px;
-            background: var(--primary-color);
+            background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -392,9 +515,9 @@
         }
 
         .recommendation-item {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
             display: flex;
@@ -404,7 +527,7 @@
         }
 
         .recommendation-item:hover {
-            border-color: var(--primary-color);
+            border-color: var(--primary);
             transform: translateX(4px);
         }
 
@@ -414,7 +537,7 @@
 
         .recommendation-tooth {
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary);
             margin-bottom: 4px;
         }
 
@@ -437,27 +560,27 @@
         }
 
         .urgency-urgent {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            background: rgba(255, 59, 48, 0.2);
+            color: #FF3B30;
+            border: 1px solid #FF3B30;
         }
 
         .urgency-medium {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
+            background: rgba(255, 149, 0, 0.2);
+            color: #FF9500;
+            border: 1px solid #FF9500;
         }
 
         .urgency-low {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            border: 1px solid #22c55e;
+            background: rgba(52, 199, 89, 0.2);
+            color: #34C759;
+            border: 1px solid #34C759;
         }
 
-        /* Treatment Plan */
+        /* Treatment Phases */
         .phase-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-main);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
@@ -468,7 +591,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
-            cursor: pointer;
         }
 
         .phase-title {
@@ -482,7 +604,7 @@
         .phase-total {
             font-size: 18px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
         .treatment-list {
@@ -490,8 +612,8 @@
         }
 
         .treatment-item {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 8px;
@@ -516,7 +638,7 @@
 
         .treatment-price {
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--primary);
             margin-right: 12px;
         }
 
@@ -525,12 +647,12 @@
             gap: 8px;
         }
 
-        .icon-btn {
+        .icon-btn-small {
             width: 32px;
             height: 32px;
             border: none;
             border-radius: 6px;
-            background: var(--card-hover);
+            background: var(--bg-hover);
             color: var(--text-primary);
             cursor: pointer;
             display: flex;
@@ -539,16 +661,45 @@
             transition: all 0.3s ease;
         }
 
-        .icon-btn:hover {
-            background: var(--primary-color);
+        .icon-btn-small:hover {
+            background: var(--primary);
             color: white;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-planned {
+            background: rgba(0, 102, 255, 0.2);
+            color: #0066FF;
+        }
+
+        .status-in-progress {
+            background: rgba(255, 149, 0, 0.2);
+            color: #FF9500;
+        }
+
+        .status-completed {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34C759;
+        }
+
+        .status-billed {
+            background: rgba(139, 163, 184, 0.2);
+            color: #8BA3B8;
         }
 
         /* Financial Summary */
         .financial-summary {
-            background: linear-gradient(135deg, var(--card-bg), rgba(59, 130, 246, 0.05));
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            background: linear-gradient(135deg, var(--bg-card), rgba(0, 102, 255, 0.05));
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 24px;
         }
@@ -558,14 +709,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
         }
 
         .financial-row:last-child {
             border-bottom: none;
             margin-top: 8px;
             padding-top: 16px;
-            border-top: 2px solid var(--primary-color);
+            border-top: 2px solid var(--primary);
         }
 
         .financial-label {
@@ -586,7 +737,7 @@
 
         .financial-row:last-child .financial-value {
             font-size: 24px;
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
         /* Modal */
@@ -597,7 +748,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -609,9 +760,9 @@
         }
 
         .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 32px;
             max-width: 600px;
             width: 90%;
@@ -648,7 +799,7 @@
             height: 36px;
             border: none;
             border-radius: 50%;
-            background: var(--card-hover);
+            background: var(--bg-hover);
             color: var(--text-primary);
             cursor: pointer;
             font-size: 20px;
@@ -658,7 +809,7 @@
         }
 
         .close-btn:hover {
-            background: var(--danger-color);
+            background: var(--danger);
         }
 
         .form-group {
@@ -677,9 +828,9 @@
         .form-textarea {
             width: 100%;
             padding: 12px;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             color: var(--text-primary);
             font-size: 14px;
         }
@@ -688,7 +839,7 @@
         .form-select:focus,
         .form-textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--primary);
         }
 
         .form-textarea {
@@ -702,77 +853,71 @@
             gap: 16px;
         }
 
-        /* Patient List */
-        .patient-list {
-            list-style: none;
+        /* Code Selector */
+        .code-selector {
             max-height: 300px;
             overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-top: 12px;
         }
 
-        .patient-item {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .code-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .patient-item:hover {
-            border-color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.1);
+        .code-item:hover {
+            background: rgba(0, 102, 255, 0.1);
         }
 
-        .patient-item.selected {
-            border-color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.2);
+        .code-item.selected {
+            background: rgba(0, 102, 255, 0.2);
+            border-left: 4px solid var(--primary);
         }
 
-        .patient-info h4 {
+        .code-number {
             font-weight: 600;
+            color: var(--primary);
             margin-bottom: 4px;
         }
 
-        .patient-meta {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .code-description {
+            font-size: 13px;
+            margin-bottom: 4px;
         }
 
-        .patient-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
+        .code-pricing {
             font-size: 11px;
-            font-weight: 600;
-        }
-
-        .patient-badge.bim {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-        }
-
-        /* Loading */
-        .loading {
+            color: var(--text-secondary);
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
+            justify-content: space-between;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border-color);
-            border-top-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        /* Pricing Breakdown */
+        .pricing-breakdown {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 16px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .pricing-row.highlight {
+            font-weight: 600;
+            color: var(--primary);
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding-top: 12px;
         }
 
         /* Notification */
@@ -780,8 +925,8 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px 20px;
             min-width: 300px;
@@ -805,112 +950,23 @@
         }
 
         .notification.success {
-            border-left: 4px solid var(--success-color);
+            border-left: 4px solid var(--success);
         }
 
         .notification.error {
-            border-left: 4px solid var(--danger-color);
+            border-left: 4px solid var(--danger);
         }
 
         .notification.warning {
-            border-left: 4px solid var(--warning-color);
-        }
-
-        /* Status Badge */
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-planned {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-        }
-
-        .status-in-progress {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-
-        .status-completed {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-        }
-
-        .status-billed {
-            background: rgba(148, 163, 184, 0.2);
-            color: #94a3b8;
-        }
-
-        /* Pricing Breakdown */
-        .pricing-breakdown {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .pricing-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 14px;
-        }
-
-        .pricing-row.highlight {
-            font-weight: 600;
-            color: var(--primary-color);
-            border-top: 1px solid var(--border-color);
-            margin-top: 8px;
-            padding-top: 12px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 220px;
-            }
-
-            .main-content {
-                margin-left: 220px;
-            }
-
-            .grid-2,
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .teeth-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
+            border-left: 4px solid var(--warning);
         }
 
         /* Tooltip */
         .tooltip {
             position: absolute;
-            background: var(--dark-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             padding: 12px;
             font-size: 12px;
             z-index: 1000;
@@ -918,6 +974,7 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             max-width: 250px;
+            box-shadow: var(--shadow);
         }
 
         .tooltip.show {
@@ -943,284 +1000,312 @@
             color: var(--text-primary);
         }
 
-        /* INAMI Code Selector */
-        .code-selector {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-top: 12px;
-        }
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
 
-        .code-item {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
 
-        .code-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
+            .sidebar.active {
+                transform: translateX(0);
+            }
 
-        .code-item.selected {
-            background: rgba(59, 130, 246, 0.2);
-            border-left: 4px solid var(--primary-color);
-        }
+            .main-content {
+                margin-left: 0;
+            }
 
-        .code-number {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 4px;
-        }
-
-        .code-description {
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .code-pricing {
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: flex;
-            justify-content: space-between;
+            .teeth-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- K2 Configuration -->
+    <script src="config.js"></script>
+    <script src="js/supabase-client.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="logo">
-                <div class="logo-icon">🦷</div>
-                <div class="logo-text">DentalCockpit Pro</div>
+            <div class="sidebar-content">
+                <div class="logo">
+                    <div class="logo-icon">🦷</div>
+                    <div class="logo-text">DentalCockpit Pro</div>
+                </div>
+
+                <nav>
+                    <div class="nav-section">
+                        <div class="nav-title">Navigation</div>
+                        <a href="dashboard.html" class="nav-item">
+                            <span>📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="patients.html" class="nav-item">
+                            <span>👥</span>
+                            <span>Patients</span>
+                        </a>
+                        <a href="calendar.html" class="nav-item">
+                            <span>📅</span>
+                            <span>Agenda</span>
+                        </a>
+                        <a href="treatment.html" class="nav-item active">
+                            <span>🎯</span>
+                            <span>Plan de Traitement</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-title">Clinique</div>
+                        <a href="dental-chart.html" class="nav-item">
+                            <span>🦷</span>
+                            <span>Schéma Dentaire</span>
+                        </a>
+                        <a href="paro.html" class="nav-item">
+                            <span>📊</span>
+                            <span>Parodontologie</span>
+                        </a>
+                        <a href="ortho.html" class="nav-item">
+                            <span>🔧</span>
+                            <span>Orthodontie</span>
+                        </a>
+                        <a href="prescriptions.html" class="nav-item">
+                            <span>💊</span>
+                            <span>Prescriptions</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-title">Imagerie Médicale</div>
+                        <a href="xrays.html" class="nav-item">
+                            <span>📷</span>
+                            <span>Radiographies X</span>
+                        </a>
+                        <a href="scanner3d.html" class="nav-item">
+                            <span>🔬</span>
+                            <span>Scanner 3D</span>
+                        </a>
+                        <a href="photos.html" class="nav-item">
+                            <span>🖼️</span>
+                            <span>Photos Intra-orales</span>
+                        </a>
+                        <a href="camera.html" class="nav-item">
+                            <span>📸</span>
+                            <span>Caméra Temps Réel</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-title">Intelligence Artificielle</div>
+                        <a href="ai-analysis.html" class="nav-item">
+                            <span>🤖</span>
+                            <span>Analyses IA</span>
+                        </a>
+                        <a href="ai-reports.html" class="nav-item">
+                            <span>📈</span>
+                            <span>Rapports Intelligents</span>
+                        </a>
+                        <a href="ai-history.html" class="nav-item">
+                            <span>🔄</span>
+                            <span>Historique Complet IA</span>
+                        </a>
+                        <a href="ai-realtime.html" class="nav-item">
+                            <span>⚡</span>
+                            <span>IA Temps Réel</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-title">Administration</div>
+                        <a href="inami.html" class="nav-item">
+                            <span>💳</span>
+                            <span>INAMI / e-Health</span>
+                        </a>
+                        <a href="mutuelles.html" class="nav-item">
+                            <span>🏥</span>
+                            <span>Mutuelles</span>
+                        </a>
+                        <a href="certificates.html" class="nav-item">
+                            <span>📄</span>
+                            <span>Certificats</span>
+                        </a>
+                        <a href="billing.html" class="nav-item">
+                            <span>📊</span>
+                            <span>Facturation</span>
+                        </a>
+                    </div>
+                </nav>
             </div>
-            <nav>
-                <div class="nav-section">
-                    <div class="nav-title">Navigation</div>
-                    <a href="dashboard.html" class="nav-item">
-                        <span>📊</span>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="patients.html" class="nav-item">
-                        <span>👥</span>
-                        <span>Patients</span>
-                    </a>
-                    <a href="calendar.html" class="nav-item">
-                        <span>📅</span>
-                        <span>Agenda</span>
-                    </a>
-                    <a href="treatment.html" class="nav-item active">
-                        <span>🎯</span>
-                        <span>Plan de Traitement</span>
-                    </a>
-                </div>
 
-                <div class="nav-section">
-                    <div class="nav-title">Clinique</div>
-                    <a href="dental-chart.html" class="nav-item">
-                        <span>🦷</span>
-                        <span>Schéma Dentaire</span>
-                    </a>
-                    <a href="paro.html" class="nav-item">
-                        <span>📊</span>
-                        <span>Parodontologie</span>
-                    </a>
-                    <a href="ortho.html" class="nav-item">
-                        <span>🔧</span>
-                        <span>Orthodontie</span>
-                    </a>
-                    <a href="prescriptions.html" class="nav-item">
-                        <span>💊</span>
-                        <span>Prescriptions</span>
-                    </a>
+            <div class="sidebar-footer">
+                <div style="text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Design by</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Ismail Sialyen</div>
+                    <div style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Powered by</div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 2px;">RCE</div>
+                    <div style="font-size: 8px; color: var(--text-secondary); margin-top: 2px;">AI Engine</div>
                 </div>
-
-                <div class="nav-section">
-                    <div class="nav-title">Imagerie Médicale</div>
-                    <a href="xrays.html" class="nav-item">
-                        <span>📷</span>
-                        <span>Radiographies X</span>
-                    </a>
-                    <a href="scanner3d.html" class="nav-item">
-                        <span>🔬</span>
-                        <span>Scanner 3D</span>
-                    </a>
-                    <a href="photos.html" class="nav-item">
-                        <span>🖼️</span>
-                        <span>Photos Intra-orales</span>
-                    </a>
-                    <a href="camera.html" class="nav-item">
-                        <span>📸</span>
-                        <span>Caméra Temps Réel</span>
-                    </a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-title">Intelligence Artificielle</div>
-                    <a href="ai-analysis.html" class="nav-item">
-                        <span>🤖</span>
-                        <span>Analyses IA</span>
-                    </a>
-                    <a href="ai-reports.html" class="nav-item">
-                        <span>📈</span>
-                        <span>Rapports Intelligents</span>
-                    </a>
-                    <a href="ai-history.html" class="nav-item">
-                        <span>🔄</span>
-                        <span>Historique Complet IA</span>
-                    </a>
-                    <a href="ai-realtime.html" class="nav-item">
-                        <span>⚡</span>
-                        <span>IA Temps Réel</span>
-                    </a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-title">Administration</div>
-                    <a href="inami.html" class="nav-item">
-                        <span>💳</span>
-                        <span>INAMI / e-Health</span>
-                    </a>
-                    <a href="mutuelles.html" class="nav-item">
-                        <span>🏥</span>
-                        <span>Mutuelles</span>
-                    </a>
-                    <a href="certificates.html" class="nav-item">
-                        <span>📄</span>
-                        <span>Certificats</span>
-                    </a>
-                    <a href="billing.html" class="nav-item">
-                        <span>📊</span>
-                        <span>Facturation</span>
-                    </a>
-                </div>
-            </nav>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
-            <div class="header">
-                <h1>🦷 Plan de Traitement</h1>
-                <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="exportToPDF()">
-                        📄 Exporter PDF
-                    </button>
-                    <button class="btn btn-primary" onclick="showNewTreatmentModal()">
-                        ➕ Nouveau Traitement
-                    </button>
+            <!-- Top Bar -->
+            <div class="topbar">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Rechercher patient, dossier, radio, diagnostic...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
+                        🌙
+                    </div>
+                    <div class="icon-btn" onclick="toggleNotifications()">
+                        🔔
+                        <span class="badge" id="notifCount">5</span>
+                    </div>
+                    <div class="icon-btn">⚙️</div>
+                    <div class="icon-btn">👤</div>
                 </div>
             </div>
 
-            <!-- Search Patient -->
-            <div class="search-section">
-                <input type="text" class="search-box" id="patientSearch" placeholder="🔍 Rechercher un patient..." oninput="searchPatients(this.value)">
-            </div>
-
-            <!-- Patient List -->
-            <div class="card" id="patientListCard" style="display: none;">
-                <div class="card-header">
-                    <h3 class="card-title">👥 Patients</h3>
-                </div>
-                <ul class="patient-list" id="patientList"></ul>
-            </div>
-
-            <!-- Selected Patient Info -->
-            <div id="selectedPatientSection">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">👤 Patient Sélectionné</h3>
-                        <button class="btn btn-secondary" onclick="clearPatientSelection()">
-                            Changer de patient
+            <!-- Content -->
+            <div class="content">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">🦷 Plan de Traitement</h1>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Planification intelligente avec recommandations IA et codes INAMI</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-secondary" onclick="exportToPDF()">
+                            📄 Exporter PDF
+                        </button>
+                        <button class="btn btn-primary" onclick="showNewTreatmentModal()">
+                            ➕ Nouveau Traitement
                         </button>
                     </div>
-                    <div id="selectedPatientInfo"></div>
                 </div>
 
-                <!-- Dental Chart -->
-                <div class="dental-chart">
+                <!-- Search Patient -->
+                <div style="margin-bottom: 24px;">
+                    <input type="text" class="search-box" id="patientSearch" placeholder="🔍 Rechercher un patient..." oninput="searchPatients(this.value)">
+                </div>
+
+                <!-- Patient List -->
+                <div class="card" id="patientListCard" style="display: none;">
                     <div class="card-header">
-                        <h3 class="card-title">🦷 Carte Dentaire Interactive</h3>
+                        <h3 class="card-title">👥 Patients</h3>
                     </div>
-                    <div class="teeth-grid" id="dentalChart"></div>
-                    <div class="chart-legend">
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(34, 197, 94, 0.4); border: 2px solid #22c55e;"></div>
-                            <span>Sain</span>
+                    <ul class="patient-list" id="patientList"></ul>
+                </div>
+
+                <!-- Selected Patient Section -->
+                <div id="selectedPatientSection" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">👤 Patient Sélectionné</h3>
+                            <button class="btn btn-secondary" onclick="clearPatientSelection()">
+                                Changer de patient
+                            </button>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(245, 158, 11, 0.4); border: 2px solid #f59e0b;"></div>
-                            <span>Surveillance</span>
+                        <div id="selectedPatientInfo"></div>
+                    </div>
+
+                    <!-- Dental Chart -->
+                    <div class="dental-chart">
+                        <div class="card-header">
+                            <h3 class="card-title">🦷 Carte Dentaire Interactive (FDI)</h3>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(239, 68, 68, 0.4); border: 2px solid #ef4444;"></div>
-                            <span>Nécessite traitement</span>
+                        <div class="teeth-grid" id="dentalChart"></div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(52, 199, 89, 0.4); border: 2px solid #34C759;"></div>
+                                <span>Sain</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(255, 149, 0, 0.4); border: 2px solid #FF9500;"></div>
+                                <span>Surveillance</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(255, 59, 48, 0.4); border: 2px solid #FF3B30;"></div>
+                                <span>Nécessite traitement</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(0, 102, 255, 0.4); border: 2px solid #0066FF;"></div>
+                                <span>Planifié</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(139, 163, 184, 0.4); border: 2px solid #8BA3B8;"></div>
+                                <span>Complété</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(10, 14, 26, 0.5); border: 2px solid #2A3347;"></div>
+                                <span>Manquant</span>
+                            </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(59, 130, 246, 0.4); border: 2px solid #3b82f6;"></div>
-                            <span>Planifié</span>
+                    </div>
+
+                    <!-- AI Recommendations -->
+                    <div class="ai-section">
+                        <div class="ai-header">
+                            <div class="ai-icon">🤖</div>
+                            <h3>Recommandations IA Intelligentes</h3>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(148, 163, 184, 0.4); border: 2px solid #94a3b8;"></div>
-                            <span>Complété</span>
+                        <ul class="recommendation-list" id="aiRecommendations"></ul>
+                    </div>
+
+                    <!-- Treatment Plan -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">📋 Plan de Traitement Multi-Phases</h3>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(15, 23, 42, 0.5); border: 2px solid #1e293b;"></div>
-                            <span>Manquant</span>
+                        <div id="treatmentPhases"></div>
+                    </div>
+
+                    <!-- Financial Summary -->
+                    <div class="financial-summary">
+                        <h3 style="margin-bottom: 20px; font-weight: 700;">💰 Résumé Financier</h3>
+                        <div class="financial-row">
+                            <span class="financial-label">Total des traitements</span>
+                            <span class="financial-value" id="totalAmount">0.00 €</span>
                         </div>
+                        <div class="financial-row">
+                            <span class="financial-label">Remboursement mutuelle</span>
+                            <span class="financial-value" id="reimbursedAmount" style="color: var(--success);">0.00 €</span>
+                        </div>
+                        <div class="financial-row">
+                            <span class="financial-label">Part patient</span>
+                            <span class="financial-value" id="patientAmount">0.00 €</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button class="btn btn-success" onclick="validateTreatmentPlan()" style="flex: 1;">
+                            ✓ Valider le Plan
+                        </button>
+                        <button class="btn btn-primary" onclick="exportToPDF()" style="flex: 1;">
+                            📄 Générer Devis PDF
+                        </button>
                     </div>
                 </div>
 
-                <!-- AI Recommendations -->
-                <div class="ai-section">
-                    <div class="ai-header">
-                        <div class="ai-icon">🤖</div>
-                        <h3>Recommandations IA Intelligentes</h3>
-                    </div>
-                    <ul class="recommendation-list" id="aiRecommendations"></ul>
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-state-icon">🦷</div>
+                    <h3>Aucun patient sélectionné</h3>
+                    <p>Recherchez et sélectionnez un patient pour commencer la planification de traitement</p>
                 </div>
-
-                <!-- Treatment Plan -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">📋 Plan de Traitement Multi-Phases</h3>
-                    </div>
-                    <div id="treatmentPhases"></div>
-                </div>
-
-                <!-- Financial Summary -->
-                <div class="financial-summary">
-                    <h3 style="margin-bottom: 20px; font-weight: 700;">💰 Résumé Financier</h3>
-                    <div class="financial-row">
-                        <span class="financial-label">Total des traitements</span>
-                        <span class="financial-value" id="totalAmount">0.00 €</span>
-                    </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Remboursement mutuelle</span>
-                        <span class="financial-value" id="reimbursedAmount" style="color: var(--success-color);">0.00 €</span>
-                    </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Part patient</span>
-                        <span class="financial-value" id="patientAmount">0.00 €</span>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button class="btn btn-success" onclick="validateTreatmentPlan()" style="flex: 1;">
-                        ✓ Valider le Plan
-                    </button>
-                    <button class="btn btn-primary" onclick="exportToPDF()" style="flex: 1;">
-                        📄 Générer Devis PDF
-                    </button>
-                </div>
-            </div>
-
-            <!-- Empty State -->
-            <div id="emptyState" class="empty-state">
-                <div class="empty-state-icon">🦷</div>
-                <h3>Aucun patient sélectionné</h3>
-                <p>Recherchez et sélectionnez un patient pour commencer la planification de traitement</p>
             </div>
         </main>
     </div>
@@ -1267,7 +1352,7 @@
                     </div>
                     <div class="pricing-row">
                         <span>Remboursement mutuelle</span>
-                        <span id="breakdownReimb" style="color: var(--success-color);">0.00 €</span>
+                        <span id="breakdownReimb" style="color: var(--success);">0.00 €</span>
                     </div>
                     <div class="pricing-row highlight">
                         <span>Part patient</span>
@@ -1322,10 +1407,7 @@
     <!-- Tooltip -->
     <div id="tooltip" class="tooltip"></div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/supabase-client.js"></script>
+    <!-- JavaScript -->
     <script>
         // INAMI Codes Database (Belgian Nomenclature 2026)
         const INAMI_CODES = {
@@ -1382,12 +1464,7 @@
         let allPatients = [];
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Wait for supabaseClient to be ready
-            while (!window.supabaseClient) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-
+        document.addEventListener('DOMContentLoaded', function() {
             initializeDentalChart();
             loadPatients();
 
@@ -1409,7 +1486,6 @@
                 if (error) throw error;
 
                 allPatients = data || [];
-                displayPatients(allPatients);
             } catch (error) {
                 console.error('Error loading patients:', error);
                 showNotification('Erreur lors du chargement des patients', 'error');
@@ -1487,14 +1563,14 @@
                     </div>
                     <div>
                         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Statut BIM</div>
-                        <div style="font-weight: 600; color: ${isBIM ? 'var(--success-color)' : 'var(--text-secondary)'};">
+                        <div style="font-weight: 600; color: ${isBIM ? 'var(--success)' : 'var(--text-secondary)'};">
                             ${isBIM ? '✓ Actif' : '✗ Non actif'}
                         </div>
                     </div>
                     ${patient.allergies ? `
                     <div style="grid-column: span 3;">
                         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">⚠️ Allergies</div>
-                        <div style="font-weight: 600; color: var(--danger-color);">${patient.allergies}</div>
+                        <div style="font-weight: 600; color: var(--danger);">${patient.allergies}</div>
                     </div>
                     ` : ''}
                 </div>
@@ -1535,7 +1611,7 @@
             }
         }
 
-        // Initialize Dental Chart
+        // Initialize Dental Chart (FDI Notation: 32 teeth)
         function initializeDentalChart() {
             const chartElement = document.getElementById('dentalChart');
             chartElement.innerHTML = '';
@@ -1584,7 +1660,6 @@
                 toothElement.className = 'tooth healthy';
 
                 if (treatments.length > 0) {
-                    // Determine status based on latest treatment
                     const latestTreatment = treatments[0];
 
                     if (latestTreatment.status === 'completed') {
@@ -1633,13 +1708,11 @@
 
             if (!currentPatient) return;
 
-            // AI Logic: Analyze dental state and suggest treatments
             const recommendations = [];
 
-            // Example recommendations based on age and existing treatments
+            // Example recommendations
             const age = calculateAge(currentPatient.date_of_birth);
 
-            // Check for missing preventive care
             const hasDetartrage = currentTreatments.some(t => t.inami_code === '371113');
             if (!hasDetartrage) {
                 recommendations.push({
@@ -1651,10 +1724,8 @@
                 });
             }
 
-            // Check for untreated teeth
             const treatedTeeth = [...new Set(currentTreatments.map(t => t.tooth_number))];
             if (treatedTeeth.length < 28) {
-                // Suggest routine checkup
                 recommendations.push({
                     tooth: 'Multiple',
                     treatment: 'Radiographie panoramique',
@@ -1664,7 +1735,6 @@
                 });
             }
 
-            // Age-based recommendations
             if (age > 50) {
                 recommendations.push({
                     tooth: 'Toutes',
@@ -1675,7 +1745,6 @@
                 });
             }
 
-            // Check patient allergies for contra-indications
             const hasAllergies = currentPatient.allergies && currentPatient.allergies.trim() !== '';
 
             recommendations.forEach(rec => {
@@ -1684,7 +1753,7 @@
 
                 const codeInfo = INAMI_CODES[rec.code];
                 const contraIndication = hasAllergies ?
-                    `<div style="color: var(--warning-color); font-size: 11px; margin-top: 4px;">⚠️ Vérifier contre-indications (allergies)</div>` : '';
+                    `<div style="color: var(--warning); font-size: 11px; margin-top: 4px;">⚠️ Vérifier contre-indications (allergies)</div>` : '';
 
                 item.innerHTML = `
                     <div class="recommendation-info">
@@ -1747,7 +1816,6 @@
             const phasesElement = document.getElementById('treatmentPhases');
             phasesElement.innerHTML = '';
 
-            // Group treatments by phase
             const phases = {
                 1: { name: 'Phase 1 - Urgent', treatments: [] },
                 2: { name: 'Phase 2 - Restauration', treatments: [] },
@@ -1774,7 +1842,7 @@
                         <li class="treatment-item">
                             <div class="treatment-details">
                                 <div class="treatment-name">
-                                    🦷 Dent ${treatment.tooth_number} - ${treatment.treatment_name}
+                                    🦷 Dent ${treatment.tooth_number || 'Multiple'} - ${treatment.treatment_name}
                                 </div>
                                 <div class="treatment-meta">
                                     INAMI: ${treatment.inami_code} |
@@ -1784,8 +1852,8 @@
                             </div>
                             <span class="treatment-price">${parseFloat(treatment.price).toFixed(2)} €</span>
                             <div class="treatment-actions">
-                                <button class="icon-btn" onclick="editTreatment(${treatment.id})" title="Éditer">✏️</button>
-                                <button class="icon-btn" onclick="deleteTreatment(${treatment.id})" title="Supprimer">🗑️</button>
+                                <button class="icon-btn-small" onclick="editTreatment(${treatment.id})" title="Éditer">✏️</button>
+                                <button class="icon-btn-small" onclick="deleteTreatment(${treatment.id})" title="Supprimer">🗑️</button>
                             </div>
                         </li>
                     `).join('');
@@ -1840,6 +1908,11 @@
 
         // Open Treatment Modal
         function openTreatmentModal(toothNum) {
+            if (!currentPatient) {
+                showNotification('Veuillez d\'abord sélectionner un patient', 'warning');
+                return;
+            }
+
             selectedTooth = toothNum;
             document.getElementById('modalTitle').textContent = `Traitement - Dent ${toothNum}`;
             document.getElementById('toothNumber').value = toothNum;
@@ -1927,7 +2000,6 @@
             const reimbursed = price * reimbRate;
             const patient = price - reimbursed;
 
-            // Apply BIM bonus if patient has BIM status
             const finalReimb = currentPatient && currentPatient.bim_status ? reimbursed * 1.15 : reimbursed;
             const finalPatient = price - finalReimb;
 
@@ -1979,7 +2051,6 @@
                 showNotification('Traitement ajouté avec succès', 'success');
                 closeTreatmentModal();
 
-                // Reload treatments
                 await loadPatientTreatments(currentPatient.id);
                 updateDentalChart();
                 displayTreatmentPhases();
@@ -1996,7 +2067,6 @@
             const treatment = currentTreatments.find(t => t.id === treatmentId);
             if (!treatment) return;
 
-            // Populate form
             selectedTooth = treatment.tooth_number;
             selectedINAMICode = treatment.inami_code;
 
@@ -2015,7 +2085,6 @@
 
             document.getElementById('treatmentModal').classList.add('active');
 
-            // Change form submission to update instead of insert
             const form = document.getElementById('treatmentForm');
             form.onsubmit = async function(e) {
                 e.preventDefault();
@@ -2053,14 +2122,12 @@
                 showNotification('Traitement mis à jour avec succès', 'success');
                 closeTreatmentModal();
 
-                // Reset form handler
                 const form = document.getElementById('treatmentForm');
                 form.onsubmit = function(e) {
                     e.preventDefault();
                     saveTreatment();
                 };
 
-                // Reload treatments
                 await loadPatientTreatments(currentPatient.id);
                 updateDentalChart();
                 displayTreatmentPhases();
@@ -2088,7 +2155,6 @@
 
                 showNotification('Traitement supprimé avec succès', 'success');
 
-                // Reload treatments
                 await loadPatientTreatments(currentPatient.id);
                 updateDentalChart();
                 displayTreatmentPhases();
@@ -2113,7 +2179,6 @@
             }
 
             try {
-                // Update all planned treatments to in-progress
                 const plannedTreatments = currentTreatments.filter(t => t.status === 'planned');
 
                 for (const treatment of plannedTreatments) {
@@ -2125,7 +2190,6 @@
 
                 showNotification('Plan de traitement validé avec succès', 'success');
 
-                // Reload treatments
                 await loadPatientTreatments(currentPatient.id);
                 updateDentalChart();
                 displayTreatmentPhases();
@@ -2147,7 +2211,6 @@
                 return;
             }
 
-            // Create PDF content
             const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
             const reimbursed = currentTreatments.reduce((sum, t) => {
                 const price = parseFloat(t.price) || 0;
@@ -2156,7 +2219,6 @@
             }, 0);
             const patient = total - reimbursed;
 
-            // Generate HTML for PDF (this would typically use a PDF library like jsPDF)
             const pdfContent = `
                 <!DOCTYPE html>
                 <html>
@@ -2166,11 +2228,11 @@
                     <style>
                         body { font-family: Arial, sans-serif; padding: 40px; }
                         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
-                        .practice { font-size: 24px; font-weight: bold; color: #3b82f6; }
+                        .practice { font-size: 24px; font-weight: bold; color: #0066FF; }
                         .patient-info { margin: 20px 0; }
                         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
                         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                        th { background-color: #3b82f6; color: white; }
+                        th { background-color: #0066FF; color: white; }
                         .total-row { font-weight: bold; background-color: #f0f0f0; }
                         .signature { margin-top: 60px; }
                     </style>
@@ -2235,7 +2297,6 @@
                 </html>
             `;
 
-            // Open in new window for printing
             const printWindow = window.open('', '_blank');
             printWindow.document.write(pdfContent);
             printWindow.document.close();
@@ -2259,21 +2320,21 @@
             }, 3000);
         }
 
-        // Auto Test Agent Integration
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'AUTO_TEST') {
-                console.log('Auto Test Agent connected');
-                // Expose test functions
-                window.testFunctions = {
-                    loadPatients,
-                    selectPatient,
-                    openTreatmentModal,
-                    saveTreatment,
-                    validateTreatmentPlan,
-                    exportToPDF
-                };
-            }
-        });
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? '' : 'light';
+            html.setAttribute('data-theme', newTheme);
+
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.textContent = newTheme === 'light' ? '☀️' : '🌙';
+        }
+
+        // Toggle Notifications
+        function toggleNotifications() {
+            showNotification('Fonctionnalité en cours de développement', 'warning');
+        }
     </script>
 </body>
 </html>
