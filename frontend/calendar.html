@@ -1469,8 +1469,14 @@
         let patients = [];
         let selectedDate = null;
 
-        // Wait for Supabase to be ready
+        // Wait for Supabase to be ready (skip in demo mode)
         async function waitForSupabase() {
+            // Skip wait in demo mode
+            if (window.K2_CONFIG?.DEMO_MODE) {
+                console.log('📊 DEMO MODE - Skipping Supabase initialization');
+                return;
+            }
+
             let attempts = 0;
             while (!window.supabaseClient && attempts < 50) {
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -1485,8 +1491,13 @@
         async function init() {
             try {
                 console.log('Initializing calendar...');
-                await waitForSupabase();
-                console.log('Supabase ready, loading data...');
+
+                if (window.K2_CONFIG?.DEMO_MODE) {
+                    console.log('📊 DEMO MODE activated');
+                } else {
+                    await waitForSupabase();
+                    console.log('Supabase ready, loading data...');
+                }
 
                 await loadPatients();
                 await loadAppointments();
@@ -1495,7 +1506,7 @@
                 updateStats();
                 setupEventListeners();
 
-                console.log('Calendar initialized successfully');
+                console.log('✅ Calendar initialized successfully');
             } catch (error) {
                 console.error('Initialization error:', error);
                 alert('Erreur lors du chargement du calendrier. Veuillez rafraîchir la page.');
