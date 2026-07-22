@@ -8,8 +8,8 @@
 
 window.K2_CONFIG = {
     // Supabase Configuration - K2 Dent Production
-    SUPABASE_URL: 'https://iibdamkqxmyyvxsijsgc.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpYmRhbWtxeG15eXZ4c2lqc2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczMzU2MTEsImV4cCI6MjA1MjkxMTYxMX0.Y_RGIhkzKzVlJ8JxX_6eZQnJmQ0xEcZqOx8C_Zf3Y6M',
+    SUPABASE_URL: 'https://sqgxscrwcffjfomlsoyf.supabase.co',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxZ3hzY3J3Y2ZmamZvbWxzb3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTE2NjMsImV4cCI6MjEwMDIyNzY2M30.TtLYJKBM7XxrdsHiHS9EGOxnyniSdAhBLPUkhpReidU',
 
     // Demo Mode - Set to FALSE for production with real database
     DEMO_MODE: false,
