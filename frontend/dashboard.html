@@ -1216,6 +1216,9 @@
         <main class="main-content">
             <!-- Top Bar -->
             <div class="topbar">
+                <button id="backToTodayBtn" class="btn" style="display: none; margin-right: 16px;" onclick="window.location.href='dashboard.html'">
+                    ← Retour aux Patients du Jour
+                </button>
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>
                     <input type="text" placeholder="Rechercher patient, dossier, radio, diagnostic...">
@@ -3048,6 +3051,20 @@
 
                     console.log('✅ Patient found:', patient.first_name, patient.last_name);
 
+                    // Hide "Patients du Jour" section when viewing specific patient
+                    const todaySection = document.getElementById('todayPatientsSection');
+                    if (todaySection) {
+                        todaySection.style.display = 'none';
+                        console.log('✅ Hidden "Patients du Jour" section');
+                    }
+
+                    // Show back button
+                    const backBtn = document.getElementById('backToTodayBtn');
+                    if (backBtn) {
+                        backBtn.style.display = 'block';
+                        console.log('✅ Showing back button');
+                    }
+
                     // Update patient info in UI
                     updatePatientInfo(patient);
 
@@ -3088,12 +3105,14 @@
 
         // Update patient info in the UI
         function updatePatientInfo(patient) {
+            console.log('🎨 Updating patient info UI for:', patient.first_name, patient.last_name);
             const patientName = `${patient.first_name} ${patient.last_name}`;
             const patientAge = calculateAge(patient.date_of_birth);
 
             // Update any patient name displays
             document.querySelectorAll('.patient-name').forEach(el => {
                 el.textContent = patientName;
+                console.log('✅ Updated .patient-name element:', el);
             });
 
             // Update patient name inputs
@@ -3105,7 +3124,20 @@
             const header = document.querySelector('.page-header h2');
             if (header) {
                 header.innerHTML = `🦷 Dashboard Patient - ${patientName}`;
+                console.log('✅ Updated page header');
             }
+
+            // Scroll to patient cockpit section
+            setTimeout(() => {
+                const patientSection = document.querySelector('.patient-info-card');
+                if (patientSection) {
+                    patientSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    patientSection.style.animation = 'pulse 0.5s ease-in-out 2';
+                    console.log('✅ Scrolled to patient section');
+                } else {
+                    console.warn('⚠️ .patient-info-card not found for scrolling');
+                }
+            }, 500);
 
             // Update patient metadata fields
             const emailEl = document.getElementById('patient-email');
