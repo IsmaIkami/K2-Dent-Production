@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📅 Agenda - K2 Dent Pro</title>
+    <title>📅 Agenda - DentalCockpit Pro</title>
 
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1075,23 +1075,23 @@
             <div class="sidebar-content">
                 <div class="logo">
                     <div class="logo-icon">🦷</div>
-                    <div class="logo-text">K2 DENT</div>
+                    <div class="logo-text">DentalCockpit Pro</div>
                 </div>
 
                 <nav>
                     <div class="nav-section">
                         <div class="nav-title">Navigation</div>
-                        <a href="dashboard.html" class="nav-item">
-                            <span>📊</span>
-                            <span>Dashboard Patient</span>
+                        <a href="calendar.html" class="nav-item active">
+                            <span>🏠</span>
+                            <span>Agenda (Accueil)</span>
                         </a>
                         <a href="patients.html" class="nav-item">
                             <span>👥</span>
                             <span>Patients</span>
                         </a>
-                        <a href="calendar.html" class="nav-item active">
-                            <span>📅</span>
-                            <span>Agenda</span>
+                        <a href="dashboard.html" class="nav-item">
+                            <span>📊</span>
+                            <span>Dashboard Patient</span>
                         </a>
                         <a href="treatment.html" class="nav-item">
                             <span>🎯</span>
@@ -1479,8 +1479,8 @@
         </div>
     </div>
 
-    <script src="js/config.js?v=4"></script>
-    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/config.js?v=5"></script>
+    <script src="js/supabase-client.js?v=5"></script>
     <script>
         let currentDate = new Date();
         let currentView = 'list'; // Default to day view (list filtered by today)
@@ -1642,14 +1642,25 @@
                 }
 
                 // Real Supabase mode
+                // Optimize: Only load appointments for current month ± 1 month
+                const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+                const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
+                const startDateStr = startDate.toISOString().split('T')[0];
+                const endDateStr = endDate.toISOString().split('T')[0];
+
+                console.log(`📅 Loading appointments from ${startDateStr} to ${endDateStr}`);
+
                 const { data, error } = await window.supabaseClient
                     .from('appointments')
                     .select('*, patient:patients(*)')
+                    .gte('appointment_date', startDateStr)
+                    .lte('appointment_date', endDateStr)
                     .order('appointment_date', { ascending: true })
                     .order('start_time', { ascending: true });
 
                 if (error) throw error;
                 appointments = data || [];
+                console.log(`✅ Loaded ${appointments.length} appointments (filtered by date range)`);
             } catch (error) {
                 console.error('Error loading appointments:', error);
                 appointments = [];
@@ -2239,7 +2250,7 @@
 
             // Demo mode - don't save
             if (window.K2_CONFIG?.DEMO_MODE) {
-                alert('📊 MODE DEMO\n\nLes modifications ne sont pas sauvegardées en mode démo.\n\nPour utiliser K2 Dent en production:\n1. Créez un projet Supabase sur supabase.com\n2. Ajoutez vos credentials dans js/config.js\n3. Déployez les tables SQL depuis le dossier /supabase\n4. Définissez DEMO_MODE = false');
+                alert('📊 MODE DEMO\n\nLes modifications ne sont pas sauvegardées en mode démo.\n\nPour utiliser DentalCockpit Pro en production:\n1. Créez un projet Supabase sur supabase.com\n2. Ajoutez vos credentials dans js/config.js\n3. Déployez les tables SQL depuis le dossier /supabase\n4. Définissez DEMO_MODE = false');
                 closeAppointmentModal();
                 return;
             }
@@ -2322,15 +2333,17 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            document.getElementById('prevMonth').addEventListener('click', () => {
+            document.getElementById('prevMonth').addEventListener('click', async () => {
                 currentDate.setMonth(currentDate.getMonth() - 1);
+                await loadAppointments(); // Reload appointments for new date range
                 renderMiniCalendar();
                 renderMainCalendar();
                 updateStats();
             });
 
-            document.getElementById('nextMonth').addEventListener('click', () => {
+            document.getElementById('nextMonth').addEventListener('click', async () => {
                 currentDate.setMonth(currentDate.getMonth() + 1);
+                await loadAppointments(); // Reload appointments for new date range
                 renderMiniCalendar();
                 renderMainCalendar();
                 updateStats();

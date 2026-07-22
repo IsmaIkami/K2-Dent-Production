@@ -43,6 +43,12 @@ let supabaseClient = null;
  * Call this once at app startup
  */
 function initSupabase() {
+  // Return true if already initialized (prevent multiple GoTrueClient instances)
+  if (supabaseClient) {
+    console.log('✅ Supabase already initialized (reusing existing client)');
+    return true;
+  }
+
   if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
     console.error('⚠️ Supabase not configured! Please set URL and ANON_KEY in js/supabase-client.js');
     return false;
@@ -1020,8 +1026,7 @@ const Realtime = {
 // EXPORT
 // ============================================================================
 
-// Make available globally
-window.supabaseClient = supabaseClient;
+// Export functions and objects globally
 window.DB = DB;
 window.Realtime = Realtime;
 window.initSupabase = initSupabase;
@@ -1030,6 +1035,7 @@ window.initSupabase = initSupabase;
 if (SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
   const initialized = initSupabase();
   if (initialized) {
+    // Export the initialized client
     window.supabaseClient = supabaseClient;
     console.log('✅ Supabase client available at window.supabaseClient');
   }
