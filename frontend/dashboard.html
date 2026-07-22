@@ -1322,14 +1322,22 @@
                     </div>
                 </div>
 
-                <!-- Dashboard Stats -->
+                <!-- Cockpit 360° - KPIs Cabinet Dentaire -->
+                <div style="margin-bottom: 16px;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                        <span>🎯</span>
+                        <span>Cockpit 360° - Vue Praticien</span>
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Indicateurs clés pour suivi optimal du patient</p>
+                </div>
+
                 <div class="dashboard-grid">
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
                                 <div class="stat-title">Dernière Visite</div>
-                                <div class="stat-value">4j</div>
-                                <div class="stat-change positive">✓ À jour</div>
+                                <div class="stat-value" id="kpi-last-visit">-</div>
+                                <div class="stat-change" id="kpi-last-visit-status">Chargement...</div>
                             </div>
                             <div class="stat-icon" style="background: rgba(0, 200, 150, 0.15); color: var(--secondary);">
                                 📅
@@ -1340,12 +1348,12 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-title">Traitements Actifs</div>
-                                <div class="stat-value">3</div>
-                                <div class="stat-change">En cours</div>
+                                <div class="stat-title">RDV Total</div>
+                                <div class="stat-value" id="kpi-total-appointments">0</div>
+                                <div class="stat-change" id="kpi-next-appointment">Aucun planifié</div>
                             </div>
                             <div class="stat-icon" style="background: rgba(0, 102, 255, 0.15); color: var(--primary);">
-                                🎯
+                                📆
                             </div>
                         </div>
                     </div>
@@ -1353,9 +1361,9 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-title">Analyses IA</div>
-                                <div class="stat-value">12</div>
-                                <div class="stat-change positive">+3 ce mois</div>
+                                <div class="stat-title">Anamnèses IA</div>
+                                <div class="stat-value" id="kpi-anamnesis-count">0</div>
+                                <div class="stat-change" id="kpi-anamnesis-last">Aucune</div>
                             </div>
                             <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">
                                 🤖
@@ -1366,12 +1374,38 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-title">Risque Global</div>
-                                <div class="stat-value" style="font-size: 28px; color: var(--warning);">Modéré</div>
-                                <div class="stat-change">Surveillance +</div>
+                                <div class="stat-title">Alertes Risques</div>
+                                <div class="stat-value" id="kpi-risk-level">Faible</div>
+                                <div class="stat-change" id="kpi-risk-details">Aucun risque détecté</div>
                             </div>
                             <div class="stat-icon" style="background: rgba(255, 149, 0, 0.15); color: var(--warning);">
                                 ⚠️
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Prescriptions</div>
+                                <div class="stat-value" id="kpi-prescriptions-count">0</div>
+                                <div class="stat-change" id="kpi-prescriptions-last">Aucune</div>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(255, 59, 48, 0.15); color: var(--danger);">
+                                💊
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Radiographies</div>
+                                <div class="stat-value" id="kpi-xrays-count">0</div>
+                                <div class="stat-change" id="kpi-xrays-last">Aucune</div>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(0, 200, 150, 0.15); color: var(--secondary);">
+                                📷
                             </div>
                         </div>
                     </div>
@@ -2820,7 +2854,10 @@
 
         // Load patient data from Supabase by NISS
         async function loadPatientByNISS(niss) {
-            if (!supabaseInitialized) return null;
+            if (!supabaseInitialized) {
+                showPatientLoadError('Supabase non initialisé');
+                return null;
+            }
 
             try {
                 const patient = await DB.getPatientByNISS(niss);
@@ -2838,13 +2875,32 @@
                     // Load medical data
                     await loadMedicalData();
 
+                    // Load KPIs (Cockpit 360°)
+                    await loadPatientKPIs(patient.id);
+
                     console.log('✅ Patient loaded:', patient.first_name, patient.last_name);
                     return patient;
+                } else {
+                    showPatientLoadError(`Patient introuvable avec NISS ${formatNISS(niss)}`);
                 }
             } catch (error) {
                 console.error('Error loading patient:', error);
+                showPatientLoadError(`Erreur lors du chargement: ${error.message}`);
             }
             return null;
+        }
+
+        function showPatientLoadError(message) {
+            // Update patient name to show error
+            document.querySelectorAll('.patient-name').forEach(el => {
+                el.innerHTML = `❌ ${message} <br><small style="font-size: 14px; font-weight: 400; color: var(--text-secondary);">Veuillez <a href="patients.html" style="color: var(--primary);">créer ce patient</a> ou vérifier le NISS</small>`;
+            });
+
+            // Clear all fields
+            ['patient-email', 'patient-phone', 'patient-dob', 'patient-gender', 'patient-niss', 'patient-mutuelle', 'patient-address'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = 'Non disponible';
+            });
         }
 
         // Update patient info in the UI
@@ -3056,6 +3112,122 @@
         }
 
         // =================================================================
+        // COCKPIT 360° - KPIs CABINET DENTAIRE
+        // =================================================================
+
+        async function loadPatientKPIs(patientId) {
+            if (!patientId) return;
+
+            try {
+                // Load all data in parallel
+                const [appointments, anamneses, prescriptions, xrays, timeline] = await Promise.all([
+                    DB.getPatientAppointments(patientId),
+                    DB.getPatientAnamnesis(patientId),
+                    DB.getPatientPrescriptions(patientId),
+                    DB.getPatientXrays(patientId),
+                    DB.getPatientTimeline(patientId)
+                ]);
+
+                // KPI 1: Dernière visite
+                if (timeline && timeline.length > 0) {
+                    const lastVisit = timeline.find(e => e.type === 'consultation' || e.type === 'treatment');
+                    if (lastVisit) {
+                        const daysSince = Math.floor((new Date() - new Date(lastVisit.created_at)) / (1000 * 60 * 60 * 24));
+                        document.getElementById('kpi-last-visit').textContent = daysSince === 0 ? "Aujourd'hui" : `${daysSince}j`;
+                        document.getElementById('kpi-last-visit-status').textContent = daysSince < 180 ? '✓ À jour' : '⚠️ Rappel nécessaire';
+                        document.getElementById('kpi-last-visit-status').className = daysSince < 180 ? 'stat-change positive' : 'stat-change negative';
+                    }
+                }
+
+                // KPI 2: Rendez-vous
+                if (appointments) {
+                    document.getElementById('kpi-total-appointments').textContent = appointments.length;
+                    const futureAppointments = appointments.filter(a => new Date(a.appointment_date) > new Date());
+                    if (futureAppointments.length > 0) {
+                        const nextAppt = futureAppointments[0];
+                        const daysUntil = Math.floor((new Date(nextAppt.appointment_date) - new Date()) / (1000 * 60 * 60 * 24));
+                        document.getElementById('kpi-next-appointment').textContent = daysUntil === 0 ? "Aujourd'hui" : `Dans ${daysUntil}j`;
+                    }
+                }
+
+                // KPI 3: Anamnèses IA
+                if (anamneses) {
+                    const aiAnamneses = anamneses.filter(a => a.type === 'AI');
+                    document.getElementById('kpi-anamnesis-count').textContent = aiAnamneses.length;
+                    if (aiAnamneses.length > 0) {
+                        const lastAI = new Date(aiAnamneses[0].created_at);
+                        const daysSince = Math.floor((new Date() - lastAI) / (1000 * 60 * 60 * 24));
+                        document.getElementById('kpi-anamnesis-last').textContent = daysSince === 0 ? "Aujourd'hui" : `Il y a ${daysSince}j`;
+                    }
+                }
+
+                // KPI 4: Alertes risques
+                calculateRiskLevel();
+
+                // KPI 5: Prescriptions
+                if (prescriptions) {
+                    document.getElementById('kpi-prescriptions-count').textContent = prescriptions.length;
+                    if (prescriptions.length > 0) {
+                        const lastPrescription = new Date(prescriptions[0].created_at);
+                        const daysSince = Math.floor((new Date() - lastPrescription) / (1000 * 60 * 60 * 24));
+                        document.getElementById('kpi-prescriptions-last').textContent = daysSince === 0 ? "Aujourd'hui" : `Il y a ${daysSince}j`;
+                    }
+                }
+
+                // KPI 6: Radiographies
+                if (xrays) {
+                    document.getElementById('kpi-xrays-count').textContent = xrays.length;
+                    if (xrays.length > 0) {
+                        const lastXray = new Date(xrays[0].xray_date);
+                        const daysSince = Math.floor((new Date() - lastXray) / (1000 * 60 * 60 * 24));
+                        document.getElementById('kpi-xrays-last').textContent = daysSince === 0 ? "Aujourd'hui" : `Il y a ${daysSince}j`;
+                    }
+                }
+
+                console.log('✅ KPIs loaded successfully');
+            } catch (error) {
+                console.error('Error loading KPIs:', error);
+            }
+        }
+
+        function calculateRiskLevel() {
+            if (!currentPatient || !currentMedicalData) {
+                document.getElementById('kpi-risk-level').textContent = 'N/A';
+                document.getElementById('kpi-risk-details').textContent = 'Données insuffisantes';
+                return;
+            }
+
+            let riskScore = 0;
+            const risks = [];
+
+            // Facteurs de risque
+            if (currentMedicalData?.allergies?.length > 0) { riskScore += 2; risks.push('Allergies'); }
+            if (currentPatient.smoker) { riskScore += 3; risks.push('Tabac'); }
+            if (currentPatient.diabetes) { riskScore += 3; risks.push('Diabète'); }
+            if (currentPatient.anticoagulant_therapy) { riskScore += 4; risks.push('Anticoagulants'); }
+            if (currentPatient.heart_disease) { riskScore += 4; risks.push('Cardiaque'); }
+            if (currentPatient.hypertension) { riskScore += 2; risks.push('HTA'); }
+
+            // Déterminer le niveau
+            const riskEl = document.getElementById('kpi-risk-level');
+            const detailsEl = document.getElementById('kpi-risk-details');
+
+            if (riskScore === 0) {
+                riskEl.textContent = 'Faible';
+                riskEl.style.color = 'var(--success)';
+                detailsEl.textContent = '✓ Aucun risque';
+            } else if (riskScore <= 5) {
+                riskEl.textContent = 'Modéré';
+                riskEl.style.color = 'var(--warning)';
+                detailsEl.textContent = risks.slice(0, 2).join(', ');
+            } else {
+                riskEl.textContent = 'Élevé';
+                riskEl.style.color = 'var(--danger)';
+                detailsEl.textContent = `⚠️ ${risks.slice(0, 2).join(', ')}`;
+            }
+        }
+
+        // =================================================================
         // MEDICAL DATA MANAGEMENT
         // =================================================================
 
@@ -3068,6 +3240,7 @@
                 currentMedicalData = await DB.getLatestMedicalHistory(currentPatientId);
                 displayMedicalAlerts(currentMedicalData);
                 displayMedicalDataSection(currentMedicalData);
+                calculateRiskLevel(); // Update risk level when medical data changes
             } catch (error) {
                 console.error('Error loading medical data:', error);
                 displayMedicalAlerts(null);
