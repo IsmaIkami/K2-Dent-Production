@@ -1505,7 +1505,26 @@
         // Load patients
         async function loadPatients() {
             try {
+                // Demo mode with fake data
+                if (window.K2_CONFIG?.DEMO_MODE) {
+                    console.log('📊 DEMO MODE - Using fake patient data');
+                    patients = [
+                        { id: 'demo-1', first_name: 'Jean', last_name: 'Dupont', niss: '85051822317', phone: '0477123456', email: 'jean.dupont@email.be' },
+                        { id: 'demo-2', first_name: 'Marie', last_name: 'Martin', niss: '90031234567', mobile: '0488765432', email: 'marie.martin@email.be' },
+                        { id: 'demo-3', first_name: 'Pierre', last_name: 'Bernard', niss: '78121556789', phone: '0495887766', email: 'pierre.bernard@email.be' },
+                        { id: 'demo-4', first_name: 'Sophie', last_name: 'Dubois', niss: '92051678901', mobile: '0476554433', email: 'sophie.dubois@email.be' },
+                        { id: 'demo-5', first_name: 'Luc', last_name: 'Lambert', niss: '86091234567', phone: '0499112233', email: 'luc.lambert@email.be' }
+                    ];
+                    console.log(`✅ Loaded ${patients.length} demo patients`);
+                    return;
+                }
+
+                // Real Supabase mode
                 console.log('Loading patients from Supabase...');
+                if (!window.supabaseClient) {
+                    throw new Error('Supabase client not initialized');
+                }
+
                 const { data, error } = await window.supabaseClient
                     .from('patients')
                     .select('*')
@@ -1524,13 +1543,66 @@
                 }
             } catch (error) {
                 console.error('❌ Error loading patients:', error);
-                alert('Erreur lors du chargement des patients. Vérifiez la console.');
+
+                // Fallback to demo mode on error
+                if (!window.K2_CONFIG?.DEMO_MODE) {
+                    console.log('⚠️ Switching to DEMO mode due to connection error');
+                    window.K2_CONFIG.DEMO_MODE = true;
+                    await loadPatients();  // Retry in demo mode
+                }
             }
         }
 
         // Load appointments
         async function loadAppointments() {
             try {
+                // Demo mode
+                if (window.K2_CONFIG?.DEMO_MODE) {
+                    console.log('📊 DEMO MODE - Using fake appointment data');
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+
+                    appointments = [
+                        {
+                            id: 'apt-1',
+                            patient_id: 'demo-1',
+                            appointment_date: today.toISOString().split('T')[0],
+                            start_time: '09:00',
+                            end_time: '09:30',
+                            duration_minutes: 30,
+                            type: 'Contrôle périodique',
+                            status: 'confirmed',
+                            patient: patients.find(p => p.id === 'demo-1')
+                        },
+                        {
+                            id: 'apt-2',
+                            patient_id: 'demo-2',
+                            appointment_date: today.toISOString().split('T')[0],
+                            start_time: '14:00',
+                            end_time: '14:45',
+                            duration_minutes: 45,
+                            type: 'Détartrage',
+                            status: 'scheduled',
+                            patient: patients.find(p => p.id === 'demo-2')
+                        },
+                        {
+                            id: 'apt-3',
+                            patient_id: 'demo-3',
+                            appointment_date: tomorrow.toISOString().split('T')[0],
+                            start_time: '10:00',
+                            end_time: '11:00',
+                            duration_minutes: 60,
+                            type: 'Carie complexe',
+                            status: 'scheduled',
+                            patient: patients.find(p => p.id === 'demo-3')
+                        }
+                    ];
+                    console.log(`✅ Loaded ${appointments.length} demo appointments`);
+                    return;
+                }
+
+                // Real Supabase mode
                 const { data, error } = await window.supabaseClient
                     .from('appointments')
                     .select('*, patient:patients(*)')
@@ -1920,6 +1992,13 @@
 
             if (!patientId) {
                 alert('⚠️ Veuillez sélectionner un patient');
+                return;
+            }
+
+            // Demo mode - don't save
+            if (window.K2_CONFIG?.DEMO_MODE) {
+                alert('📊 MODE DEMO\n\nLes modifications ne sont pas sauvegardées en mode démo.\n\nPour utiliser K2 Dent en production:\n1. Créez un projet Supabase sur supabase.com\n2. Ajoutez vos credentials dans js/config.js\n3. Déployez les tables SQL depuis le dossier /supabase\n4. Définissez DEMO_MODE = false');
+                closeAppointmentModal();
                 return;
             }
 

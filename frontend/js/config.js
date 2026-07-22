@@ -8,8 +8,13 @@
 
 window.K2_CONFIG = {
     // Supabase Configuration
-    SUPABASE_URL: 'https://iibdamkqxmyyvxsijsgc.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpYmRhbWtxeG15eXZ4c2lqc2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczMzU2MTEsImV4cCI6MjA1MjkxMTYxMX0.Y_RGIhkzKzVlJ8JxX_6eZQnJmQ0xEcZqOx8C_Zf3Y6M',
+    // ⚠️ IMPORTANT: Replace with your own Supabase credentials
+    // Get them from: https://supabase.com/dashboard/project/_/settings/api
+    SUPABASE_URL: '',  // Ex: 'https://xxxxx.supabase.co'
+    SUPABASE_ANON_KEY: '',  // Your anon/public key
+
+    // Demo Mode (when no Supabase credentials)
+    DEMO_MODE: true,  // Set to false when you have real Supabase
 
     // Application Settings
     APP_NAME: 'K2 DENT',
