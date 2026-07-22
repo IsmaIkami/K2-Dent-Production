@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DentalCockpit Pro - Système Intelligent de Gestion Dentaire avec IA">
-    <title>DentalCockpit Pro - Gestion Cabinet Dentaire Intelligente</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title>DentalCockpit Pro - Connexion</title>
     <style>
         * {
             margin: 0;
@@ -12,366 +12,451 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --secondary: #00C896;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #2A3347;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #24292f;
-            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background gradient */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0, 200, 150, 0.1) 0%, transparent 50%);
+            animation: gradient-shift 15s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-50px, -50px); }
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
         }
 
-        /* Header */
-        header {
-            border-bottom: 1px solid #d0d7de;
-            padding: 24px 0;
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            animation: slide-up 0.6s ease-out;
         }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .logo {
-            font-size: 20px;
-            font-weight: 600;
-            color: #24292f;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #24292f;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .nav-links a:hover {
-            color: #0969da;
-        }
-
-        .btn-app {
-            background: #0969da;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-
-        .btn-app:hover {
-            background: #0860ca;
-            color: white;
-        }
-
-        /* Hero Section */
-        .hero {
+        .logo-section {
             text-align: center;
-            padding: 120px 0 80px;
-        }
-
-        h1 {
-            font-size: 48px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #24292f;
-        }
-
-        .tagline {
-            font-size: 20px;
-            color: #57606a;
             margin-bottom: 40px;
         }
 
-        .cta-buttons {
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
             display: flex;
-            gap: 16px;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 60px;
+            font-size: 42px;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+            animation: float 3s ease-in-out infinite;
         }
 
-        .btn-primary {
-            background: #238636;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            transition: background 0.2s;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
-        .btn-primary:hover {
-            background: #2ea043;
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #24292f;
-            padding: 14px 28px;
-            border-radius: 6px;
-            border: 1px solid #d0d7de;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background: #f6f8fa;
-            border-color: #57606a;
-        }
-
-        /* Problem Section */
-        .section {
-            padding: 60px 0;
-            border-top: 1px solid #d0d7de;
-        }
-
-        .section-title {
-            font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .section-subtitle {
-            font-size: 18px;
-            color: #57606a;
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-            margin-top: 48px;
-        }
-
-        .feature {
-            padding: 24px;
-            background: #f6f8fa;
-            border-radius: 8px;
-        }
-
-        .feature h3 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            color: #24292f;
-        }
-
-        .feature p {
-            color: #57606a;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* Resources Section */
-        .resources {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
-        }
-
-        .resource-card {
-            border: 1px solid #d0d7de;
-            border-radius: 8px;
-            padding: 24px;
-            text-decoration: none;
-            color: #24292f;
-            transition: all 0.2s;
-        }
-
-        .resource-card:hover {
-            border-color: #0969da;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .resource-card h3 {
-            font-size: 18px;
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 8px;
-            color: #0969da;
         }
 
-        .resource-card p {
-            color: #57606a;
+        .logo-subtitle {
             font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        /* Footer */
-        footer {
-            border-top: 1px solid #d0d7de;
-            padding: 40px 0;
+        .welcome-text {
             text-align: center;
-            color: #57606a;
+            margin-bottom: 32px;
+        }
+
+        .welcome-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .welcome-text p {
             font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        .footer-content {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 16px;
+        .form-group {
+            margin-bottom: 24px;
         }
 
-        .footer-content a {
-            color: #57606a;
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.05);
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 102, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .login-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 102, 255, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-message {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            color: #FF3B30;
+            font-size: 14px;
+            display: none;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .footer-text a {
+            color: var(--primary);
             text-decoration: none;
+            font-weight: 600;
         }
 
-        .footer-content a:hover {
-            color: #0969da;
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading state */
+        .login-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .login-btn.loading span::after {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-left: 8px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 36px;
+        @media (max-width: 600px) {
+            .login-card {
+                padding: 36px 28px;
             }
 
-            .tagline {
-                font-size: 18px;
+            .logo-icon {
+                width: 64px;
+                height: 64px;
+                font-size: 34px;
             }
 
-            .cta-buttons {
-                flex-direction: column;
-                align-items: stretch;
+            .logo-text {
+                font-size: 24px;
             }
 
-            .nav-links {
-                gap: 16px;
-                font-size: 13px;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 12px;
+            .welcome-text h2 {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo">🦷 DentalCockpit Pro</div>
-                <div class="nav-links">
-                    <a href="#features">Fonctionnalités</a>
-                    <a href="#technology">Technologie</a>
-                    <a href="#contact">Contact</a>
-                    <a href="/K2-Dent-Production/login.html" class="btn-app">Accéder à l'App</a>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo-icon">🦷</div>
+                <div class="logo-text">DentalCockpit Pro</div>
+                <div class="logo-subtitle">Système Intelligent de Gestion Dentaire</div>
+            </div>
+
+            <div class="welcome-text">
+                <h2>Bienvenue</h2>
+                <p>Connectez-vous pour accéder à votre espace professionnel</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                ❌ Identifiants incorrects. Veuillez réessayer.
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Identifiant</label>
+                    <input
+                        type="text"
+                        id="username"
+                        class="form-input"
+                        placeholder="Votre identifiant"
+                        autocomplete="username"
+                        required
+                    >
                 </div>
-            </nav>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Mot de passe</label>
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-input"
+                            placeholder="••••••••"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span>Se connecter</span>
+                </button>
+            </form>
+
+            <div class="footer-text">
+                <p>Développé avec ❤️ par <a href="mailto:is.sialyen@gmail.com">Ismail Sialyen</a></p>
+                <p style="margin-top: 8px; font-size: 11px;">Powered by RCE AI Engine</p>
+            </div>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>🦷 DentalCockpit Pro</h1>
-                <p class="tagline">Système Intelligent de Gestion Dentaire avec IA</p>
-                <div class="cta-buttons">
-                    <a href="/K2-Dent-Production/login.html" class="btn-primary">🚀 Accéder à l'Application</a>
-                    <a href="#technology" class="btn-secondary">🤖 Technologie IA</a>
-                </div>
-            </div>
-        </section>
+    <script>
+        // Configuration - À MODIFIER selon vos besoins
+        const VALID_CREDENTIALS = {
+            username: 'admin',
+            password: 'dentalcockpitk2',
+            redirectUrl: '/K2-Dent-Production/frontend/dashboard.html'
+        };
 
-        <section id="features" class="section">
-            <div class="container">
-                <h2 class="section-title">Fonctionnalités Complètes</h2>
-                <p class="section-subtitle">Tout ce dont vous avez besoin pour gérer votre cabinet dentaire</p>
-                <div class="features">
-                    <div class="feature">
-                        <h3>👥 Gestion Patients</h3>
-                        <p>Dossiers patients complets avec historique, BIM, mutuelles et alertes médicales</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📅 Agenda Intelligent</h3>
-                        <p>Calendrier optimisé avec vues jour/semaine/mois et recommandations IA</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🎯 Plan de Traitement</h3>
-                        <p>Carte dentaire interactive (FDI), codes INAMI 2026, calcul remboursements</p>
-                    </div>
-                    <div class="feature">
-                        <h3>💰 Facturation INAMI</h3>
-                        <p>Génération automatique de devis, export PDF, gestion tiers payant</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🤖 IA Intelligente</h3>
-                        <p>Recommandations de traitements basées sur RCE (Relational Cognitive Engine)</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📊 Rapports & Analytics</h3>
-                        <p>Dashboard temps réel avec métriques cabinet et analyses prédictives</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = event.currentTarget;
 
-        <section id="technology" class="section">
-            <div class="container">
-                <h2 class="section-title">Technologie RCE</h2>
-                <p class="section-subtitle">Powered by Relational Cognitive Engine - Recherche publiée dans Springer's Cognitive Computation</p>
-                <div class="features">
-                    <div class="feature">
-                        <h3>🧠 IA Explicable</h3>
-                        <p>Chaque recommandation est traçable et justifiable, conforme RGPD</p>
-                    </div>
-                    <div class="feature">
-                        <h3>✅ Zéro Hallucination</h3>
-                        <p>Raisonnement basé sur des graphes de connaissances validés</p>
-                    </div>
-                    <div class="feature">
-                        <h3>⚡ Performance</h3>
-                        <p>Inférence ultra-rapide avec empreinte énergétique réduite</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🔒 Sécurité & Conformité</h3>
-                        <p>RGPD, authentification sécurisée, données patient chiffrées</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
 
-        <section class="section" style="background: #f6f8fa;">
-            <div class="container">
-                <h2 class="section-title">Prêt à transformer votre cabinet?</h2>
-                <p class="section-subtitle">Rejoignez les dentistes qui utilisent DentalCockpit Pro</p>
-                <div style="text-align: center; margin-top: 32px;">
-                    <a href="/K2-Dent-Production/login.html" class="btn-primary" style="font-size: 18px; padding: 16px 32px;">
-                        🦷 Accéder à l'Application
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <span>© 2026 Ismail Sialyen</span>
-                <a href="mailto:is.sialyen@gmail.com">Contact</a>
-                <span>Powered by RCE AI Engine</span>
-            </div>
-            <p style="font-size: 12px; color: #8b949e;">
-                Design by Ismail Sialyen - Head Engineer & Paper Author
-            </p>
-        </div>
-    </footer>
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loginBtn = document.getElementById('loginBtn');
+
+            // Clear previous error
+            errorMessage.classList.remove('show');
+
+            // Add loading state
+            loginBtn.classList.add('loading');
+
+            // Simulate slight delay for better UX
+            setTimeout(() => {
+                if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
+                    // Success - Store session
+                    sessionStorage.setItem('dental_authenticated', 'true');
+                    sessionStorage.setItem('dental_user', username);
+                    sessionStorage.setItem('dental_login_time', new Date().toISOString());
+
+                    // Redirect to dashboard
+                    window.location.href = VALID_CREDENTIALS.redirectUrl;
+                } else {
+                    // Error
+                    loginBtn.classList.remove('loading');
+                    errorMessage.classList.add('show');
+
+                    // Shake the input fields
+                    document.getElementById('username').style.animation = 'shake 0.5s';
+                    document.getElementById('password').style.animation = 'shake 0.5s';
+
+                    setTimeout(() => {
+                        document.getElementById('username').style.animation = '';
+                        document.getElementById('password').style.animation = '';
+                    }, 500);
+                }
+            }, 800);
+        });
+
+        // Auto-focus on username field
+        document.getElementById('username').focus();
+    </script>
 </body>
 </html>
