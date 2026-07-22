@@ -287,6 +287,100 @@
             text-decoration: underline;
         }
 
+        /* Profile Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .profile-card {
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-card:hover {
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 102, 255, 0.2);
+        }
+
+        .profile-card.selected {
+            border-color: var(--primary);
+            background: rgba(0, 102, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+        }
+
+        .profile-avatar {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .profile-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Selected Profile Info */
+        .selected-profile-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(0, 102, 255, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .selected-avatar {
+            font-size: 48px;
+        }
+
+        .selected-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .selected-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .change-profile-btn {
+            margin-left: auto;
+            padding: 8px 16px;
+            background: transparent;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .change-profile-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
         /* Loading state */
         .login-btn.loading {
             pointer-events: none;
@@ -328,6 +422,38 @@
             .welcome-text h2 {
                 font-size: 20px;
             }
+
+            .profile-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .profile-card {
+                padding: 16px 8px;
+            }
+
+            .profile-avatar {
+                font-size: 36px;
+                margin-bottom: 8px;
+            }
+
+            .profile-name {
+                font-size: 13px;
+            }
+
+            .profile-role {
+                font-size: 11px;
+            }
+
+            .selected-profile-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .change-profile-btn {
+                margin-left: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -341,25 +467,57 @@
             </div>
 
             <div class="welcome-text">
-                <h2>Bienvenue</h2>
-                <p>Connectez-vous pour accéder à votre espace professionnel</p>
+                <h2>Sélectionnez votre profil</h2>
+                <p>Choisissez votre profil et entrez le mot de passe</p>
             </div>
 
             <div class="error-message" id="errorMessage">
-                ❌ Identifiants incorrects. Veuillez réessayer.
+                ❌ Mot de passe incorrect. Veuillez réessayer.
             </div>
 
-            <form id="loginForm">
-                <div class="form-group">
-                    <label class="form-label" for="username">Identifiant</label>
-                    <input
-                        type="text"
-                        id="username"
-                        class="form-input"
-                        placeholder="Votre identifiant"
-                        autocomplete="username"
-                        required
-                    >
+            <!-- Profile Selection Grid -->
+            <div class="profile-grid" id="profileGrid">
+                <div class="profile-card" data-username="Dr. Sialyen" data-role="Dentiste Principal">
+                    <div class="profile-avatar">👨‍⚕️</div>
+                    <div class="profile-name">Dr. Sialyen</div>
+                    <div class="profile-role">Dentiste Principal</div>
+                </div>
+                <div class="profile-card" data-username="Dr. Martin" data-role="Dentiste">
+                    <div class="profile-avatar">👨‍⚕️</div>
+                    <div class="profile-name">Dr. Martin</div>
+                    <div class="profile-role">Dentiste</div>
+                </div>
+                <div class="profile-card" data-username="Dr. Dubois" data-role="Orthodontiste">
+                    <div class="profile-avatar">👨‍⚕️</div>
+                    <div class="profile-name">Dr. Dubois</div>
+                    <div class="profile-role">Orthodontiste</div>
+                </div>
+                <div class="profile-card" data-username="Dr. Laurent" data-role="Parodontiste">
+                    <div class="profile-avatar">👩‍⚕️</div>
+                    <div class="profile-name">Dr. Laurent</div>
+                    <div class="profile-role">Parodontiste</div>
+                </div>
+                <div class="profile-card" data-username="Sophie" data-role="Assistante">
+                    <div class="profile-avatar">👩‍💼</div>
+                    <div class="profile-name">Sophie</div>
+                    <div class="profile-role">Assistante Dentaire</div>
+                </div>
+                <div class="profile-card" data-username="Admin" data-role="Administrateur">
+                    <div class="profile-avatar">⚙️</div>
+                    <div class="profile-name">Admin</div>
+                    <div class="profile-role">Administrateur</div>
+                </div>
+            </div>
+
+            <!-- Password Form (hidden initially) -->
+            <form id="loginForm" style="display: none;">
+                <div class="selected-profile-info" id="selectedProfileInfo">
+                    <div class="selected-avatar" id="selectedAvatar"></div>
+                    <div>
+                        <div class="selected-name" id="selectedName"></div>
+                        <div class="selected-role" id="selectedRole"></div>
+                    </div>
+                    <button type="button" class="change-profile-btn" onclick="changeProfile()">Changer</button>
                 </div>
 
                 <div class="form-group">
@@ -385,19 +543,76 @@
             </form>
 
             <div class="footer-text">
-                <p>Développé avec ❤️ par <a href="mailto:is.sialyen@gmail.com">Ismail Sialyen</a></p>
+                <p>Développé par <a href="mailto:is.sialyen@gmail.com">Ismail Sialyen</a></p>
                 <p style="margin-top: 8px; font-size: 11px;">Powered by RCE AI Engine</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuration - À MODIFIER selon vos besoins
-        const VALID_CREDENTIALS = {
-            username: 'admin',
-            password: 'dentalcockpitk2',
-            redirectUrl: 'frontend/dashboard.html'
-        };
+        // Configuration - Tous les profils utilisent le même mot de passe
+        const MASTER_PASSWORD = 'dentalcockpitk2';
+        const REDIRECT_URL = 'frontend/dashboard.html';
+
+        let selectedUsername = null;
+        let selectedAvatar = null;
+        let selectedRole = null;
+
+        // Profile selection handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileCards = document.querySelectorAll('.profile-card');
+            const profileGrid = document.getElementById('profileGrid');
+            const loginForm = document.getElementById('loginForm');
+
+            profileCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove previous selection
+                    profileCards.forEach(c => c.classList.remove('selected'));
+
+                    // Select this card
+                    this.classList.add('selected');
+
+                    // Get profile data
+                    selectedUsername = this.dataset.username;
+                    selectedRole = this.dataset.role;
+                    selectedAvatar = this.querySelector('.profile-avatar').textContent;
+
+                    // Show password form
+                    profileGrid.style.display = 'none';
+                    loginForm.style.display = 'block';
+
+                    // Update selected profile info
+                    document.getElementById('selectedAvatar').textContent = selectedAvatar;
+                    document.getElementById('selectedName').textContent = selectedUsername;
+                    document.getElementById('selectedRole').textContent = selectedRole;
+
+                    // Focus on password field
+                    setTimeout(() => {
+                        document.getElementById('password').focus();
+                    }, 100);
+                });
+            });
+        });
+
+        // Change profile function
+        function changeProfile() {
+            const profileGrid = document.getElementById('profileGrid');
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Hide form, show profiles
+            loginForm.style.display = 'none';
+            profileGrid.style.display = 'grid';
+
+            // Clear password and errors
+            document.getElementById('password').value = '';
+            errorMessage.classList.remove('show');
+
+            // Clear selection
+            selectedUsername = null;
+            selectedAvatar = null;
+            selectedRole = null;
+        }
 
         // Toggle password visibility
         function togglePassword() {
@@ -417,7 +632,6 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
             const loginBtn = document.getElementById('loginBtn');
@@ -430,33 +644,30 @@
 
             // Simulate slight delay for better UX
             setTimeout(() => {
-                if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
+                if (password === MASTER_PASSWORD) {
                     // Success - Store session
                     sessionStorage.setItem('dental_authenticated', 'true');
-                    sessionStorage.setItem('dental_user', username);
+                    sessionStorage.setItem('dental_user', selectedUsername);
+                    sessionStorage.setItem('dental_user_role', selectedRole);
+                    sessionStorage.setItem('dental_user_avatar', selectedAvatar);
                     sessionStorage.setItem('dental_login_time', new Date().toISOString());
 
                     // Redirect to dashboard
-                    window.location.href = VALID_CREDENTIALS.redirectUrl;
+                    window.location.href = REDIRECT_URL;
                 } else {
                     // Error
                     loginBtn.classList.remove('loading');
                     errorMessage.classList.add('show');
 
-                    // Shake the input fields
-                    document.getElementById('username').style.animation = 'shake 0.5s';
+                    // Shake the password field
                     document.getElementById('password').style.animation = 'shake 0.5s';
 
                     setTimeout(() => {
-                        document.getElementById('username').style.animation = '';
                         document.getElementById('password').style.animation = '';
                     }, 500);
                 }
             }, 800);
         });
-
-        // Auto-focus on username field
-        document.getElementById('username').focus();
     </script>
 </body>
 </html>
