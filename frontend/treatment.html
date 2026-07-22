@@ -4,171 +4,2171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan de Traitement - DentalCockpit Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --primary: #0066FF; --primary-dark: #0052CC; --secondary: #00C896;
-            --danger: #FF3B30; --warning: #FF9500; --success: #34C759; --purple: #8B5CF6;
-            --bg-main: #0A0E1A; --bg-card: #141B2D; --bg-hover: #1E2740;
-            --text-primary: #FFFFFF; --text-secondary: #8B92A8; --border: #2A3347;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --card-hover: #334155;
+            --border-color: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --success-color: #22c55e;
         }
-        [data-theme="light"] {
-            --bg-main: #F5F7FA; --bg-card: #FFFFFF; --bg-hover: #E8ECF1;
-            --text-primary: #1A1D29; --text-secondary: #6B7280; --border: #E5E7EB;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            background: var(--bg-main); color: var(--text-primary); overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
         }
-        .app-container { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
         .sidebar {
-            background: var(--bg-card); border-right: 1px solid var(--border); padding: 24px 16px;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; width: 280px; overflow-y: auto;
+            width: 260px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
         }
-        .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin-bottom: 32px; }
-        .logo-icon {
-            width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .logo-text { font-size: 19px; font-weight: 700; }
-        .nav-section { margin-bottom: 24px; }
-        .nav-title {
-            font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);
-            padding: 0 12px; margin-bottom: 8px; letter-spacing: 0.5px;
+
+        .nav-menu {
+            list-style: none;
         }
+
         .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 12px; border-radius: 10px;
-            cursor: pointer; transition: all 0.2s; color: var(--text-secondary); text-decoration: none; font-size: 14px;
+            margin-bottom: 8px;
         }
-        .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .nav-item.active { background: var(--primary); color: var(--text-primary); }
-        .main-content { margin-left: 280px; display: flex; flex-direction: column; }
-        .topbar {
-            background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 16px 32px;
-            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-        .search-bar { flex: 1; max-width: 500px; position: relative; }
-        .search-bar input {
-            width: 100%; padding: 12px 16px 12px 44px; background: var(--bg-main); border: 1px solid var(--border);
-            border-radius: 10px; color: var(--text-primary); font-size: 14px; transition: all 0.2s;
+
+        .nav-link:hover {
+            background: var(--card-hover);
+            color: var(--text-primary);
         }
-        .search-bar input:focus { outline: none; border-color: var(--primary); background: var(--bg-hover); }
-        .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
-        .topbar-actions { display: flex; gap: 12px; align-items: center; }
+
+        .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card-hover);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* Search Bar */
+        .search-section {
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Dental Chart */
+        .dental-chart {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .teeth-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quadrant-label {
+            grid-column: span 8;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .tooth {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tooth:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            z-index: 10;
+        }
+
+        .tooth-number {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-bottom: 2px;
+        }
+
+        .tooth-status {
+            font-size: 8px;
+            margin-top: 2px;
+        }
+
+        .tooth.healthy {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+
+        .tooth.watch {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+        }
+
+        .tooth.needs-treatment {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+
+        .tooth.planned {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .tooth.completed {
+            background: rgba(148, 163, 184, 0.2);
+            border-color: #94a3b8;
+        }
+
+        .tooth.missing {
+            background: rgba(15, 23, 42, 0.5);
+            border-color: #1e293b;
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* AI Recommendations */
+        .ai-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .ai-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            border-color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .recommendation-info {
+            flex: 1;
+        }
+
+        .recommendation-tooth {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .recommendation-treatment {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .recommendation-code {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .urgency-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .urgency-urgent {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .urgency-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .urgency-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        /* Treatment Plan */
+        .phase-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .phase-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .treatment-list {
+            list-style: none;
+        }
+
+        .treatment-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .treatment-details {
+            flex: 1;
+        }
+
+        .treatment-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .treatment-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .treatment-price {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 12px;
+        }
+
+        .treatment-actions {
+            display: flex;
+            gap: 8px;
+        }
+
         .icon-btn {
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px;
-            cursor: pointer; transition: all 0.2s; position: relative;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background: var(--card-hover);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
-        .icon-btn:hover { background: var(--bg-hover); border-color: var(--primary); transform: translateY(-2px); }
-        .badge {
-            position: absolute; top: -4px; right: -4px; background: var(--danger); color: white;
-            font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+
+        .icon-btn:hover {
+            background: var(--primary-color);
+            color: white;
         }
-        .content { padding: 32px; display: grid; gap: 24px; }
-        .placeholder-panel {
-            background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
-            padding: 80px 32px; text-align: center; min-height: 500px; display: flex;
-            flex-direction: column; align-items: center; justify-content: center;
+
+        /* Financial Summary */
+        .financial-summary {
+            background: linear-gradient(135deg, var(--card-bg), rgba(59, 130, 246, 0.05));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
         }
-        .placeholder-icon { font-size: 120px; margin-bottom: 24px; opacity: 0.8; }
-        .placeholder-title { font-size: 32px; font-weight: 800; margin-bottom: 16px; }
-        .placeholder-description { font-size: 16px; color: var(--text-secondary); line-height: 1.6; max-width: 600px; }
+
+        .financial-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .financial-row:last-child {
+            border-bottom: none;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .financial-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .financial-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .financial-row:last-child .financial-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .financial-row:last-child .financial-value {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: var(--card-hover);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: var(--danger-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Patient List */
+        .patient-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .patient-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .patient-item:hover {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .patient-item.selected {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .patient-info h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .patient-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .patient-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .patient-badge.bim {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-planned {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .status-in-progress {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-billed {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+
+        /* Pricing Breakdown */
+        .pricing-breakdown {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .pricing-row.highlight {
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            margin-top: 8px;
+            padding-top: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-content {
+                margin-left: 220px;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .teeth-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 250px;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        /* INAMI Code Selector */
+        .code-selector {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .code-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .code-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .code-item.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .code-number {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .code-description {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .code-pricing {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="container">
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <div class="logo-icon">🦷</div>
-                <div class="logo-text">DentalCockpit Pro</div>
+                DentalCockpit Pro
             </div>
-            <nav>
-                <div class="nav-section">
-                    <div class="nav-title">Navigation</div>
-                    <a href="dashboard.html" class="nav-item"><span>📊</span><span>Dashboard</span></a>
-                    <a href="patients.html" class="nav-item"><span>👥</span><span>Patients</span></a>
-                    <a href="calendar.html" class="nav-item"><span>📅</span><span>Agenda</span></a>
-                    <a href="treatment.html" class="nav-item active"><span>🎯</span><span>Plan de Traitement</span></a>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-title">Imagerie Médicale</div>
-                    <a href="xrays.html" class="nav-item"><span>📷</span><span>Radiographies X</span></a>
-                    <a href="scanner3d.html" class="nav-item"><span>🔬</span><span>Scanner 3D</span></a>
-                    <a href="photos.html" class="nav-item"><span>🖼️</span><span>Photos Intra-orales</span></a>
-                    <a href="camera.html" class="nav-item"><span>📸</span><span>Caméra Temps Réel</span></a>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-title">Intelligence Artificielle</div>
-                    <a href="ai-analysis.html" class="nav-item"><span>🤖</span><span>Analyses IA</span></a>
-                    <a href="ai-reports.html" class="nav-item"><span>📈</span><span>Rapports Intelligents</span></a>
-                    <a href="ai-history.html" class="nav-item"><span>🔄</span><span>Historique Complet IA</span></a>
-                    <a href="ai-realtime.html" class="nav-item"><span>⚡</span><span>IA Temps Réel</span></a>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-title">Administration</div>
-                    <a href="inami.html" class="nav-item"><span>💳</span><span>INAMI / e-Health</span></a>
-                    <a href="mutuelles.html" class="nav-item"><span>🏥</span><span>Mutuelles</span></a>
-                    <a href="certificates.html" class="nav-item"><span>📄</span><span>Certificats</span></a>
-                    <a href="billing.html" class="nav-item"><span>📊</span><span>Facturation</span></a>
-                </div>
-            </nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span>📊</span> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="patients.html" class="nav-link">
+                        <span>👥</span> Patients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="calendar.html" class="nav-link">
+                        <span>📅</span> Agenda
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="treatment.html" class="nav-link active">
+                        <span>🦷</span> Plan de Traitement
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="prescriptions.html" class="nav-link">
+                        <span>💊</span> Prescriptions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="dental-chart.html" class="nav-link">
+                        <span>🎯</span> Carte Dentaire
+                    </a>
+                </li>
+            </ul>
         </aside>
+
+        <!-- Main Content -->
         <main class="main-content">
-            <div class="topbar">
-                <div class="search-bar">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Rechercher...">
-                </div>
-                <div class="topbar-actions">
-                    <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">🌙</div>
-                    <div class="icon-btn">🔔<span class="badge">5</span></div>
-                    <div class="icon-btn">⚙️</div>
-                    <div class="icon-btn">👤</div>
+            <div class="header">
+                <h1>🦷 Plan de Traitement</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="exportToPDF()">
+                        📄 Exporter PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="showNewTreatmentModal()">
+                        ➕ Nouveau Traitement
+                    </button>
                 </div>
             </div>
-            <div class="content">
-                <div class="placeholder-panel">
-                    <div class="placeholder-icon">🎯</div>
-                    <div class="placeholder-title">Plan de Traitement</div>
-                    <div class="placeholder-description">Module de planification et suivi des traitements dentaires. Création de plans de traitement détaillés, devis, et suivi de l'évolution des interventions.</div>
+
+            <!-- Search Patient -->
+            <div class="search-section">
+                <input type="text" class="search-box" id="patientSearch" placeholder="🔍 Rechercher un patient..." oninput="searchPatients(this.value)">
+            </div>
+
+            <!-- Patient List -->
+            <div class="card" id="patientListCard" style="display: none;">
+                <div class="card-header">
+                    <h3 class="card-title">👥 Patients</h3>
                 </div>
+                <ul class="patient-list" id="patientList"></ul>
+            </div>
+
+            <!-- Selected Patient Info -->
+            <div id="selectedPatientSection" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👤 Patient Sélectionné</h3>
+                        <button class="btn btn-secondary" onclick="clearPatientSelection()">
+                            Changer de patient
+                        </button>
+                    </div>
+                    <div id="selectedPatientInfo"></div>
+                </div>
+
+                <!-- Dental Chart -->
+                <div class="dental-chart">
+                    <div class="card-header">
+                        <h3 class="card-title">🦷 Carte Dentaire Interactive</h3>
+                    </div>
+                    <div class="teeth-grid" id="dentalChart"></div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(34, 197, 94, 0.4); border: 2px solid #22c55e;"></div>
+                            <span>Sain</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(245, 158, 11, 0.4); border: 2px solid #f59e0b;"></div>
+                            <span>Surveillance</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(239, 68, 68, 0.4); border: 2px solid #ef4444;"></div>
+                            <span>Nécessite traitement</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(59, 130, 246, 0.4); border: 2px solid #3b82f6;"></div>
+                            <span>Planifié</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(148, 163, 184, 0.4); border: 2px solid #94a3b8;"></div>
+                            <span>Complété</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(15, 23, 42, 0.5); border: 2px solid #1e293b;"></div>
+                            <span>Manquant</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommendations -->
+                <div class="ai-section">
+                    <div class="ai-header">
+                        <div class="ai-icon">🤖</div>
+                        <h3>Recommandations IA Intelligentes</h3>
+                    </div>
+                    <ul class="recommendation-list" id="aiRecommendations"></ul>
+                </div>
+
+                <!-- Treatment Plan -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 Plan de Traitement Multi-Phases</h3>
+                    </div>
+                    <div id="treatmentPhases"></div>
+                </div>
+
+                <!-- Financial Summary -->
+                <div class="financial-summary">
+                    <h3 style="margin-bottom: 20px; font-weight: 700;">💰 Résumé Financier</h3>
+                    <div class="financial-row">
+                        <span class="financial-label">Total des traitements</span>
+                        <span class="financial-value" id="totalAmount">0.00 €</span>
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Remboursement mutuelle</span>
+                        <span class="financial-value" id="reimbursedAmount" style="color: var(--success-color);">0.00 €</span>
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Part patient</span>
+                        <span class="financial-value" id="patientAmount">0.00 €</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button class="btn btn-success" onclick="validateTreatmentPlan()" style="flex: 1;">
+                        ✓ Valider le Plan
+                    </button>
+                    <button class="btn btn-primary" onclick="exportToPDF()" style="flex: 1;">
+                        📄 Générer Devis PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <div class="empty-state-icon">🦷</div>
+                <h3>Aucun patient sélectionné</h3>
+                <p>Recherchez et sélectionnez un patient pour commencer la planification de traitement</p>
             </div>
         </main>
     </div>
-    <!-- K2 Dent Configuration -->
-    <script src="config.js"></script>
 
+    <!-- Treatment Modal -->
+    <div id="treatmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nouveau Traitement</h2>
+                <button class="close-btn" onclick="closeTreatmentModal()">×</button>
+            </div>
+            <form id="treatmentForm">
+                <div class="form-group">
+                    <label class="form-label">Dent</label>
+                    <input type="text" class="form-input" id="toothNumber" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Code INAMI</label>
+                    <input type="text" class="form-input" id="inamiSearch" placeholder="Rechercher un code INAMI..." oninput="searchINAMICodes(this.value)">
+                    <div class="code-selector" id="codeSelector" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description du traitement</label>
+                    <input type="text" class="form-input" id="treatmentDescription" readonly>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Prix (€)</label>
+                        <input type="number" class="form-input" id="treatmentPrice" step="0.01" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Taux remboursement</label>
+                        <input type="text" class="form-input" id="reimbursementRate" readonly>
+                    </div>
+                </div>
+
+                <div class="pricing-breakdown" id="pricingBreakdown" style="display: none;">
+                    <div class="pricing-row">
+                        <span>Prix total</span>
+                        <span id="breakdownTotal">0.00 €</span>
+                    </div>
+                    <div class="pricing-row">
+                        <span>Remboursement mutuelle</span>
+                        <span id="breakdownReimb" style="color: var(--success-color);">0.00 €</span>
+                    </div>
+                    <div class="pricing-row highlight">
+                        <span>Part patient</span>
+                        <span id="breakdownPatient">0.00 €</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phase du traitement</label>
+                    <select class="form-select" id="treatmentPhase">
+                        <option value="1">Phase 1 - Urgent</option>
+                        <option value="2">Phase 2 - Restauration</option>
+                        <option value="3">Phase 3 - Prothétique</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Statut</label>
+                    <select class="form-select" id="treatmentStatus">
+                        <option value="planned">Planifié</option>
+                        <option value="in-progress">En cours</option>
+                        <option value="completed">Complété</option>
+                        <option value="billed">Facturé</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Date estimée</label>
+                    <input type="date" class="form-input" id="estimatedDate">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="treatmentNotes" placeholder="Notes additionnelles..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeTreatmentModal()" style="flex: 1;">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        💾 Sauvegarder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Tooltip -->
+    <div id="tooltip" class="tooltip"></div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
     <script>
-        function toggleTheme() {
-            const html = document.documentElement;
-            const themeToggle = document.getElementById('themeToggle');
-            const currentTheme = html.getAttribute('data-theme');
-            if (currentTheme === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '🌙';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.setAttribute('data-theme', 'light');
-                themeToggle.textContent = '☀️';
-                localStorage.setItem('theme', 'light');
+        // INAMI Codes Database (Belgian Nomenclature 2026)
+        const INAMI_CODES = {
+            '301011': { name: 'Consultation cabinet', price: 25.00, reimb: 0.75 },
+            '301033': { name: 'Consultation domicile', price: 35.00, reimb: 0.75 },
+            '301055': { name: 'Consultation urgence', price: 45.00, reimb: 0.75 },
+            '371113': { name: 'Détartrage complet', price: 55.00, reimb: 0.75 },
+            '371135': { name: 'Détartrage partiel', price: 35.00, reimb: 0.75 },
+            '371150': { name: 'Polissage dentaire', price: 25.00, reimb: 0.75 },
+            '372011': { name: 'Radiographie rétro-alvéolaire', price: 15.00, reimb: 0.75 },
+            '372033': { name: 'Radiographie panoramique', price: 35.00, reimb: 0.75 },
+            '372055': { name: 'Radiographie occlusale', price: 20.00, reimb: 0.75 },
+            '374811': { name: 'Obturation amalgame 1 surf', price: 55.00, reimb: 0.75 },
+            '374833': { name: 'Obturation amalgame 2 surf', price: 70.00, reimb: 0.75 },
+            '374856': { name: 'Obturation composite 1 surf', price: 65.00, reimb: 0.75 },
+            '374871': { name: 'Obturation composite 2 surf', price: 85.00, reimb: 0.75 },
+            '374893': { name: 'Obturation composite 3 surf', price: 105.00, reimb: 0.75 },
+            '375211': { name: 'Extraction simple', price: 45.00, reimb: 0.75 },
+            '375233': { name: 'Extraction complexe', price: 75.00, reimb: 0.75 },
+            '375255': { name: 'Extraction chirurgicale', price: 120.00, reimb: 0.75 },
+            '375270': { name: 'Extraction dent de sagesse incluse', price: 180.00, reimb: 0.75 },
+            '377110': { name: 'Traitement canal 1 racine', price: 120.00, reimb: 0.75 },
+            '377132': { name: 'Traitement canal 2 racines', price: 160.00, reimb: 0.75 },
+            '377154': { name: 'Traitement canal 3 racines', price: 200.00, reimb: 0.75 },
+            '377176': { name: 'Traitement canal 4 racines', price: 240.00, reimb: 0.75 },
+            '377191': { name: 'Retraitement endodontique', price: 180.00, reimb: 0.75 },
+            '378012': { name: 'Couronne provisoire', price: 85.00, reimb: 0.38 },
+            '379132': { name: 'Couronne céramique', price: 850.00, reimb: 0.38 },
+            '379154': { name: 'Couronne céramo-métallique', price: 650.00, reimb: 0.38 },
+            '379176': { name: 'Couronne métallique', price: 450.00, reimb: 0.38 },
+            '379191': { name: 'Inlay céramique', price: 550.00, reimb: 0.38 },
+            '379213': { name: 'Onlay céramique', price: 650.00, reimb: 0.38 },
+            '389010': { name: 'Bridge 3 éléments céramique', price: 2100.00, reimb: 0.38 },
+            '389032': { name: 'Bridge 3 éléments céramo-métallique', price: 1650.00, reimb: 0.38 },
+            '389054': { name: 'Prothèse partielle résine', price: 550.00, reimb: 0.50 },
+            '389076': { name: 'Prothèse complète résine', price: 750.00, reimb: 0.50 },
+            '389091': { name: 'Prothèse squelettée', price: 1200.00, reimb: 0.50 },
+            '391010': { name: 'Implant dentaire', price: 1500.00, reimb: 0.00 },
+            '391032': { name: 'Pilier implantaire', price: 400.00, reimb: 0.00 },
+            '391054': { name: 'Couronne sur implant', price: 950.00, reimb: 0.00 },
+            '392011': { name: 'Chirurgie parodontale par quadrant', price: 250.00, reimb: 0.50 },
+            '392033': { name: 'Greffe gingivale', price: 350.00, reimb: 0.50 },
+            '393010': { name: 'Facette céramique', price: 650.00, reimb: 0.00 },
+            '394011': { name: 'Blanchiment dentaire complet', price: 450.00, reimb: 0.00 },
+            '395012': { name: 'Gouttière occlusale', price: 280.00, reimb: 0.50 },
+            '396013': { name: 'Orthodontie par semestre', price: 750.00, reimb: 0.50 }
+        };
+
+        // Global State
+        let currentPatient = null;
+        let currentTreatments = [];
+        let selectedTooth = null;
+        let selectedINAMICode = null;
+        let allPatients = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDentalChart();
+            loadPatients();
+
+            // Form submission
+            document.getElementById('treatmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveTreatment();
+            });
+        });
+
+        // Load Patients
+        async function loadPatients() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('patients')
+                    .select('*')
+                    .order('last_name', { ascending: true });
+
+                if (error) throw error;
+
+                allPatients = data || [];
+                displayPatients(allPatients);
+            } catch (error) {
+                console.error('Error loading patients:', error);
+                showNotification('Erreur lors du chargement des patients', 'error');
             }
         }
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            const html = document.documentElement;
-            const themeToggle = document.getElementById('themeToggle');
-            if (savedTheme === 'light') {
-                html.setAttribute('data-theme', 'light');
-                if (themeToggle) themeToggle.textContent = '☀️';
-            } else {
-                html.setAttribute('data-theme', 'dark');
-                if (themeToggle) themeToggle.textContent = '🌙';
+
+        // Search Patients
+        function searchPatients(query) {
+            if (!query.trim()) {
+                document.getElementById('patientListCard').style.display = 'none';
+                return;
+            }
+
+            const filtered = allPatients.filter(patient => {
+                const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();
+                return fullName.includes(query.toLowerCase());
+            });
+
+            displayPatients(filtered);
+            document.getElementById('patientListCard').style.display = 'block';
+        }
+
+        // Display Patients
+        function displayPatients(patients) {
+            const listElement = document.getElementById('patientList');
+            listElement.innerHTML = '';
+
+            if (patients.length === 0) {
+                listElement.innerHTML = '<div class="empty-state"><p>Aucun patient trouvé</p></div>';
+                return;
+            }
+
+            patients.forEach(patient => {
+                const item = document.createElement('li');
+                item.className = 'patient-item';
+                item.onclick = () => selectPatient(patient);
+
+                const isBIM = patient.bim_status === true;
+                const mutuelle = patient.mutuelle || 'Non renseignée';
+
+                item.innerHTML = `
+                    <div class="patient-info">
+                        <h4>${patient.first_name} ${patient.last_name}</h4>
+                        <div class="patient-meta">
+                            📋 ${patient.national_number || 'N/A'} | 🏥 ${mutuelle}
+                        </div>
+                    </div>
+                    ${isBIM ? '<span class="patient-badge bim">BIM</span>' : ''}
+                `;
+
+                listElement.appendChild(item);
+            });
+        }
+
+        // Select Patient
+        async function selectPatient(patient) {
+            currentPatient = patient;
+            document.getElementById('patientListCard').style.display = 'none';
+            document.getElementById('patientSearch').value = `${patient.first_name} ${patient.last_name}`;
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('selectedPatientSection').style.display = 'block';
+
+            // Display patient info
+            const infoElement = document.getElementById('selectedPatientInfo');
+            const isBIM = patient.bim_status === true;
+            infoElement.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Patient</div>
+                        <div style="font-weight: 600;">${patient.first_name} ${patient.last_name}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Mutuelle</div>
+                        <div style="font-weight: 600;">${patient.mutuelle || 'Non renseignée'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Statut BIM</div>
+                        <div style="font-weight: 600; color: ${isBIM ? 'var(--success-color)' : 'var(--text-secondary)'};">
+                            ${isBIM ? '✓ Actif' : '✗ Non actif'}
+                        </div>
+                    </div>
+                    ${patient.allergies ? `
+                    <div style="grid-column: span 3;">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">⚠️ Allergies</div>
+                        <div style="font-weight: 600; color: var(--danger-color);">${patient.allergies}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Load patient treatments
+            await loadPatientTreatments(patient.id);
+            updateDentalChart();
+            generateAIRecommendations();
+            displayTreatmentPhases();
+            updateFinancialSummary();
+        }
+
+        // Clear Patient Selection
+        function clearPatientSelection() {
+            currentPatient = null;
+            currentTreatments = [];
+            document.getElementById('patientSearch').value = '';
+            document.getElementById('selectedPatientSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        // Load Patient Treatments
+        async function loadPatientTreatments(patientId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tooth_treatments')
+                    .select('*')
+                    .eq('patient_id', patientId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                currentTreatments = data || [];
+            } catch (error) {
+                console.error('Error loading treatments:', error);
+                currentTreatments = [];
             }
         }
-        document.addEventListener('DOMContentLoaded', loadTheme);
+
+        // Initialize Dental Chart
+        function initializeDentalChart() {
+            const chartElement = document.getElementById('dentalChart');
+            chartElement.innerHTML = '';
+
+            // FDI Notation: 11-18, 21-28, 31-38, 41-48
+            const quadrants = [
+                { label: 'Maxillaire Droit', teeth: [18, 17, 16, 15, 14, 13, 12, 11] },
+                { label: 'Maxillaire Gauche', teeth: [21, 22, 23, 24, 25, 26, 27, 28] },
+                { label: 'Mandibulaire Gauche', teeth: [38, 37, 36, 35, 34, 33, 32, 31] },
+                { label: 'Mandibulaire Droit', teeth: [41, 42, 43, 44, 45, 46, 47, 48] }
+            ];
+
+            quadrants.forEach((quadrant, index) => {
+                if (index > 0) {
+                    const label = document.createElement('div');
+                    label.className = 'quadrant-label';
+                    label.textContent = quadrant.label;
+                    chartElement.appendChild(label);
+                }
+
+                quadrant.teeth.forEach(toothNum => {
+                    const tooth = document.createElement('div');
+                    tooth.className = 'tooth healthy';
+                    tooth.dataset.tooth = toothNum;
+                    tooth.innerHTML = `
+                        <div class="tooth-number">${toothNum}</div>
+                        <div>🦷</div>
+                    `;
+                    tooth.onclick = () => openTreatmentModal(toothNum);
+                    tooth.onmouseenter = (e) => showToothTooltip(e, toothNum);
+                    tooth.onmouseleave = hideTooltip;
+                    chartElement.appendChild(tooth);
+                });
+            });
+        }
+
+        // Update Dental Chart
+        function updateDentalChart() {
+            const teeth = document.querySelectorAll('.tooth');
+
+            teeth.forEach(toothElement => {
+                const toothNum = parseInt(toothElement.dataset.tooth);
+                const treatments = currentTreatments.filter(t => t.tooth_number === toothNum);
+
+                // Reset to healthy
+                toothElement.className = 'tooth healthy';
+
+                if (treatments.length > 0) {
+                    // Determine status based on latest treatment
+                    const latestTreatment = treatments[0];
+
+                    if (latestTreatment.status === 'completed') {
+                        toothElement.className = 'tooth completed';
+                    } else if (latestTreatment.status === 'in-progress') {
+                        toothElement.className = 'tooth planned';
+                    } else if (latestTreatment.status === 'planned') {
+                        toothElement.className = 'tooth planned';
+                    }
+                }
+            });
+        }
+
+        // Show Tooth Tooltip
+        function showToothTooltip(event, toothNum) {
+            const tooltip = document.getElementById('tooltip');
+            const treatments = currentTreatments.filter(t => t.tooth_number === toothNum);
+
+            if (treatments.length > 0) {
+                const content = treatments.map(t => `
+                    <div style="margin-bottom: 8px;">
+                        <strong>${t.treatment_name}</strong><br>
+                        <span style="font-size: 11px;">${t.inami_code} - ${t.status}</span>
+                    </div>
+                `).join('');
+
+                tooltip.innerHTML = `<strong>Dent ${toothNum}</strong><br>${content}`;
+            } else {
+                tooltip.innerHTML = `<strong>Dent ${toothNum}</strong><br>Aucun traitement`;
+            }
+
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY + 10 + 'px';
+            tooltip.classList.add('show');
+        }
+
+        // Hide Tooltip
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+
+        // Generate AI Recommendations
+        function generateAIRecommendations() {
+            const recommendationsElement = document.getElementById('aiRecommendations');
+            recommendationsElement.innerHTML = '';
+
+            if (!currentPatient) return;
+
+            // AI Logic: Analyze dental state and suggest treatments
+            const recommendations = [];
+
+            // Example recommendations based on age and existing treatments
+            const age = calculateAge(currentPatient.date_of_birth);
+
+            // Check for missing preventive care
+            const hasDetartrage = currentTreatments.some(t => t.inami_code === '371113');
+            if (!hasDetartrage) {
+                recommendations.push({
+                    tooth: 'Toutes',
+                    treatment: 'Détartrage complet',
+                    code: '371113',
+                    urgency: 'medium',
+                    reason: 'Prévention recommandée (pas de détartrage récent)'
+                });
+            }
+
+            // Check for untreated teeth
+            const treatedTeeth = [...new Set(currentTreatments.map(t => t.tooth_number))];
+            if (treatedTeeth.length < 28) {
+                // Suggest routine checkup
+                recommendations.push({
+                    tooth: 'Multiple',
+                    treatment: 'Radiographie panoramique',
+                    code: '372033',
+                    urgency: 'low',
+                    reason: 'Diagnostic complet recommandé'
+                });
+            }
+
+            // Age-based recommendations
+            if (age > 50) {
+                recommendations.push({
+                    tooth: 'Toutes',
+                    treatment: 'Examen parodontal',
+                    code: '392011',
+                    urgency: 'medium',
+                    reason: 'Prévention maladies parodontales (âge > 50 ans)'
+                });
+            }
+
+            // Check patient allergies for contra-indications
+            const hasAllergies = currentPatient.allergies && currentPatient.allergies.trim() !== '';
+
+            recommendations.forEach(rec => {
+                const item = document.createElement('li');
+                item.className = 'recommendation-item';
+
+                const codeInfo = INAMI_CODES[rec.code];
+                const contraIndication = hasAllergies ?
+                    `<div style="color: var(--warning-color); font-size: 11px; margin-top: 4px;">⚠️ Vérifier contre-indications (allergies)</div>` : '';
+
+                item.innerHTML = `
+                    <div class="recommendation-info">
+                        <div class="recommendation-tooth">🦷 ${rec.tooth}</div>
+                        <div class="recommendation-treatment">${rec.treatment}</div>
+                        <div class="recommendation-code">INAMI: ${rec.code} - ${codeInfo.price.toFixed(2)} €</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">${rec.reason}</div>
+                        ${contraIndication}
+                    </div>
+                    <div>
+                        <span class="urgency-badge urgency-${rec.urgency}">
+                            ${rec.urgency === 'urgent' ? 'Urgent' : rec.urgency === 'medium' ? 'Moyen' : 'Faible'}
+                        </span>
+                        <button class="btn btn-primary" style="padding: 8px 16px;" onclick="addRecommendedTreatment('${rec.code}')">
+                            ➕ Ajouter
+                        </button>
+                    </div>
+                `;
+
+                recommendationsElement.appendChild(item);
+            });
+
+            if (recommendations.length === 0) {
+                recommendationsElement.innerHTML = '<div class="empty-state"><p>Aucune recommandation pour le moment. État dentaire optimal!</p></div>';
+            }
+        }
+
+        // Calculate Age
+        function calculateAge(dateOfBirth) {
+            if (!dateOfBirth) return 0;
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Add Recommended Treatment
+        function addRecommendedTreatment(inamiCode) {
+            selectedINAMICode = inamiCode;
+            const codeInfo = INAMI_CODES[inamiCode];
+
+            document.getElementById('modalTitle').textContent = 'Ajouter Traitement Recommandé';
+            document.getElementById('toothNumber').value = 'Multiple';
+            document.getElementById('inamiSearch').value = `${inamiCode} - ${codeInfo.name}`;
+            document.getElementById('treatmentDescription').value = codeInfo.name;
+            document.getElementById('treatmentPrice').value = codeInfo.price;
+            document.getElementById('reimbursementRate').value = `${(codeInfo.reimb * 100).toFixed(0)}%`;
+
+            updatePricingBreakdown(codeInfo.price, codeInfo.reimb);
+
+            document.getElementById('treatmentModal').classList.add('active');
+        }
+
+        // Display Treatment Phases
+        function displayTreatmentPhases() {
+            const phasesElement = document.getElementById('treatmentPhases');
+            phasesElement.innerHTML = '';
+
+            // Group treatments by phase
+            const phases = {
+                1: { name: 'Phase 1 - Urgent', treatments: [] },
+                2: { name: 'Phase 2 - Restauration', treatments: [] },
+                3: { name: 'Phase 3 - Prothétique', treatments: [] }
+            };
+
+            currentTreatments.forEach(treatment => {
+                const phase = treatment.phase || 1;
+                if (phases[phase]) {
+                    phases[phase].treatments.push(treatment);
+                }
+            });
+
+            Object.keys(phases).forEach(phaseNum => {
+                const phase = phases[phaseNum];
+                const total = phase.treatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
+
+                const phaseDiv = document.createElement('div');
+                phaseDiv.className = 'phase-section';
+
+                let treatmentsList = '';
+                if (phase.treatments.length > 0) {
+                    treatmentsList = phase.treatments.map(treatment => `
+                        <li class="treatment-item">
+                            <div class="treatment-details">
+                                <div class="treatment-name">
+                                    🦷 Dent ${treatment.tooth_number} - ${treatment.treatment_name}
+                                </div>
+                                <div class="treatment-meta">
+                                    INAMI: ${treatment.inami_code} |
+                                    <span class="status-badge status-${treatment.status}">${getStatusLabel(treatment.status)}</span>
+                                    ${treatment.estimated_date ? `| 📅 ${formatDate(treatment.estimated_date)}` : ''}
+                                </div>
+                            </div>
+                            <span class="treatment-price">${parseFloat(treatment.price).toFixed(2)} €</span>
+                            <div class="treatment-actions">
+                                <button class="icon-btn" onclick="editTreatment(${treatment.id})" title="Éditer">✏️</button>
+                                <button class="icon-btn" onclick="deleteTreatment(${treatment.id})" title="Supprimer">🗑️</button>
+                            </div>
+                        </li>
+                    `).join('');
+                } else {
+                    treatmentsList = '<div class="empty-state"><p style="font-size: 14px;">Aucun traitement dans cette phase</p></div>';
+                }
+
+                phaseDiv.innerHTML = `
+                    <div class="phase-header">
+                        <h4 class="phase-title">${phase.name}</h4>
+                        <span class="phase-total">${total.toFixed(2)} €</span>
+                    </div>
+                    <ul class="treatment-list">${treatmentsList}</ul>
+                `;
+
+                phasesElement.appendChild(phaseDiv);
+            });
+        }
+
+        // Get Status Label
+        function getStatusLabel(status) {
+            const labels = {
+                'planned': 'Planifié',
+                'in-progress': 'En cours',
+                'completed': 'Complété',
+                'billed': 'Facturé'
+            };
+            return labels[status] || status;
+        }
+
+        // Format Date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        // Update Financial Summary
+        function updateFinancialSummary() {
+            const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
+            const reimbursed = currentTreatments.reduce((sum, t) => {
+                const price = parseFloat(t.price) || 0;
+                const rate = parseFloat(t.reimbursement_rate) || 0;
+                return sum + (price * rate);
+            }, 0);
+            const patient = total - reimbursed;
+
+            document.getElementById('totalAmount').textContent = total.toFixed(2) + ' €';
+            document.getElementById('reimbursedAmount').textContent = reimbursed.toFixed(2) + ' €';
+            document.getElementById('patientAmount').textContent = patient.toFixed(2) + ' €';
+        }
+
+        // Open Treatment Modal
+        function openTreatmentModal(toothNum) {
+            selectedTooth = toothNum;
+            document.getElementById('modalTitle').textContent = `Traitement - Dent ${toothNum}`;
+            document.getElementById('toothNumber').value = toothNum;
+            document.getElementById('treatmentModal').classList.add('active');
+
+            // Reset form
+            document.getElementById('inamiSearch').value = '';
+            document.getElementById('treatmentDescription').value = '';
+            document.getElementById('treatmentPrice').value = '';
+            document.getElementById('reimbursementRate').value = '';
+            document.getElementById('pricingBreakdown').style.display = 'none';
+            document.getElementById('codeSelector').style.display = 'none';
+            selectedINAMICode = null;
+        }
+
+        // Show New Treatment Modal
+        function showNewTreatmentModal() {
+            if (!currentPatient) {
+                showNotification('Veuillez d\'abord sélectionner un patient', 'warning');
+                return;
+            }
+
+            selectedTooth = null;
+            document.getElementById('modalTitle').textContent = 'Nouveau Traitement';
+            document.getElementById('toothNumber').value = '';
+            document.getElementById('toothNumber').readOnly = false;
+            document.getElementById('treatmentModal').classList.add('active');
+        }
+
+        // Close Treatment Modal
+        function closeTreatmentModal() {
+            document.getElementById('treatmentModal').classList.remove('active');
+            document.getElementById('treatmentForm').reset();
+            selectedTooth = null;
+            selectedINAMICode = null;
+        }
+
+        // Search INAMI Codes
+        function searchINAMICodes(query) {
+            const selector = document.getElementById('codeSelector');
+
+            if (!query.trim()) {
+                selector.style.display = 'none';
+                return;
+            }
+
+            const filtered = Object.entries(INAMI_CODES).filter(([code, info]) => {
+                return code.includes(query) || info.name.toLowerCase().includes(query.toLowerCase());
+            });
+
+            if (filtered.length > 0) {
+                selector.innerHTML = filtered.map(([code, info]) => `
+                    <div class="code-item" onclick="selectINAMICode('${code}')">
+                        <div class="code-number">${code}</div>
+                        <div class="code-description">${info.name}</div>
+                        <div class="code-pricing">
+                            <span>Prix: ${info.price.toFixed(2)} €</span>
+                            <span>Remb: ${(info.reimb * 100).toFixed(0)}%</span>
+                        </div>
+                    </div>
+                `).join('');
+                selector.style.display = 'block';
+            } else {
+                selector.innerHTML = '<div class="empty-state"><p style="font-size: 12px;">Aucun code trouvé</p></div>';
+                selector.style.display = 'block';
+            }
+        }
+
+        // Select INAMI Code
+        function selectINAMICode(code) {
+            selectedINAMICode = code;
+            const codeInfo = INAMI_CODES[code];
+
+            document.getElementById('inamiSearch').value = `${code} - ${codeInfo.name}`;
+            document.getElementById('treatmentDescription').value = codeInfo.name;
+            document.getElementById('treatmentPrice').value = codeInfo.price;
+            document.getElementById('reimbursementRate').value = `${(codeInfo.reimb * 100).toFixed(0)}%`;
+            document.getElementById('codeSelector').style.display = 'none';
+
+            updatePricingBreakdown(codeInfo.price, codeInfo.reimb);
+        }
+
+        // Update Pricing Breakdown
+        function updatePricingBreakdown(price, reimbRate) {
+            const reimbursed = price * reimbRate;
+            const patient = price - reimbursed;
+
+            // Apply BIM bonus if patient has BIM status
+            const finalReimb = currentPatient && currentPatient.bim_status ? reimbursed * 1.15 : reimbursed;
+            const finalPatient = price - finalReimb;
+
+            document.getElementById('breakdownTotal').textContent = price.toFixed(2) + ' €';
+            document.getElementById('breakdownReimb').textContent = finalReimb.toFixed(2) + ' €';
+            document.getElementById('breakdownPatient').textContent = finalPatient.toFixed(2) + ' €';
+            document.getElementById('pricingBreakdown').style.display = 'block';
+        }
+
+        // Save Treatment
+        async function saveTreatment() {
+            if (!currentPatient) {
+                showNotification('Aucun patient sélectionné', 'error');
+                return;
+            }
+
+            if (!selectedINAMICode) {
+                showNotification('Veuillez sélectionner un code INAMI', 'error');
+                return;
+            }
+
+            const toothNumber = document.getElementById('toothNumber').value;
+            const codeInfo = INAMI_CODES[selectedINAMICode];
+            const price = parseFloat(document.getElementById('treatmentPrice').value);
+            const reimbRate = codeInfo.reimb;
+
+            const treatmentData = {
+                patient_id: currentPatient.id,
+                tooth_number: toothNumber === 'Multiple' ? 0 : parseInt(toothNumber),
+                treatment_name: document.getElementById('treatmentDescription').value,
+                inami_code: selectedINAMICode,
+                price: price,
+                reimbursement_rate: reimbRate,
+                phase: parseInt(document.getElementById('treatmentPhase').value),
+                status: document.getElementById('treatmentStatus').value,
+                estimated_date: document.getElementById('estimatedDate').value || null,
+                notes: document.getElementById('treatmentNotes').value || null,
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tooth_treatments')
+                    .insert([treatmentData])
+                    .select();
+
+                if (error) throw error;
+
+                showNotification('Traitement ajouté avec succès', 'success');
+                closeTreatmentModal();
+
+                // Reload treatments
+                await loadPatientTreatments(currentPatient.id);
+                updateDentalChart();
+                displayTreatmentPhases();
+                updateFinancialSummary();
+                generateAIRecommendations();
+            } catch (error) {
+                console.error('Error saving treatment:', error);
+                showNotification('Erreur lors de l\'enregistrement', 'error');
+            }
+        }
+
+        // Edit Treatment
+        async function editTreatment(treatmentId) {
+            const treatment = currentTreatments.find(t => t.id === treatmentId);
+            if (!treatment) return;
+
+            // Populate form
+            selectedTooth = treatment.tooth_number;
+            selectedINAMICode = treatment.inami_code;
+
+            document.getElementById('modalTitle').textContent = 'Modifier Traitement';
+            document.getElementById('toothNumber').value = treatment.tooth_number || 'Multiple';
+            document.getElementById('inamiSearch').value = `${treatment.inami_code} - ${treatment.treatment_name}`;
+            document.getElementById('treatmentDescription').value = treatment.treatment_name;
+            document.getElementById('treatmentPrice').value = treatment.price;
+            document.getElementById('reimbursementRate').value = `${(treatment.reimbursement_rate * 100).toFixed(0)}%`;
+            document.getElementById('treatmentPhase').value = treatment.phase || 1;
+            document.getElementById('treatmentStatus').value = treatment.status;
+            document.getElementById('estimatedDate').value = treatment.estimated_date || '';
+            document.getElementById('treatmentNotes').value = treatment.notes || '';
+
+            updatePricingBreakdown(treatment.price, treatment.reimbursement_rate);
+
+            document.getElementById('treatmentModal').classList.add('active');
+
+            // Change form submission to update instead of insert
+            const form = document.getElementById('treatmentForm');
+            form.onsubmit = async function(e) {
+                e.preventDefault();
+                await updateTreatment(treatmentId);
+            };
+        }
+
+        // Update Treatment
+        async function updateTreatment(treatmentId) {
+            const toothNumber = document.getElementById('toothNumber').value;
+            const codeInfo = INAMI_CODES[selectedINAMICode];
+            const price = parseFloat(document.getElementById('treatmentPrice').value);
+
+            const updateData = {
+                tooth_number: toothNumber === 'Multiple' ? 0 : parseInt(toothNumber),
+                treatment_name: document.getElementById('treatmentDescription').value,
+                inami_code: selectedINAMICode,
+                price: price,
+                reimbursement_rate: codeInfo.reimb,
+                phase: parseInt(document.getElementById('treatmentPhase').value),
+                status: document.getElementById('treatmentStatus').value,
+                estimated_date: document.getElementById('estimatedDate').value || null,
+                notes: document.getElementById('treatmentNotes').value || null
+            };
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tooth_treatments')
+                    .update(updateData)
+                    .eq('id', treatmentId)
+                    .select();
+
+                if (error) throw error;
+
+                showNotification('Traitement mis à jour avec succès', 'success');
+                closeTreatmentModal();
+
+                // Reset form handler
+                const form = document.getElementById('treatmentForm');
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    saveTreatment();
+                };
+
+                // Reload treatments
+                await loadPatientTreatments(currentPatient.id);
+                updateDentalChart();
+                displayTreatmentPhases();
+                updateFinancialSummary();
+                generateAIRecommendations();
+            } catch (error) {
+                console.error('Error updating treatment:', error);
+                showNotification('Erreur lors de la mise à jour', 'error');
+            }
+        }
+
+        // Delete Treatment
+        async function deleteTreatment(treatmentId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce traitement ?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('tooth_treatments')
+                    .delete()
+                    .eq('id', treatmentId);
+
+                if (error) throw error;
+
+                showNotification('Traitement supprimé avec succès', 'success');
+
+                // Reload treatments
+                await loadPatientTreatments(currentPatient.id);
+                updateDentalChart();
+                displayTreatmentPhases();
+                updateFinancialSummary();
+                generateAIRecommendations();
+            } catch (error) {
+                console.error('Error deleting treatment:', error);
+                showNotification('Erreur lors de la suppression', 'error');
+            }
+        }
+
+        // Validate Treatment Plan
+        async function validateTreatmentPlan() {
+            if (!currentPatient) {
+                showNotification('Aucun patient sélectionné', 'warning');
+                return;
+            }
+
+            if (currentTreatments.length === 0) {
+                showNotification('Aucun traitement à valider', 'warning');
+                return;
+            }
+
+            try {
+                // Update all planned treatments to in-progress
+                const plannedTreatments = currentTreatments.filter(t => t.status === 'planned');
+
+                for (const treatment of plannedTreatments) {
+                    await supabaseClient
+                        .from('tooth_treatments')
+                        .update({ status: 'in-progress' })
+                        .eq('id', treatment.id);
+                }
+
+                showNotification('Plan de traitement validé avec succès', 'success');
+
+                // Reload treatments
+                await loadPatientTreatments(currentPatient.id);
+                updateDentalChart();
+                displayTreatmentPhases();
+            } catch (error) {
+                console.error('Error validating plan:', error);
+                showNotification('Erreur lors de la validation', 'error');
+            }
+        }
+
+        // Export to PDF
+        function exportToPDF() {
+            if (!currentPatient) {
+                showNotification('Aucun patient sélectionné', 'warning');
+                return;
+            }
+
+            if (currentTreatments.length === 0) {
+                showNotification('Aucun traitement à exporter', 'warning');
+                return;
+            }
+
+            // Create PDF content
+            const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
+            const reimbursed = currentTreatments.reduce((sum, t) => {
+                const price = parseFloat(t.price) || 0;
+                const rate = parseFloat(t.reimbursement_rate) || 0;
+                return sum + (price * rate);
+            }, 0);
+            const patient = total - reimbursed;
+
+            // Generate HTML for PDF (this would typically use a PDF library like jsPDF)
+            const pdfContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Devis - ${currentPatient.first_name} ${currentPatient.last_name}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 40px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+                        .practice { font-size: 24px; font-weight: bold; color: #3b82f6; }
+                        .patient-info { margin: 20px 0; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                        th { background-color: #3b82f6; color: white; }
+                        .total-row { font-weight: bold; background-color: #f0f0f0; }
+                        .signature { margin-top: 60px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="practice">DentalCockpit Pro</div>
+                        <div>Devis de Traitement Dentaire</div>
+                        <div style="font-size: 12px; margin-top: 10px;">Date: ${new Date().toLocaleDateString('fr-BE')}</div>
+                    </div>
+
+                    <div class="patient-info">
+                        <h3>Informations Patient</h3>
+                        <p><strong>Nom:</strong> ${currentPatient.first_name} ${currentPatient.last_name}</p>
+                        <p><strong>Numéro National:</strong> ${currentPatient.national_number || 'N/A'}</p>
+                        <p><strong>Mutuelle:</strong> ${currentPatient.mutuelle || 'Non renseignée'}</p>
+                        <p><strong>BIM:</strong> ${currentPatient.bim_status ? 'Oui' : 'Non'}</p>
+                    </div>
+
+                    <h3>Détail des Traitements</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dent</th>
+                                <th>Traitement</th>
+                                <th>Code INAMI</th>
+                                <th>Prix</th>
+                                <th>Remboursement</th>
+                                <th>Part Patient</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${currentTreatments.map(t => {
+                                const price = parseFloat(t.price);
+                                const reimb = price * t.reimbursement_rate;
+                                const patientPart = price - reimb;
+                                return `
+                                    <tr>
+                                        <td>${t.tooth_number || 'Multiple'}</td>
+                                        <td>${t.treatment_name}</td>
+                                        <td>${t.inami_code}</td>
+                                        <td>${price.toFixed(2)} €</td>
+                                        <td>${reimb.toFixed(2)} €</td>
+                                        <td>${patientPart.toFixed(2)} €</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                            <tr class="total-row">
+                                <td colspan="3">TOTAL</td>
+                                <td>${total.toFixed(2)} €</td>
+                                <td>${reimbursed.toFixed(2)} €</td>
+                                <td>${patient.toFixed(2)} €</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="signature">
+                        <p>Signature du praticien: _______________________</p>
+                        <p>Signature du patient: _______________________</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            // Open in new window for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(pdfContent);
+            printWindow.document.close();
+            printWindow.focus();
+
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+
+            showNotification('Document PDF généré - Utilisez Ctrl+P pour imprimer', 'success');
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auto Test Agent Integration
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'AUTO_TEST') {
+                console.log('Auto Test Agent connected');
+                // Expose test functions
+                window.testFunctions = {
+                    loadPatients,
+                    selectPatient,
+                    openTreatmentModal,
+                    saveTreatment,
+                    validateTreatmentPlan,
+                    exportToPDF
+                };
+            }
+        });
     </script>
 </body>
 </html>
