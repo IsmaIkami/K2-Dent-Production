@@ -1,8 +1,11 @@
-# ⚠️ IMPORTANT - NE JAMAIS MODIFIER LE SITE PRINCIPAL
+# ⚠️ CRITICAL - NEVER MODIFY THE MAIN SITE
 
-## 🔒 Fichier Protégé: index.html
+## 🔒 Protected File: index.html
 
-**LA PAGE PRINCIPALE `/index.html` NE DOIT JAMAIS ÊTRE MODIFIÉE SANS AUTORISATION EXPLICITE DE L'UTILISATEUR.**
+**THE MAIN PAGE `/index.html` MUST NEVER BE MODIFIED WITHOUT EXPLICIT USER AUTHORIZATION.**
+
+**COMMIT DE RÉFÉRENCE APPROUVÉ: 12770f6 (feat: Add complete authentication system with modern login page)**
+**STRUCTURE APPROUVÉE: Login page à la racine - PAS de landing page, PAS de dossier /app/**
 
 ### Structure du Site (À CONSERVER)
 
