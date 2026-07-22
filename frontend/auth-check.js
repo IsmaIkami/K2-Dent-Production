@@ -15,7 +15,7 @@
 
     if (!isAuthenticated) {
         // Pas authentifié - rediriger vers la page de connexion
-        window.location.href = '/app/index.html';
+        window.location.href = '../index.html';
         return;
     }
 
@@ -28,7 +28,7 @@
             // Session expirée
             sessionStorage.clear();
             alert('⏰ Votre session a expiré. Veuillez vous reconnecter.');
-            window.location.href = '/app/index.html';
+            window.location.href = '../index.html';
             return;
         }
     }
@@ -53,7 +53,7 @@
             logoutBtn.onclick = function() {
                 if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                     sessionStorage.clear();
-                    window.location.href = '/app/index.html';
+                    window.location.href = '../index.html';
                 }
             };
             topbarActions.appendChild(logoutBtn);
