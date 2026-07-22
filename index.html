@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DentalCockpit Pro - Système Intelligent de Gestion Dentaire avec IA">
-    <title>DentalCockpit Pro - Gestion Cabinet Dentaire Intelligente</title>
+    <title>DentalCockpit Pro - Intelligence Artificielle pour Dentistes | RCE AI</title>
+    <meta name="description" content="Solution dentaire nouvelle génération alimentée par l'IA. Anamnèse automatique, charting intelligent, prescriptions Recip-e. Découvrez la révolution de la gestion dentaire.">
     <style>
         * {
             margin: 0;
@@ -12,367 +12,1415 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #0066FF;
+            --secondary: #00C896;
+            --accent: #9333EA;
+            --dark: #0A0E1A;
+            --card: #141B2D;
+            --text: #FFFFFF;
+            --text-muted: #8B92A8;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--text);
             line-height: 1.6;
-            color: #24292f;
-            background: #ffffff;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* Header */
-        header {
-            border-bottom: 1px solid #d0d7de;
-            padding: 24px 0;
-        }
-
+        /* Navigation */
         nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 20px 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 20px;
-            font-weight: 600;
-            color: #24292f;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .nav-links {
             display: flex;
-            gap: 32px;
+            gap: 40px;
             align-items: center;
         }
 
         .nav-links a {
-            color: #24292f;
+            color: var(--text);
             text-decoration: none;
-            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
         }
 
         .nav-links a:hover {
-            color: #0969da;
+            color: var(--primary);
         }
 
-        .btn-app {
-            background: #0969da;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
+        .language-selector {
+            position: relative;
+        }
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
             font-size: 14px;
-            transition: background 0.2s;
         }
 
-        .btn-app:hover {
-            background: #0860ca;
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .language-btn::after {
+            content: '▼';
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .language-selector.active .language-btn::after {
+            transform: rotate(180deg);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .language-selector.active .language-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .language-dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        .language-dropdown a:hover {
+            background: rgba(255, 255, 255, 0.05);
+            padding-left: 20px;
+        }
+
+        .language-dropdown a.active {
+            background: rgba(0, 102, 255, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .language-dropdown a.active::before {
+            content: '✓';
+            margin-right: -8px;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #0052CC 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
             color: white;
         }
 
         /* Hero Section */
         .hero {
+            padding: 180px 40px 100px;
             text-align: center;
-            padding: 120px 0 80px;
+            background: linear-gradient(180deg, var(--dark) 0%, #0D1221 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
         }
 
         h1 {
-            font-size: 48px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #24292f;
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #8B92A8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .tagline {
-            font-size: 20px;
-            color: #57606a;
+        .hero p {
+            font-size: 22px;
+            color: var(--text-muted);
             margin-bottom: 40px;
+            line-height: 1.6;
         }
 
-        .cta-buttons {
+        .hero-cta {
             display: flex;
-            gap: 16px;
+            gap: 20px;
             justify-content: center;
             margin-bottom: 60px;
         }
 
-        .btn-primary {
-            background: #238636;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            transition: background 0.2s;
+        .ai-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 50px;
         }
 
-        .btn-primary:hover {
-            background: #2ea043;
+        .ai-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            font-size: 14px;
         }
 
-        .btn-secondary {
-            background: white;
-            color: #24292f;
-            padding: 14px 28px;
-            border-radius: 6px;
-            border: 1px solid #d0d7de;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background: #f6f8fa;
-            border-color: #57606a;
-        }
-
-        /* Problem Section */
-        .section {
-            padding: 60px 0;
-            border-top: 1px solid #d0d7de;
+        /* Screenshot Section */
+        .screenshots {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, #0D1221 0%, var(--dark) 100%);
         }
 
         .section-title {
-            font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 16px;
             text-align: center;
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
         }
 
         .section-subtitle {
-            font-size: 18px;
-            color: #57606a;
             text-align: center;
-            margin-bottom: 48px;
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-bottom: 60px;
         }
 
-        .features {
+        .screenshot-grid {
+            max-width: 1400px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-            margin-top: 48px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
         }
 
-        .feature {
-            padding: 24px;
-            background: #f6f8fa;
+        .screenshot-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 102, 255, 0.2);
+        }
+
+        .screenshot-img {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(0, 200, 150, 0.1) 100%);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .screenshot-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .screenshot-card p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            background: var(--dark);
+        }
+
+        .features-grid {
+            max-width: 1400px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .feature-card {
+            cursor: pointer;
+        }
+
+        .feature-expand-btn {
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover .feature-expand-btn {
+            gap: 10px;
+        }
+
+        .feature-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            margin-top: 0;
+        }
+
+        .feature-details.active {
+            max-height: 800px;
+            margin-top: 20px;
+        }
+
+        .feature-details-content {
+            background: rgba(0, 102, 255, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 20px;
             border-radius: 8px;
         }
 
-        .feature h3 {
-            font-size: 18px;
+        .feature-benefit {
+            display: flex;
+            align-items: start;
+            gap: 10px;
             margin-bottom: 12px;
-            color: #24292f;
-        }
-
-        .feature p {
-            color: #57606a;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
         }
 
-        /* Resources Section */
-        .resources {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
+        .feature-benefit:last-child {
+            margin-bottom: 0;
         }
 
-        .resource-card {
-            border: 1px solid #d0d7de;
-            border-radius: 8px;
-            padding: 24px;
-            text-decoration: none;
-            color: #24292f;
-            transition: all 0.2s;
-        }
-
-        .resource-card:hover {
-            border-color: #0969da;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .resource-card h3 {
+        .feature-benefit-icon {
+            color: var(--secondary);
             font-size: 18px;
-            margin-bottom: 8px;
-            color: #0969da;
+            flex-shrink: 0;
         }
 
-        .resource-card p {
-            color: #57606a;
+        .feature-roi {
+            background: linear-gradient(135deg, rgba(0, 200, 150, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
             font-size: 14px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* AI Technology Section */
+        .ai-tech {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, var(--dark) 0%, #0D1221 100%);
+            text-align: center;
+        }
+
+        .ai-models {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .ai-model-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .ai-model-card.rce {
+            border-color: rgba(0, 102, 255, 0.3);
+        }
+
+        .ai-model-card.rce::before {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .ai-model-card.gpt {
+            border-color: rgba(16, 163, 127, 0.3);
+        }
+
+        .ai-model-card.gpt::before {
+            background: linear-gradient(90deg, #10A37F 0%, #1A7F64 100%);
+        }
+
+        .ai-model-card.anthropic {
+            border-color: rgba(204, 142, 53, 0.3);
+        }
+
+        .ai-model-card.anthropic::before {
+            background: linear-gradient(90deg, #CC8E35 0%, #B67A2D 100%);
+        }
+
+        .ai-model-card.gemini {
+            border-color: rgba(66, 133, 244, 0.3);
+        }
+
+        .ai-model-card.gemini::before {
+            background: linear-gradient(90deg, #4285F4 0%, #34A853 100%);
+        }
+
+        .ai-model-card h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .ai-model-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .ai-model-card .tech-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, var(--dark) 0%, #0D1221 100%);
+        }
+
+        .pricing-grid {
+            max-width: 1600px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            align-items: start;
+        }
+
+        .pricing-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 102, 255, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 102, 255, 0.4);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .pricing-header h3 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .pricing-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .pricing-price {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pricing-price .price {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-price .period {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .pricing-description {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            color: var(--text);
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* Demo Section */
+        .demo {
+            padding: 100px 40px;
+            background: var(--dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 60px auto 0;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .demo-video {
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border-radius: 16px;
+            margin: 40px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .demo-btn {
+            font-size: 80px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .demo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 120px 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 48px;
+            margin-bottom: 25px;
+        }
+
+        .cta p {
+            font-size: 22px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
         }
 
         /* Footer */
         footer {
-            border-top: 1px solid #d0d7de;
-            padding: 40px 0;
+            padding: 60px 40px;
+            background: #050812;
             text-align: center;
-            color: #57606a;
-            font-size: 14px;
         }
 
         .footer-content {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 16px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .footer-content a {
-            color: #57606a;
-            text-decoration: none;
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
         }
 
-        .footer-content a:hover {
-            color: #0969da;
+        .footer-text {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .footer-credits {
+            font-size: 14px;
+            color: var(--text-muted);
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             h1 {
-                font-size: 36px;
+                font-size: 40px;
             }
 
-            .tagline {
+            .hero p {
                 font-size: 18px;
             }
 
-            .cta-buttons {
+            .section-title {
+                font-size: 36px;
+            }
+
+            .hero-cta {
                 flex-direction: column;
-                align-items: stretch;
             }
 
             .nav-links {
-                gap: 16px;
-                font-size: 13px;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 12px;
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo">🦷 DentalCockpit Pro</div>
-                <div class="nav-links">
-                    <a href="#features">Fonctionnalités</a>
-                    <a href="#technology">Technologie</a>
-                    <a href="#contact">Contact</a>
-                    <a href="/K2-Dent-Production/login.html" class="btn-app">Accéder à l'App</a>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                🦷 DentalCockpit Pro
+            </div>
+            <div class="nav-links">
+                <a href="#features">Fonctionnalités</a>
+                <a href="#technology">Technologie IA</a>
+                <a href="#pricing">Tarifs</a>
+                <a href="#demo">Démo</a>
+                <div class="language-selector">
+                    <div class="language-btn">🇫🇷 FR</div>
+                    <div class="language-dropdown">
+                        <a href="index.html" class="active">🇫🇷 Français</a>
+                        <a href="index-nl.html">🇳🇱 Nederlands</a>
+                        <a href="index-en.html">🇬🇧 English</a>
+                        <a href="index-de.html">🇩🇪 Deutsch</a>
+                    </div>
                 </div>
-            </nav>
+                <a href="dashboard.html" class="btn btn-primary">Accéder à l'App →</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>🦷 DentalCockpit Pro</h1>
-                <p class="tagline">Système Intelligent de Gestion Dentaire avec IA</p>
-                <div class="cta-buttons">
-                    <a href="/K2-Dent-Production/login.html" class="btn-primary">🚀 Accéder à l'Application</a>
-                    <a href="#technology" class="btn-secondary">🤖 Technologie IA</a>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                ✨ Nouvelle Génération • Alimenté par l'IA
+            </div>
+            <h1>La Révolution de la<br>Gestion Dentaire par IA</h1>
+            <p>
+                DentalCockpit Pro combine l'intelligence artificielle de pointe (GPT-4, Claude, Gemini)
+                avec RCE pour automatiser votre pratique dentaire. Anamnèse automatique, charting intelligent,
+                prescriptions Recip-e, et bien plus.
+            </p>
+            <div class="hero-cta">
+                <a href="dashboard.html" class="btn btn-primary" style="display: inline-block;">🚀 Essayer Gratuitement</a>
+                <a href="#demo" class="btn btn-secondary" style="display: inline-block;">▶️ Voir la Démo</a>
+            </div>
+
+            <div class="ai-badges">
+                <div class="ai-badge">🧠 RCE AI Engine</div>
+                <div class="ai-badge">🤖 GPT-4 Turbo</div>
+                <div class="ai-badge">⚡ Claude Sonnet</div>
+                <div class="ai-badge">✨ Gemini Pro</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="screenshots" id="screenshots">
+        <h2 class="section-title">Interface Professionnelle</h2>
+        <p class="section-subtitle">Des écrans conçus pour votre workflow quotidien</p>
+
+        <div class="screenshot-grid">
+            <div class="screenshot-card">
+                <div class="screenshot-img">🎤</div>
+                <h3>Enregistrement IA</h3>
+                <p>Enregistrez la consultation vocalement. L'IA transcrit et génère automatiquement l'anamnèse complète en quelques secondes.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">🦷</div>
+                <h3>Schéma Dentaire Intelligent</h3>
+                <p>Charting professionnel avec FDI, gradients de couleur, raccourcis clavier (C, O, K, I). Alignement parfait, workflow optimisé.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">📊</div>
+                <h3>Charting Parodontal</h3>
+                <p>Sondage parodontal 6 points par dent, calcul automatique des indices, classification AAP. Visualisation professionnelle.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">🔧</div>
+                <h3>Analyse Orthodontique</h3>
+                <p>Céphalométrie complète (SNA, SNB, ANB, Wits), plan de traitement par phases, calculateur de durée. Outil professionnel.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">💊</div>
+                <h3>Prescriptions Recip-e</h3>
+                <p>Prescriptions électroniques belges officielles. Base de données médicamenteuse, vérification d'interactions, suggestions IA.</p>
+            </div>
+
+            <div class="screenshot-card">
+                <div class="screenshot-img">📈</div>
+                <h3>Timeline Patient</h3>
+                <p>Historique complet avec timeline visuelle. Toutes les actions loggées automatiquement. Navigation facile.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Fonctionnalités Innovantes</h2>
+        <p class="section-subtitle">Tout ce dont vous avez besoin pour gérer votre cabinet dentaire</p>
+
+        <div class="features-grid">
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">🎯</div>
+                <h3>Anamnèse Automatique</h3>
+                <p>Enregistrez vocalement la consultation. L'IA transcrit, analyse et génère une anamnèse structurée professionnelle instantanément.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Gain de temps massif :</strong> Plus besoin de taper pendant ou après la consultation - RCE capture tout automatiquement</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Qualité professionnelle :</strong> Anamnèse structurée selon standards médicaux, aucun détail oublié</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Historique complet :</strong> Versionning automatique, modifications tracées, accès immédiat aux anciennes versions</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Concentration patient :</strong> Maintenez le contact visuel et la relation, pas les yeux rivés sur l'écran</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Économisez 15-20 min par consultation = +3 patients/jour possible
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <section id="features" class="section">
-            <div class="container">
-                <h2 class="section-title">Fonctionnalités Complètes</h2>
-                <p class="section-subtitle">Tout ce dont vous avez besoin pour gérer votre cabinet dentaire</p>
-                <div class="features">
-                    <div class="feature">
-                        <h3>👥 Gestion Patients</h3>
-                        <p>Dossiers patients complets avec historique, BIM, mutuelles et alertes médicales</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📅 Agenda Intelligent</h3>
-                        <p>Calendrier optimisé avec vues jour/semaine/mois et recommandations IA</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🎯 Plan de Traitement</h3>
-                        <p>Carte dentaire interactive (FDI), codes INAMI 2026, calcul remboursements</p>
-                    </div>
-                    <div class="feature">
-                        <h3>💰 Facturation INAMI</h3>
-                        <p>Génération automatique de devis, export PDF, gestion tiers payant</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🤖 IA Intelligente</h3>
-                        <p>Recommandations de traitements basées sur RCE (Relational Cognitive Engine)</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📊 Rapports & Analytics</h3>
-                        <p>Dashboard temps réel avec métriques cabinet et analyses prédictives</p>
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">🦷</div>
+                <h3>Schéma Dentaire Pro</h3>
+                <p>Odontogramme FDI avec gradients, raccourcis clavier, alignement parfait. Interface inspirée des meilleurs logiciels (CareStack, Dentrix).</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Workflow ultra-rapide :</strong> Raccourcis clavier (C, O, K, I, M, R) pour saisie instantanée sans clic</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Visuel professionnel :</strong> Gradients de couleurs, statuts visuels clairs, design moderne qui impressionne</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Zéro erreur :</strong> Notation FDI standard, sauvegarde automatique, impossible de perdre des données</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Saisie 5x plus rapide qu'un logiciel classique = gain de productivité immédiat
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section id="technology" class="section">
-            <div class="container">
-                <h2 class="section-title">Technologie RCE</h2>
-                <p class="section-subtitle">Powered by Relational Cognitive Engine - Recherche publiée dans Springer's Cognitive Computation</p>
-                <div class="features">
-                    <div class="feature">
-                        <h3>🧠 IA Explicable</h3>
-                        <p>Chaque recommandation est traçable et justifiable, conforme RGPD</p>
-                    </div>
-                    <div class="feature">
-                        <h3>✅ Zéro Hallucination</h3>
-                        <p>Raisonnement basé sur des graphes de connaissances validés</p>
-                    </div>
-                    <div class="feature">
-                        <h3>⚡ Performance</h3>
-                        <p>Inférence ultra-rapide avec empreinte énergétique réduite</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🔒 Sécurité & Conformité</h3>
-                        <p>RGPD, authentification sécurisée, données patient chiffrées</p>
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📊</div>
+                <h3>Parodontologie</h3>
+                <p>Charting 6 points, calcul automatique d'indices, saignement, récession. Classification AAP automatique avec recommandations.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Précision clinique :</strong> 6 mesures par dent, tracking saignement/récession, graphiques d'évolution automatiques</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Classification AAP :</strong> RCE calcule automatiquement stade et grade, suggère le traitement approprié</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Suivi longitudinal :</strong> Comparaison sessions précédentes, alertes sur détérioration, preuves d'amélioration</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Facturez parodontologie avec preuves cliniques béton + fidélisation patients
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section class="section" style="background: #f6f8fa;">
-            <div class="container">
-                <h2 class="section-title">Prêt à transformer votre cabinet?</h2>
-                <p class="section-subtitle">Rejoignez les dentistes qui utilisent DentalCockpit Pro</p>
-                <div style="text-align: center; margin-top: 32px;">
-                    <a href="/K2-Dent-Production/login.html" class="btn-primary" style="font-size: 18px; padding: 16px 32px;">
-                        🦷 Accéder à l'Application
-                    </a>
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">🔧</div>
+                <h3>Orthodontie</h3>
+                <p>Analyse céphalométrique complète, plan de traitement par phases, calculateur durée, visualisation arcades dentaires.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Céphalométrie intelligente :</strong> RCE analyse téléradiographie, calcule tous les angles et mesures automatiquement</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Plan par phases :</strong> Structurez traitement étape par étape, durée estimée, suivi progression visuel</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Simulation visuelle :</strong> Arcades 3D, prévisualisation résultats, communication patient facilitée</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Offrez orthodontie sans logiciel séparé = nouveau flux de revenus
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <span>© 2026 Ismail Sialyen</span>
-                <a href="mailto:is.sialyen@gmail.com">Contact</a>
-                <span>Powered by RCE AI Engine</span>
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">💊</div>
+                <h3>Prescriptions Recip-e</h3>
+                <p>Système officiel belge intégré. QR codes, e-Health, base médicamenteuse, vérification interactions, suggestions IA contextuelles.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Conformité légale :</strong> Recip-e officiel belge, QR codes valides, envoi direct e-Health</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Sécurité maximale :</strong> RCE vérifie interactions médicamenteuses, allergies patient, contre-indications</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Suggestions intelligentes :</strong> Médicaments adaptés au diagnostic, posologie automatique, alternatives proposées</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Zéro erreur de prescription = protection juridique + confiance patient
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p style="font-size: 12px; color: #8b949e;">
-                Design by Ismail Sialyen - Head Engineer & Paper Author
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📷</div>
+                <h3>Imagerie Médicale</h3>
+                <p>Radiographies X, scanner 3D, photos intra-orales, caméra temps réel. Analyse IA des images avec détection automatique.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Détection IA automatique :</strong> Caries, perte osseuse, obturations compromises détectées en secondes</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Centralisation complète :</strong> Toutes vos images au même endroit, accès instantané, comparaison facilitée</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Outils d'analyse :</strong> Zoom, contraste, mesures, annotations, export DICOM</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Détection précoce problèmes = plans de traitement préventifs + facturation
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">💳</div>
+                <h3>INAMI / e-Health</h3>
+                <p>Intégration complète système belge INAMI. Attestations électroniques, mutuelles, facturation automatisée.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Facturation automatique :</strong> Un clic = attestation INAMI envoyée, nomenclature correcte, remboursement garanti</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Vérification mutuelle :</strong> Statut patient vérifié en temps réel, droits affichés, plafonds consultables</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Certificats automatiques :</strong> Génération certificat absence avec envoi email patient intégré</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Zéro perte de facturation + trésorerie optimisée = +15-20% revenus récupérés
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📈</div>
+                <h3>Rapports Intelligents</h3>
+                <p>Analytics avancés, KPIs en temps réel, prévisions IA, recommandations personnalisées pour optimiser votre pratique.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>KPIs en temps réel :</strong> CA, taux remplissage, patients actifs, analyses par praticien/service</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Prédictions IA :</strong> RCE prédit vos revenus à 3/6/12 mois, identifie opportunités de croissance</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Recommandations actionnables :</strong> Créneaux à optimiser, patients à rappeler, services sous-utilisés</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Optimisation planning + relances automatiques = +10-15% CA sans effort
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="toggleFeature(this)">
+                <div class="feature-icon">📅</div>
+                <h3>Gestion Intelligente de l'Agenda</h3>
+                <p>Optimisation automatique des créneaux, rappels patients, gestion conflits. RCE analyse et suggère le planning optimal.</p>
+                <div class="feature-expand-btn">En savoir plus →</div>
+                <div class="feature-details">
+                    <div class="feature-details-content">
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Optimisation IA :</strong> RCE analyse votre agenda et suggère les meilleurs créneaux selon type de soin et durée</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Rappels automatiques :</strong> SMS/Email envoyés automatiquement 48h et 24h avant RDV, réduction no-shows de 70%</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Gestion conflits intelligente :</strong> Détection double réservation, suggestions alternatives, réorganisation automatique</span>
+                        </div>
+                        <div class="feature-benefit">
+                            <span class="feature-benefit-icon">✓</span>
+                            <span><strong>Statistiques temps réel :</strong> Taux remplissage, durées moyennes, créneaux libres, optimisation continue</span>
+                        </div>
+                        <div class="feature-roi">
+                            💰 ROI : Taux remplissage +25% + réduction no-shows 70% = +€2000-3000/mois
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Technology Section -->
+    <section class="ai-tech" id="technology">
+        <h2 class="section-title">Propulsé par RCE AI Engine</h2>
+        <p class="section-subtitle">
+            RCE (Relational Cognitive Engine) est notre moteur d'intelligence artificielle propriétaire<br>
+            qui orchestre intelligemment plusieurs modèles IA en fonction des besoins spécifiques de chaque tâche
+        </p>
+
+        <div class="ai-models">
+            <div class="ai-model-card rce" style="grid-column: 1 / -1; max-width: 800px; margin: 0 auto;">
+                <h3>🧠 RCE - Relational Cognitive Engine</h3>
+                <p style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;">
+                    <strong>RCE</strong> est votre unique point d'accès à l'intelligence artificielle. En interne, RCE sélectionne automatiquement
+                    le meilleur modèle (GPT-4 Turbo, Claude Sonnet, ou Gemini Pro) selon la tâche :
+                    transcription vocale, analyse médicale, vision radiographique, génération de rapports.
+                    <br><br>
+                    <strong>Vous utilisez RCE, RCE orchestre tout le reste.</strong>
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                    <div class="tech-badge">Orchestration Intelligente</div>
+                    <div class="tech-badge">GPT-4 Turbo Intégré</div>
+                    <div class="tech-badge">Claude Sonnet Intégré</div>
+                    <div class="tech-badge">Gemini Pro Intégré</div>
+                    <div class="tech-badge">Optimisation Auto</div>
+                    <div class="tech-badge">Sécurité Médicale</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Plans & Abonnements</h2>
+        <p class="section-subtitle">Choisissez la formule adaptée à votre cabinet dentaire</p>
+
+        <div class="pricing-grid">
+            <!-- Plan Academic (Free) -->
+            <div class="pricing-card" style="border-color: var(--secondary);">
+                <div class="featured-badge" style="background: linear-gradient(135deg, var(--secondary) 0%, #00A578 100%);">🎓 Gratuit</div>
+                <div class="pricing-header">
+                    <h3>Académique</h3>
+                    <div class="pricing-icon">🎓</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price" style="background: linear-gradient(135deg, var(--secondary) 0%, #00A578 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GRATUIT</span>
+                </div>
+                <p class="pricing-description">Pour étudiants en dentisterie avec email académique</p>
+                <ul class="pricing-features">
+                    <li>✓ 1 étudiant</li>
+                    <li>✓ Jusqu'à 50 patients (fictifs)</li>
+                    <li>✓ Toutes fonctionnalités Starter</li>
+                    <li>✓ Schéma dentaire complet</li>
+                    <li>✓ Enregistrement vocal IA</li>
+                    <li>✓ 5 analyses IA / mois</li>
+                    <li>✓ Mode formation & exercices</li>
+                    <li>✓ Accès aux tutoriels</li>
+                    <li>✓ Valide pendant les études</li>
+                    <li style="color: var(--secondary); font-weight: 600;">📧 Email @univ.edu requis</li>
+                </ul>
+                <a href="dashboard.html" class="btn btn-secondary" style="width: 100%; display: block; text-align: center; background: var(--secondary); border-color: var(--secondary);">S'inscrire</a>
+            </div>
+
+            <!-- Plan Starter -->
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Starter</h3>
+                    <div class="pricing-icon">🌱</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price">€99</span>
+                    <span class="period">/mois</span>
+                </div>
+                <p class="pricing-description">Idéal pour les praticiens solo ou petits cabinets</p>
+                <ul class="pricing-features">
+                    <li>✓ 1 praticien</li>
+                    <li>✓ Jusqu'à 100 patients</li>
+                    <li>✓ Schéma dentaire intelligent</li>
+                    <li>✓ Enregistrement vocal IA</li>
+                    <li>✓ Anamnèse automatique</li>
+                    <li>✓ Prescriptions Recip-e</li>
+                    <li>✓ INAMI / e-Health</li>
+                    <li>✓ 10 analyses IA / mois</li>
+                    <li>✓ Support email</li>
+                </ul>
+                <a href="dashboard.html" class="btn btn-secondary" style="width: 100%; display: block; text-align: center;">Commencer</a>
+            </div>
+
+            <!-- Plan Professional (Featured) -->
+            <div class="pricing-card featured">
+                <div class="featured-badge">⭐ Populaire</div>
+                <div class="pricing-header">
+                    <h3>Professional</h3>
+                    <div class="pricing-icon">🚀</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price">€249</span>
+                    <span class="period">/mois</span>
+                </div>
+                <p class="pricing-description">Solution complète pour cabinets établis</p>
+                <ul class="pricing-features">
+                    <li>✓ Jusqu'à 3 praticiens</li>
+                    <li>✓ Patients illimités</li>
+                    <li>✓ Toutes fonctionnalités Starter</li>
+                    <li>✓ Scanner 3D & radiographies</li>
+                    <li>✓ Analyses IA illimitées</li>
+                    <li>✓ Charting parodontal avancé</li>
+                    <li>✓ Orthodontie & céphalométrie</li>
+                    <li>✓ Rapports intelligents</li>
+                    <li>✓ API pharmacologie</li>
+                    <li>✓ Timeline patient complète</li>
+                    <li>✓ Support prioritaire 24/7</li>
+                </ul>
+                <a href="dashboard.html" class="btn btn-primary" style="width: 100%; display: block; text-align: center;">Essayer 30 jours</a>
+            </div>
+
+            <!-- Plan Enterprise -->
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Enterprise</h3>
+                    <div class="pricing-icon">🏢</div>
+                </div>
+                <div class="pricing-price">
+                    <span class="price">Sur mesure</span>
+                </div>
+                <p class="pricing-description">Pour cliniques et groupes de cabinets</p>
+                <ul class="pricing-features">
+                    <li>✓ Praticiens illimités</li>
+                    <li>✓ Multi-sites</li>
+                    <li>✓ Toutes fonctionnalités Pro</li>
+                    <li>✓ Personnalisation complète</li>
+                    <li>✓ Intégrations sur mesure</li>
+                    <li>✓ Formation équipe incluse</li>
+                    <li>✓ Gestionnaire de compte dédié</li>
+                    <li>✓ SLA garanti 99.9%</li>
+                    <li>✓ Déploiement on-premise possible</li>
+                    <li>✓ Conformité RGPD avancée</li>
+                    <li>✓ Support dédié 24/7</li>
+                </ul>
+                <a href="#" class="btn btn-secondary" style="width: 100%; display: block; text-align: center;" onclick="alert('Contactez-nous à contact@dentalcockpit.pro pour un devis personnalisé'); return false;">Nous contacter</a>
+            </div>
+        </div>
+
+        <!-- Academic Plan Info -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: linear-gradient(135deg, rgba(0, 200, 150, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%); border: 2px solid var(--secondary); border-radius: 16px; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <p style="font-size: 17px; line-height: 1.8; color: var(--text);">
+                🎓 <strong>Plan Académique :</strong> Nous soutenons la formation des futurs dentistes ! Inscrivez-vous gratuitement avec votre email universitaire
+                (<em style="color: var(--secondary);">@uclouvain.be, @ulb.be, @ugent.be, @kuleuven.be, etc.</em>)
+                et profitez de toutes les fonctionnalités pendant vos études. Parfait pour apprendre et pratiquer !
             </p>
         </div>
+
+        <div style="text-align: center; margin-top: 30px; padding: 40px; background: rgba(0, 102, 255, 0.1); border-radius: 16px; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <p style="font-size: 18px; line-height: 1.8; color: var(--text-muted);">
+                💡 <strong>Tous les plans incluent :</strong> Mises à jour automatiques, sécurité médicale maximale,
+                hébergement cloud certifié, conformité RGPD, backups quotidiens, et accès à toutes les nouvelles fonctionnalités IA développées par RCE
+            </p>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <h2 class="section-title">Découvrez DentalCockpit Pro</h2>
+        <p class="section-subtitle">Explorez l'interface et les fonctionnalités en live</p>
+
+        <div class="demo-container">
+            <h3 style="font-size: 32px; margin-bottom: 20px;">Démo Interactive</h3>
+            <p style="color: var(--text-muted); font-size: 18px; margin-bottom: 30px;">
+                Cliquez ci-dessous pour accéder à la démo complète et tester toutes les fonctionnalités
+            </p>
+
+            <div class="demo-video">
+                <div class="demo-btn" onclick="window.location.href='index.html'">
+                    ▶️
+                </div>
+            </div>
+
+            <a href="dashboard.html" class="btn btn-primary" style="display: inline-block; font-size: 18px; padding: 16px 40px;">
+                🚀 Lancer la Démo Complète
+            </a>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Prêt à Révolutionner Votre Cabinet?</h2>
+        <p>Rejoignez les dentistes qui utilisent déjà l'IA pour améliorer leur pratique</p>
+        <div class="cta-buttons">
+            <a href="dashboard.html" class="btn btn-white" style="display: inline-block;">Commencer Maintenant →</a>
+            <a href="#" class="btn btn-secondary" style="display: inline-block; border-color: white; color: white;">Planifier une Démo</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">🦷 DentalCockpit Pro</div>
+            <p class="footer-text">
+                Solution dentaire nouvelle génération alimentée par l'intelligence artificielle.<br>
+                Faites passer votre cabinet au niveau supérieur.
+            </p>
+            <div class="footer-credits" style="margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="font-size: 14px; margin-bottom: 15px;">
+                    <strong style="font-size: 16px;">Développement et Design by Ismail Sialyen</strong>
+                </div>
+                <div style="font-size: 15px; margin-bottom: 10px;">
+                    Powered by <a href="https://ismaikami.github.io/rce-website/" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--primary); padding-bottom: 2px; transition: all 0.3s;">RCE</a> <span style="color: var(--text-muted);">(AI Engine)</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 20px;">
+                    © 2025 DentalCockpit Pro. Tous droits réservés.
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        // Language selector toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageBtn = document.querySelector('.language-btn');
+
+            if (languageBtn) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    languageSelector.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!languageSelector.contains(e.target)) {
+                        languageSelector.classList.remove('active');
+                    }
+                });
+
+                // Close dropdown when selecting a language
+                const languageLinks = document.querySelectorAll('.language-dropdown a');
+                languageLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        languageSelector.classList.remove('active');
+                    });
+                });
+            }
+        });
+
+        // Toggle feature card details
+        function toggleFeature(card) {
+            const details = card.querySelector('.feature-details');
+            const btn = card.querySelector('.feature-expand-btn');
+
+            // Close all other cards first
+            document.querySelectorAll('.feature-details.active').forEach(detail => {
+                if (detail !== details) {
+                    detail.classList.remove('active');
+                    detail.parentElement.querySelector('.feature-expand-btn').textContent = 'En savoir plus →';
+                }
+            });
+
+            // Toggle current card
+            if (details.classList.contains('active')) {
+                details.classList.remove('active');
+                btn.textContent = 'En savoir plus →';
+            } else {
+                details.classList.add('active');
+                btn.textContent = 'Fermer ✕';
+            }
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(10, 14, 26, 0.98)';
+            } else {
+                nav.style.background = 'rgba(10, 14, 26, 0.95)';
+            }
+        });
+    </script>
 </body>
 </html>
-<!-- Force rebuild 1784759447 -->
