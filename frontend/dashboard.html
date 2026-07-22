@@ -2876,8 +2876,13 @@
                     // Load patient from URL parameter if provided
                     const urlParams = new URLSearchParams(window.location.search);
                     const niss = urlParams.get('niss');
+                    console.log('🔍 URL params:', window.location.search);
+                    console.log('🔍 NISS from URL:', niss);
                     if (niss) {
+                        console.log('📋 Loading patient with NISS:', niss);
                         await loadPatientByNISS(niss);
+                    } else {
+                        console.log('ℹ️ No NISS in URL - showing generic dashboard');
                     }
                 } else {
                     console.warn('⚠️ Supabase not configured - using local mode');
@@ -3017,17 +3022,31 @@
 
         // Load patient data from Supabase by NISS
         async function loadPatientByNISS(niss) {
+            console.log('🔍 loadPatientByNISS called with:', niss);
+
             if (!supabaseInitialized) {
+                console.error('❌ Supabase not initialized');
                 showPatientLoadError('Supabase non initialisé');
                 return null;
             }
 
+            if (!niss || niss.trim() === '') {
+                console.error('❌ Empty NISS provided');
+                showPatientLoadError('NISS vide ou invalide');
+                return null;
+            }
+
             try {
+                console.log('🔄 Fetching patient from DB...');
                 const patient = await DB.getPatientByNISS(niss);
+                console.log('📦 DB.getPatientByNISS returned:', patient);
+
                 if (patient) {
                     currentPatientId = patient.id;
                     currentPatientNISS = patient.niss;
                     currentPatient = patient; // Store globally
+
+                    console.log('✅ Patient found:', patient.first_name, patient.last_name);
 
                     // Update patient info in UI
                     updatePatientInfo(patient);
@@ -3041,13 +3060,14 @@
                     // Load KPIs (Cockpit 360°)
                     await loadPatientKPIs(patient.id);
 
-                    console.log('✅ Patient loaded:', patient.first_name, patient.last_name);
+                    console.log('✅ Patient fully loaded:', patient.first_name, patient.last_name);
                     return patient;
                 } else {
+                    console.warn('⚠️ No patient found with NISS:', niss);
                     showPatientLoadError(`Patient introuvable avec NISS ${formatNISS(niss)}`);
                 }
             } catch (error) {
-                console.error('Error loading patient:', error);
+                console.error('❌ Error loading patient:', error);
                 showPatientLoadError(`Erreur lors du chargement: ${error.message}`);
             }
             return null;
