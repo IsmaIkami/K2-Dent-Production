@@ -2103,10 +2103,28 @@
             });
 
             document.getElementById('todayBtn').addEventListener('click', () => {
+                console.log('📅 Bouton "Aujourd\'hui" cliqué');
                 currentDate = new Date();
+                currentView = 'month'; // Force month view
+
+                // Update view buttons
+                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-view="month"]')?.classList.add('active');
+
                 renderMiniCalendar();
                 renderMainCalendar();
                 updateStats();
+
+                // Scroll to today's date cell
+                setTimeout(() => {
+                    const todayCell = document.querySelector('.calendar-day.today');
+                    if (todayCell) {
+                        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        todayCell.style.animation = 'pulse 1s ease-in-out 2';
+                    }
+                }, 100);
+
+                console.log('✅ Navigation vers aujourd\'hui terminée');
             });
 
             document.getElementById('miniPrev').addEventListener('click', () => {
