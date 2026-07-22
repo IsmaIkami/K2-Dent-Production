@@ -1529,6 +1529,10 @@
                 document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelector('[data-view="day"]')?.classList.add('active');
 
+                // FORCE currentDate to today (fix bug: showing wrong month)
+                currentDate = new Date();
+                console.log('📅 Current date set to:', currentDate.toLocaleDateString('fr-FR'));
+
                 renderMiniCalendar();
                 renderListView(new Date()); // Show today by default
                 updateStats();
@@ -2630,5 +2634,8 @@
         // Initialize on load
         window.addEventListener('DOMContentLoaded', init);
     </script>
+
+    <!-- Auto Test Agent -->
+    <script src="../tests/auto-test.js"></script>
 </body>
 </html>
