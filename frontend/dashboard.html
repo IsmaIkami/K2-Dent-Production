@@ -1298,6 +1298,10 @@
                                         <div class="meta-value" id="patient-mutuelle" style="color: var(--success);">-</div>
                                     </div>
                                     <div class="meta-item">
+                                        <div class="meta-label">Statut BIM</div>
+                                        <div class="meta-value" id="patient-bim">-</div>
+                                    </div>
+                                    <div class="meta-item">
                                         <div class="meta-label">Adresse</div>
                                         <div class="meta-value" id="patient-address">-</div>
                                     </div>
@@ -3094,7 +3098,7 @@
             });
 
             // Clear all fields
-            ['patient-email', 'patient-phone', 'patient-dob', 'patient-gender', 'patient-niss', 'patient-mutuelle', 'patient-address'].forEach(id => {
+            ['patient-email', 'patient-phone', 'patient-dob', 'patient-gender', 'patient-niss', 'patient-mutuelle', 'patient-bim', 'patient-address'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = 'Non disponible';
             });
@@ -3166,6 +3170,17 @@
                 };
                 const mutuelleName = mutuelleNames[patient.mutuelle_code] || 'Non renseignée';
                 mutuelleEl.textContent = `✓ ${mutuelleName}`;
+            }
+
+            const bimEl = document.getElementById('patient-bim');
+            if (bimEl) {
+                const isBIM = patient.bim === true || patient.bim_status === true;
+                if (isBIM) {
+                    bimEl.innerHTML = '<span style="color: var(--warning); font-weight: 600;">⭐ Actif (+15% remboursement)</span>';
+                } else {
+                    bimEl.textContent = 'Non actif';
+                    bimEl.style.color = 'var(--text-secondary)';
+                }
             }
 
             const addressEl = document.getElementById('patient-address');
