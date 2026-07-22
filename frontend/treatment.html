@@ -1681,7 +1681,7 @@
             if (treatments.length > 0) {
                 const content = treatments.map(t => `
                     <div style="margin-bottom: 8px;">
-                        <strong>${t.treatment_name}</strong><br>
+                        <strong>${t.treatment_type}</strong><br>
                         <span style="font-size: 11px;">${t.inami_code} - ${t.status}</span>
                     </div>
                 `).join('');
@@ -1831,7 +1831,7 @@
 
             Object.keys(phases).forEach(phaseNum => {
                 const phase = phases[phaseNum];
-                const total = phase.treatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
+                const total = phase.treatments.reduce((sum, t) => sum + (parseFloat(t.price_total) || 0), 0);
 
                 const phaseDiv = document.createElement('div');
                 phaseDiv.className = 'phase-section';
@@ -1842,15 +1842,15 @@
                         <li class="treatment-item">
                             <div class="treatment-details">
                                 <div class="treatment-name">
-                                    🦷 Dent ${treatment.tooth_number || 'Multiple'} - ${treatment.treatment_name}
+                                    🦷 Dent ${treatment.tooth_number || 'Multiple'} - ${treatment.treatment_type}
                                 </div>
                                 <div class="treatment-meta">
                                     INAMI: ${treatment.inami_code} |
                                     <span class="status-badge status-${treatment.status}">${getStatusLabel(treatment.status)}</span>
-                                    ${treatment.estimated_date ? `| 📅 ${formatDate(treatment.estimated_date)}` : ''}
+                                    ${treatment.treatment_date ? `| 📅 ${formatDate(treatment.treatment_date)}` : ''}
                                 </div>
                             </div>
-                            <span class="treatment-price">${parseFloat(treatment.price).toFixed(2)} €</span>
+                            <span class="treatment-price">${parseFloat(treatment.price_total).toFixed(2)} €</span>
                             <div class="treatment-actions">
                                 <button class="icon-btn-small" onclick="editTreatment(${treatment.id})" title="Éditer">✏️</button>
                                 <button class="icon-btn-small" onclick="deleteTreatment(${treatment.id})" title="Supprimer">🗑️</button>
@@ -1893,10 +1893,10 @@
 
         // Update Financial Summary
         function updateFinancialSummary() {
-            const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
+            const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price_total) || 0), 0);
             const reimbursed = currentTreatments.reduce((sum, t) => {
-                const price = parseFloat(t.price) || 0;
-                const rate = parseFloat(t.reimbursement_rate) || 0;
+                const price = parseFloat(t.price_total) || 0;
+                const rate = (t.price_insurance / t.price_total) || 0;
                 return sum + (price * rate);
             }, 0);
             const patient = total - reimbursed;
@@ -2026,18 +2026,20 @@
             const price = parseFloat(document.getElementById('treatmentPrice').value);
             const reimbRate = codeInfo.reimb;
 
+            const priceInsurance = price * reimbRate;
+            const pricePatient = price - priceInsurance;
+
             const treatmentData = {
                 patient_id: currentPatient.id,
-                tooth_number: toothNumber === 'Multiple' ? 0 : parseInt(toothNumber),
-                treatment_name: document.getElementById('treatmentDescription').value,
+                tooth_number: toothNumber === 'Multiple' ? '0' : toothNumber,
+                treatment_type: document.getElementById('treatmentDescription').value,
                 inami_code: selectedINAMICode,
-                price: price,
-                reimbursement_rate: reimbRate,
-                phase: parseInt(document.getElementById('treatmentPhase').value),
-                status: document.getElementById('treatmentStatus').value,
-                estimated_date: document.getElementById('estimatedDate').value || null,
-                notes: document.getElementById('treatmentNotes').value || null,
-                created_at: new Date().toISOString()
+                price_total: price,
+                price_insurance: priceInsurance,
+                price_patient: pricePatient,
+                status: document.getElementById('treatmentStatus').value || 'planned',
+                treatment_date: document.getElementById('estimatedDate').value || new Date().toISOString().split('T')[0],
+                notes: document.getElementById('treatmentNotes').value || null
             };
 
             try {
@@ -2072,16 +2074,18 @@
 
             document.getElementById('modalTitle').textContent = 'Modifier Traitement';
             document.getElementById('toothNumber').value = treatment.tooth_number || 'Multiple';
-            document.getElementById('inamiSearch').value = `${treatment.inami_code} - ${treatment.treatment_name}`;
-            document.getElementById('treatmentDescription').value = treatment.treatment_name;
-            document.getElementById('treatmentPrice').value = treatment.price;
-            document.getElementById('reimbursementRate').value = `${(treatment.reimbursement_rate * 100).toFixed(0)}%`;
+            const codeInfo = INAMI_CODES[treatment.inami_code];
+            document.getElementById('inamiSearch').value = `${treatment.inami_code} - ${treatment.treatment_type}`;
+            document.getElementById('treatmentDescription').value = treatment.treatment_type;
+            document.getElementById('treatmentPrice').value = treatment.price_total;
+            const reimbRate = codeInfo ? codeInfo.reimb : (treatment.price_insurance / treatment.price_total);
+            document.getElementById('reimbursementRate').value = `${(reimbRate * 100).toFixed(0)}%`;
             document.getElementById('treatmentPhase').value = treatment.phase || 1;
             document.getElementById('treatmentStatus').value = treatment.status;
-            document.getElementById('estimatedDate').value = treatment.estimated_date || '';
+            document.getElementById('estimatedDate').value = treatment.treatment_date || '';
             document.getElementById('treatmentNotes').value = treatment.notes || '';
 
-            updatePricingBreakdown(treatment.price, treatment.reimbursement_rate);
+            updatePricingBreakdown(treatment.price_total, reimbRate);
 
             document.getElementById('treatmentModal').classList.add('active');
 
@@ -2097,16 +2101,19 @@
             const toothNumber = document.getElementById('toothNumber').value;
             const codeInfo = INAMI_CODES[selectedINAMICode];
             const price = parseFloat(document.getElementById('treatmentPrice').value);
+            const reimbRate = codeInfo.reimb;
+            const priceInsurance = price * reimbRate;
+            const pricePatient = price - priceInsurance;
 
             const updateData = {
-                tooth_number: toothNumber === 'Multiple' ? 0 : parseInt(toothNumber),
-                treatment_name: document.getElementById('treatmentDescription').value,
+                tooth_number: toothNumber === 'Multiple' ? '0' : toothNumber,
+                treatment_type: document.getElementById('treatmentDescription').value,
                 inami_code: selectedINAMICode,
-                price: price,
-                reimbursement_rate: codeInfo.reimb,
-                phase: parseInt(document.getElementById('treatmentPhase').value),
+                price_total: price,
+                price_insurance: priceInsurance,
+                price_patient: pricePatient,
                 status: document.getElementById('treatmentStatus').value,
-                estimated_date: document.getElementById('estimatedDate').value || null,
+                treatment_date: document.getElementById('estimatedDate').value || new Date().toISOString().split('T')[0],
                 notes: document.getElementById('treatmentNotes').value || null
             };
 
@@ -2211,10 +2218,10 @@
                 return;
             }
 
-            const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price) || 0), 0);
+            const total = currentTreatments.reduce((sum, t) => sum + (parseFloat(t.price_total) || 0), 0);
             const reimbursed = currentTreatments.reduce((sum, t) => {
-                const price = parseFloat(t.price) || 0;
-                const rate = parseFloat(t.reimbursement_rate) || 0;
+                const price = parseFloat(t.price_total) || 0;
+                const rate = (t.price_insurance / t.price_total) || 0;
                 return sum + (price * rate);
             }, 0);
             const patient = total - reimbursed;
@@ -2266,13 +2273,14 @@
                         </thead>
                         <tbody>
                             ${currentTreatments.map(t => {
-                                const price = parseFloat(t.price);
-                                const reimb = price * t.reimbursement_rate;
+                                const price = parseFloat(t.price_total);
+                                const rate = (t.price_insurance / t.price_total) || 0;
+                                const reimb = price * rate;
                                 const patientPart = price - reimb;
                                 return `
                                     <tr>
                                         <td>${t.tooth_number || 'Multiple'}</td>
-                                        <td>${t.treatment_name}</td>
+                                        <td>${t.treatment_type}</td>
                                         <td>${t.inami_code}</td>
                                         <td>${price.toFixed(2)} €</td>
                                         <td>${reimb.toFixed(2)} €</td>
