@@ -641,6 +641,12 @@
     </div>
 
     <script>
+        // Clear any existing session on login page load
+        // This prevents auto-login loops
+        if (window.location.pathname.includes('login.html')) {
+            sessionStorage.removeItem('dental_authenticated');
+        }
+
         // Configuration - Tous les profils utilisent le même mot de passe
         const MASTER_PASSWORD = 'dentalcockpitk2';
         const REDIRECT_URL = 'frontend/dashboard.html';
