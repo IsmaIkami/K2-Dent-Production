@@ -1326,38 +1326,88 @@
         let patients = [];
         let selectedDate = null;
 
+        // Wait for Supabase to be ready
+        async function waitForSupabase() {
+            let attempts = 0;
+            while (!window.supabaseClient && attempts < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            if (!window.supabaseClient) {
+                throw new Error('Supabase client not initialized');
+            }
+        }
+
         // Initialize
         async function init() {
-            await loadPatients();
-            await loadAppointments();
-            renderMiniCalendar();
-            renderMainCalendar();
-            updateStats();
-            setupEventListeners();
+            try {
+                console.log('Initializing calendar...');
+                await waitForSupabase();
+                console.log('Supabase ready, loading data...');
+
+                await loadPatients();
+                await loadAppointments();
+                renderMiniCalendar();
+                renderMainCalendar();
+                updateStats();
+                setupEventListeners();
+
+                console.log('Calendar initialized successfully');
+            } catch (error) {
+                console.error('Initialization error:', error);
+                alert('Erreur lors du chargement du calendrier. Veuillez rafraîchir la page.');
+            }
         }
 
         // Load patients
         async function loadPatients() {
             try {
+                console.log('Loading patients from Supabase...');
                 const { data, error } = await window.supabaseClient
                     .from('patients')
                     .select('*')
                     .order('last_name', { ascending: true });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+
                 patients = data || [];
-                console.log(`Loaded ${patients.length} patients`);
+                console.log(`✅ Loaded ${patients.length} patients:`, patients.slice(0, 3));
 
                 const select = document.getElementById('patientSelect');
+                if (!select) {
+                    console.error('❌ patientSelect element not found!');
+                    return;
+                }
+
                 select.innerHTML = '<option value="">-- Sélectionner un patient --</option>';
+
+                if (patients.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = '⚠️ Aucun patient dans la base de données';
+                    option.disabled = true;
+                    select.appendChild(option);
+                    console.warn('No patients found in database');
+                    return;
+                }
+
                 patients.forEach(p => {
                     const option = document.createElement('option');
                     option.value = p.id;
-                    option.textContent = `${p.first_name} ${p.last_name} - ${p.niss || 'Sans NISS'}`;
+                    option.textContent = `${p.first_name} ${p.last_name}${p.niss ? ' - ' + p.niss : ''}`;
                     select.appendChild(option);
                 });
+
+                console.log(`✅ Patient select populated with ${patients.length} options`);
             } catch (error) {
-                console.error('Error loading patients:', error);
+                console.error('❌ Error loading patients:', error);
+                const select = document.getElementById('patientSelect');
+                if (select) {
+                    select.innerHTML = '<option value="">❌ Erreur de chargement - Voir console</option>';
+                }
             }
         }
 
@@ -1642,13 +1692,19 @@
         }
 
         // Open new appointment modal
-        function openNewAppointmentModal() {
+        async function openNewAppointmentModal() {
             const modal = document.getElementById('appointmentModal');
             const form = document.getElementById('appointmentForm');
             form.reset();
 
             document.getElementById('modalTitle').textContent = 'Nouveau Rendez-vous';
             document.getElementById('deleteBtn').style.display = 'none';
+
+            // Refresh patient list to ensure it's up to date
+            if (patients.length === 0) {
+                console.log('No patients loaded, reloading...');
+                await loadPatients();
+            }
 
             if (selectedDate) {
                 document.getElementById('appointmentDate').value = selectedDate;
