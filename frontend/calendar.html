@@ -1352,22 +1352,88 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Statut</label>
-                        <select id="appointmentStatus">
-                            <option value="scheduled">📅 Planifié</option>
-                            <option value="confirmed">✅ Confirmé</option>
-                            <option value="arrived">🚪 Arrivé</option>
-                            <option value="in_progress">⚡ En cours</option>
-                            <option value="completed">✔️ Terminé</option>
-                            <option value="cancelled">❌ Annulé</option>
-                            <option value="no_show">👻 Absent</option>
+                    <div class="form-group full-width">
+                        <label>Type de rendez-vous *</label>
+                        <select id="appointmentType" required>
+                            <option value="">-- Sélectionner --</option>
+                            <optgroup label="Consultations">
+                                <option value="Première consultation">🩺 Première consultation</option>
+                                <option value="Contrôle périodique">✅ Contrôle périodique</option>
+                                <option value="Contrôle post-opératoire">🔍 Contrôle post-opératoire</option>
+                            </optgroup>
+                            <optgroup label="Prévention & Hygiène">
+                                <option value="Détartrage">🪥 Détartrage</option>
+                                <option value="Polissage">✨ Polissage</option>
+                                <option value="Fluoration">💧 Fluoration</option>
+                                <option value="Scellement de sillons">🛡️ Scellement de sillons</option>
+                            </optgroup>
+                            <optgroup label="Soins Conservateurs">
+                                <option value="Carie simple">🦷 Carie simple</option>
+                                <option value="Carie complexe">⚠️ Carie complexe</option>
+                                <option value="Reconstitution">🔧 Reconstitution</option>
+                                <option value="Inlay/Onlay">💎 Inlay/Onlay</option>
+                            </optgroup>
+                            <optgroup label="Endodontie">
+                                <option value="Dévitalisation">🔴 Dévitalisation</option>
+                                <option value="Retraitement canalaire">♻️ Retraitement canalaire</option>
+                            </optgroup>
+                            <optgroup label="Chirurgie">
+                                <option value="Extraction simple">🦷 Extraction simple</option>
+                                <option value="Extraction complexe">⚠️ Extraction complexe</option>
+                                <option value="Extraction dent de sagesse">🦷 Dent de sagesse</option>
+                                <option value="Chirurgie parodontale">🔪 Chirurgie parodontale</option>
+                            </optgroup>
+                            <optgroup label="Prothèses">
+                                <option value="Couronne">👑 Couronne</option>
+                                <option value="Bridge">🌉 Bridge</option>
+                                <option value="Prothèse amovible">🦷 Prothèse amovible</option>
+                                <option value="Implant">🔩 Implant dentaire</option>
+                            </optgroup>
+                            <optgroup label="Esthétique">
+                                <option value="Blanchiment">✨ Blanchiment</option>
+                                <option value="Facette">💎 Facette</option>
+                                <option value="Composite esthétique">🎨 Composite esthétique</option>
+                            </optgroup>
+                            <optgroup label="Parodontologie">
+                                <option value="Détartrage profond">🪥 Détartrage profond (surfaçage)</option>
+                                <option value="Traitement parodontal">🔬 Traitement parodontal</option>
+                            </optgroup>
+                            <optgroup label="Orthodontie">
+                                <option value="Consultation orthodontie">📐 Consultation orthodontie</option>
+                                <option value="Pose appareil">🦷 Pose appareil</option>
+                                <option value="Suivi orthodontie">📊 Suivi orthodontie</option>
+                            </optgroup>
+                            <optgroup label="Radiologie">
+                                <option value="Radio panoramique">📷 Radio panoramique</option>
+                                <option value="Radio rétro-alvéolaire">📸 Radio rétro-alvéolaire</option>
+                                <option value="CBCT/Scanner 3D">🔬 CBCT/Scanner 3D</option>
+                            </optgroup>
+                            <optgroup label="Urgences">
+                                <option value="Urgence douleur">🚨 Urgence douleur</option>
+                                <option value="Urgence traumatisme">⚡ Urgence traumatisme</option>
+                                <option value="Urgence infection">🔴 Urgence infection</option>
+                            </optgroup>
+                            <optgroup label="Autre">
+                                <option value="Devis">💰 Établissement devis</option>
+                                <option value="Autre">➕ Autre</option>
+                            </optgroup>
                         </select>
                     </div>
 
-                    <div class="form-group full-width">
-                        <label>Type de rendez-vous *</label>
-                        <input type="text" id="appointmentType" placeholder="Ex: Contrôle, Détartrage, Urgence, Soins..." required>
+                    <div class="form-group">
+                        <label>Statut du RDV</label>
+                        <select id="appointmentStatus">
+                            <option value="scheduled">📅 À venir (défaut)</option>
+                            <option value="confirmed">✅ Confirmé par patient</option>
+                            <option value="arrived">🚪 Patient arrivé</option>
+                            <option value="in_progress">⚡ En cours de traitement</option>
+                            <option value="completed">✔️ Terminé</option>
+                            <option value="cancelled">❌ Annulé</option>
+                            <option value="no_show">👻 Patient absent (no-show)</option>
+                        </select>
+                        <small style="color: var(--text-secondary); font-size: 11px; margin-top: 4px; display: block;">
+                            💡 "À venir" = nouveau RDV | "Confirmé" = patient a confirmé | "Arrivé" = en salle d'attente
+                        </small>
                     </div>
 
                     <div class="form-group full-width">
@@ -1964,6 +2030,57 @@
             });
 
             document.getElementById('appointmentDate').addEventListener('change', showAISuggestions);
+
+            // Auto-suggest duration based on appointment type
+            document.getElementById('appointmentType').addEventListener('change', (e) => {
+                const type = e.target.value;
+                const durationSelect = document.getElementById('duration');
+
+                // Durées suggérées par type (en minutes)
+                const suggestedDurations = {
+                    'Première consultation': 60,
+                    'Contrôle périodique': 30,
+                    'Contrôle post-opératoire': 30,
+                    'Détartrage': 45,
+                    'Polissage': 30,
+                    'Fluoration': 15,
+                    'Scellement de sillons': 30,
+                    'Carie simple': 30,
+                    'Carie complexe': 60,
+                    'Reconstitution': 45,
+                    'Inlay/Onlay': 60,
+                    'Dévitalisation': 90,
+                    'Retraitement canalaire': 120,
+                    'Extraction simple': 30,
+                    'Extraction complexe': 60,
+                    'Extraction dent de sagesse': 90,
+                    'Chirurgie parodontale': 90,
+                    'Couronne': 60,
+                    'Bridge': 90,
+                    'Prothèse amovible': 60,
+                    'Implant': 120,
+                    'Blanchiment': 90,
+                    'Facette': 60,
+                    'Composite esthétique': 45,
+                    'Détartrage profond': 60,
+                    'Traitement parodontal': 90,
+                    'Consultation orthodontie': 45,
+                    'Pose appareil': 90,
+                    'Suivi orthodontie': 30,
+                    'Radio panoramique': 15,
+                    'Radio rétro-alvéolaire': 15,
+                    'CBCT/Scanner 3D': 30,
+                    'Urgence douleur': 30,
+                    'Urgence traumatisme': 45,
+                    'Urgence infection': 30,
+                    'Devis': 30
+                };
+
+                if (suggestedDurations[type]) {
+                    durationSelect.value = suggestedDurations[type];
+                    console.log(`💡 Durée suggérée: ${suggestedDurations[type]} min pour ${type}`);
+                }
+            });
 
             // Patient search
             const searchInput = document.getElementById('patientSearch');
