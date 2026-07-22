@@ -1220,7 +1220,7 @@
                     <!-- Calendar Header -->
                     <div class="calendar-header">
                         <div>
-                            <h1 class="calendar-title" id="currentMonthYear">Janvier 2026</h1>
+                            <h1 class="calendar-title" id="currentMonthYear">Chargement...</h1>
                             <p style="color: var(--text-secondary); margin-top: 8px;">Gestion complète des rendez-vous avec optimisation IA</p>
                         </div>
                         <div class="calendar-controls">
@@ -1246,7 +1246,7 @@
                             <div class="mini-calendar">
                                 <div class="mini-calendar-header">
                                     <button class="mini-nav-btn" id="miniPrev">←</button>
-                                    <div class="mini-calendar-title" id="miniMonthYear">Jan 2026</div>
+                                    <div class="mini-calendar-title" id="miniMonthYear">...</div>
                                     <button class="mini-nav-btn" id="miniNext">→</button>
                                 </div>
                                 <div class="mini-calendar-grid" id="miniCalendarGrid">
@@ -1536,6 +1536,7 @@
                 console.log('📅 Current date set to:', currentDate.toLocaleDateString('fr-FR'));
 
                 renderMiniCalendar();
+                renderMainCalendar(); // Update main calendar title with current month
                 renderListView(new Date()); // Show today by default
                 updateStats();
                 setupEventListeners();
