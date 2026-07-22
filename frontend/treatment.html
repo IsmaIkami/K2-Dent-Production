@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Plan de Traitement - DentalCockpit Pro</title>
     <style>
         * {
@@ -1524,13 +1527,15 @@
                 item.onclick = () => selectPatient(patient);
 
                 const isBIM = patient.bim_status === true;
-                const mutuelle = patient.mutuelle || 'Non renseignée';
+                const age = patient.date_of_birth ? new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() : null;
+                const ageDisplay = age ? `${age} ans` : 'Âge non renseigné';
+                const phone = patient.phone || patient.mobile || 'Pas de téléphone';
 
                 item.innerHTML = `
                     <div class="patient-info">
                         <h4>${patient.first_name} ${patient.last_name}</h4>
                         <div class="patient-meta">
-                            📋 ${patient.national_number || 'N/A'} | 🏥 ${mutuelle}
+                            👤 ${ageDisplay} | 📞 ${phone}
                         </div>
                     </div>
                     ${isBIM ? '<span class="patient-badge bim">BIM</span>' : ''}
