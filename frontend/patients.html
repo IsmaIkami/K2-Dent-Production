@@ -1005,11 +1005,18 @@
 
         // Display patients in the list
         function displayPatients(patients) {
+            console.log('🎨 displayPatients called with', patients.length, 'patients');
             const container = document.querySelector('.patients-panel');
-            if (!container) return;
+            console.log('📦 Container found:', container);
+
+            if (!container) {
+                console.error('❌ .patients-panel container not found!');
+                return;
+            }
 
             // Keep the header
             const header = container.querySelector('.panel-header');
+            console.log('📋 Header found:', header);
             container.innerHTML = '';
             if (header) container.appendChild(header);
 
