@@ -1021,13 +1021,18 @@ const Realtime = {
 // ============================================================================
 
 // Make available globally
+window.supabaseClient = supabaseClient;
 window.DB = DB;
 window.Realtime = Realtime;
 window.initSupabase = initSupabase;
 
 // Auto-initialize if config is set
 if (SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
-  initSupabase();
+  const initialized = initSupabase();
+  if (initialized) {
+    window.supabaseClient = supabaseClient;
+    console.log('✅ Supabase client available at window.supabaseClient');
+  }
 }
 
 console.log('📦 K2 Dent - Supabase Client loaded');
