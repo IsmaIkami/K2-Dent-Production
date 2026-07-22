@@ -6,18 +6,20 @@
 (function() {
     'use strict';
 
-    // Vérifier si l'utilisateur est authentifié
-    const isAuthenticated = sessionStorage.getItem('dental_authenticated') === 'true';
-    const loginTime = sessionStorage.getItem('dental_login_time');
+    // Petit délai pour laisser le temps à la session d'être disponible
+    setTimeout(function() {
+        // Vérifier si l'utilisateur est authentifié
+        const isAuthenticated = sessionStorage.getItem('dental_authenticated') === 'true';
+        const loginTime = sessionStorage.getItem('dental_login_time');
 
-    // Session expire après 8 heures
-    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 heures en millisecondes
+        // Session expire après 8 heures
+        const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 heures en millisecondes
 
-    if (!isAuthenticated) {
-        // Pas authentifié - rediriger vers la page de connexion
-        window.location.href = '/K2-Dent-Production/login.html';
-        return;
-    }
+        if (!isAuthenticated) {
+            // Pas authentifié - rediriger vers la page de connexion
+            window.location.href = '/K2-Dent-Production/login.html';
+            return;
+        }
 
     if (loginTime) {
         const loginDate = new Date(loginTime);
@@ -59,4 +61,5 @@
             topbarActions.appendChild(logoutBtn);
         }
     });
+    }, 100); // Délai de 100ms
 })();
