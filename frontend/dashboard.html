@@ -1246,9 +1246,14 @@
                                 Rendez-vous d'aujourd'hui avec points d'attention
                             </p>
                         </div>
-                        <button class="btn btn-primary" onclick="window.location.href='patients.html'">
-                            ➕ Nouveau Patient
-                        </button>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn" onclick="loadTodaysPatients()" style="background: var(--bg-secondary); color: var(--text-primary);">
+                                ↻ Rafraîchir
+                            </button>
+                            <button class="btn btn-primary" onclick="window.location.href='calendar.html'">
+                                ➕ Nouveau RDV
+                            </button>
+                        </div>
                     </div>
 
                     <div id="todayPatientsList">
@@ -2888,28 +2893,36 @@
 
         async function loadTodaysPatients() {
             const today = new Date().toISOString().split('T')[0];
+            console.log('🔍 Loading appointments for:', today);
 
             try {
                 const { data, error } = await window.supabaseClient
                     .from('appointments')
                     .select(`
                         *,
-                        patient:patients(*)
+                        patients (*)
                     `)
                     .eq('appointment_date', today)
-                    .order('appointment_time', { ascending: true });
+                    .order('start_time', { ascending: true });
 
                 if (error) throw error;
 
+                console.log('✅ Today appointments loaded:', data);
                 displayTodaysPatients(data || []);
             } catch (error) {
-                console.error('Error loading today patients:', error);
+                console.error('❌ Error loading today patients:', error);
                 displayTodaysPatients([]);
             }
         }
 
         function displayTodaysPatients(appointments) {
             const container = document.getElementById('todayPatientsList');
+            console.log('📊 Displaying today patients:', appointments?.length || 0);
+
+            if (!container) {
+                console.error('❌ Container #todayPatientsList not found');
+                return;
+            }
 
             if (appointments.length === 0) {
                 container.innerHTML = `
@@ -2925,8 +2938,11 @@
             let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
 
             appointments.forEach(appt => {
-                const patient = appt.patient;
-                if (!patient) return;
+                const patient = appt.patients;
+                if (!patient) {
+                    console.warn('⚠️ Appointment without patient:', appt);
+                    return;
+                }
 
                 // Calculate risk indicators
                 const risks = [];
@@ -2955,7 +2971,8 @@
                                     ${patient.first_name} ${patient.last_name}
                                 </div>
                                 <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-                                    <span style="display: flex; align-items: center; gap: 4px;">🕒 ${appt.appointment_time || 'Non défini'}</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;">🕒 ${appt.start_time?.slice(0, 5) || 'Non défini'}</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;">📋 ${appt.type || 'Consultation'}</span>
                                     <span style="display: flex; align-items: center; gap: 4px;">📞 ${patient.phone || 'N/A'}</span>
                                     ${risks.length > 0 ? `<span style="color: ${risks[0].color}; font-weight: 500;">${risks[0].icon} ${risks[0].text}</span>` : ''}
                                 </div>
