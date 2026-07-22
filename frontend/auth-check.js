@@ -15,7 +15,7 @@
 
     if (!isAuthenticated) {
         // Pas authentifié - rediriger vers la page de connexion
-        window.location.href = '/K2-Dent-Production/';
+        window.location.href = '/K2-Dent-Production/login.html';
         return;
     }
 
@@ -28,7 +28,7 @@
             // Session expirée
             sessionStorage.clear();
             alert('⏰ Votre session a expiré. Veuillez vous reconnecter.');
-            window.location.href = '/K2-Dent-Production/';
+            window.location.href = '/K2-Dent-Production/login.html';
             return;
         }
     }
@@ -53,7 +53,7 @@
             logoutBtn.onclick = function() {
                 if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                     sessionStorage.clear();
-                    window.location.href = '/K2-Dent-Production/';
+                    window.location.href = '/K2-Dent-Production/login.html';
                 }
             };
             topbarActions.appendChild(logoutBtn);
