@@ -1254,6 +1254,10 @@
                                         <div class="meta-value" id="patient-dob">-</div>
                                     </div>
                                     <div class="meta-item">
+                                        <div class="meta-label">Genre</div>
+                                        <div class="meta-value" id="patient-gender">-</div>
+                                    </div>
+                                    <div class="meta-item">
                                         <div class="meta-label">NISS</div>
                                         <div class="meta-value" id="patient-niss">-</div>
                                     </div>
@@ -1948,7 +1952,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="pregnantGroup" style="display: none;">
                         <label class="form-label">🤰 Grossesse</label>
                         <select class="form-select" id="pregnant">
                             <option value="false">Non</option>
@@ -1956,7 +1960,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="breastfeedingGroup" style="display: none;">
                         <label class="form-label">🍼 Allaitement</label>
                         <select class="form-select" id="breastfeeding">
                             <option value="false">Non</option>
@@ -2874,6 +2878,12 @@
             const dobEl = document.getElementById('patient-dob');
             if (dobEl) dobEl.textContent = `${formatDate(patient.date_of_birth)}${patientAge ? ` (${patientAge} ans)` : ''}`;
 
+            const genderEl = document.getElementById('patient-gender');
+            if (genderEl) {
+                const genderLabels = { 'F': '👩 Femme', 'M': '👨 Homme', 'X': '⚧ Autre', 'OTHER': 'Autre' };
+                genderEl.textContent = genderLabels[patient.gender] || 'Non renseigné';
+            }
+
             const nissEl = document.getElementById('patient-niss');
             if (nissEl) nissEl.textContent = formatNISS(patient.niss);
 
@@ -3105,8 +3115,21 @@
                 document.getElementById('diabetes').value = currentPatient.diabetes ? 'true' : 'false';
                 document.getElementById('hypertension').value = currentPatient.hypertension ? 'true' : 'false';
                 document.getElementById('heartDisease').value = currentPatient.heart_disease ? 'true' : 'false';
-                document.getElementById('pregnant').value = currentPatient.pregnant ? 'true' : 'false';
-                document.getElementById('breastfeeding').value = currentPatient.breastfeeding ? 'true' : 'false';
+                // Show/hide pregnancy and breastfeeding fields based on gender
+                const isFemale = currentPatient.gender === 'F';
+                const pregnantGroup = document.getElementById('pregnantGroup');
+                const breastfeedingGroup = document.getElementById('breastfeedingGroup');
+
+                if (isFemale) {
+                    pregnantGroup.style.display = 'block';
+                    breastfeedingGroup.style.display = 'block';
+                    document.getElementById('pregnant').value = currentPatient.pregnant ? 'true' : 'false';
+                    document.getElementById('breastfeeding').value = currentPatient.breastfeeding ? 'true' : 'false';
+                } else {
+                    pregnantGroup.style.display = 'none';
+                    breastfeedingGroup.style.display = 'none';
+                }
+
                 document.getElementById('lastDentalVisit').value = currentPatient.last_dental_visit || '';
                 document.getElementById('dentalHygieneFrequency').value = currentPatient.dental_hygiene_frequency || '';
 
@@ -3156,11 +3179,18 @@
                     diabetes: document.getElementById('diabetes').value === 'true',
                     hypertension: document.getElementById('hypertension').value === 'true',
                     heart_disease: document.getElementById('heartDisease').value === 'true',
-                    pregnant: document.getElementById('pregnant').value === 'true',
-                    breastfeeding: document.getElementById('breastfeeding').value === 'true',
                     last_dental_visit: document.getElementById('lastDentalVisit').value || null,
                     dental_hygiene_frequency: document.getElementById('dentalHygieneFrequency').value || null
                 };
+
+                // Only update pregnancy/breastfeeding for female patients
+                if (currentPatient.gender === 'F') {
+                    patientUpdate.pregnant = document.getElementById('pregnant').value === 'true';
+                    patientUpdate.breastfeeding = document.getElementById('breastfeeding').value === 'true';
+                } else {
+                    patientUpdate.pregnant = false;
+                    patientUpdate.breastfeeding = false;
+                }
 
                 await DB.updatePatient(currentPatient.id, patientUpdate);
 

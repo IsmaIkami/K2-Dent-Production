@@ -187,6 +187,29 @@ const DB = {
   },
 
   /**
+   * Update patient fields
+   * @param {string} id - Patient UUID
+   * @param {Object} updates - Fields to update
+   * @returns {Promise<Object>} Updated patient
+   */
+  async updatePatient(id, updates) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('patients')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating patient:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Search patients
    * @param {string} query - Search query
    * @returns {Promise<Array>} Matching patients
