@@ -659,6 +659,9 @@
             }
         }
 
+        // Store selected profile data for form submission
+        let selectedProfileData = null;
+
         // Handle classic form submission
         document.getElementById('classicLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -677,11 +680,16 @@
             // Simulate slight delay for better UX
             setTimeout(() => {
                 if (password === MASTER_PASSWORD) {
+                    // Use profile data if a profile was clicked, otherwise use form data
+                    const userAvatar = selectedProfileData ? selectedProfileData.avatar : '👤';
+                    const userRole = selectedProfileData ? selectedProfileData.role : 'Utilisateur';
+                    const userName = selectedProfileData ? selectedProfileData.username : username;
+
                     // Success - Store session
                     sessionStorage.setItem('dental_authenticated', 'true');
-                    sessionStorage.setItem('dental_user', username);
-                    sessionStorage.setItem('dental_user_role', 'Utilisateur');
-                    sessionStorage.setItem('dental_user_avatar', '👤');
+                    sessionStorage.setItem('dental_user', userName);
+                    sessionStorage.setItem('dental_user_role', userRole);
+                    sessionStorage.setItem('dental_user_avatar', userAvatar);
                     sessionStorage.setItem('dental_login_time', new Date().toISOString());
 
                     // Redirect to dashboard
@@ -703,9 +711,11 @@
             }, 800);
         });
 
-        // Handle profile quick login
+        // Handle profile click - fill form instead of prompt
         document.addEventListener('DOMContentLoaded', function() {
             const profileCards = document.querySelectorAll('.profile-card');
+            const usernameField = document.getElementById('username');
+            const passwordField = document.getElementById('password');
 
             profileCards.forEach(card => {
                 card.addEventListener('click', function() {
@@ -713,26 +723,38 @@
                     const role = this.dataset.role;
                     const avatar = this.querySelector('.profile-avatar').textContent;
 
-                    // Prompt for password
-                    const password = prompt(`🔐 Mot de passe pour ${username}:`);
+                    // Store profile data
+                    selectedProfileData = {
+                        username: username,
+                        role: role,
+                        avatar: avatar
+                    };
 
-                    if (password === null) return; // User cancelled
+                    // Fill username field
+                    usernameField.value = username;
+                    usernameField.disabled = true;
+                    usernameField.style.opacity = '0.7';
 
-                    if (password === MASTER_PASSWORD) {
-                        // Success - Store session
-                        sessionStorage.setItem('dental_authenticated', 'true');
-                        sessionStorage.setItem('dental_user', username);
-                        sessionStorage.setItem('dental_user_role', role);
-                        sessionStorage.setItem('dental_user_avatar', avatar);
-                        sessionStorage.setItem('dental_login_time', new Date().toISOString());
+                    // Focus on password field
+                    passwordField.focus();
 
-                        // Redirect to dashboard
-                        window.location.href = REDIRECT_URL;
-                    } else {
-                        // Error
-                        alert('❌ Mot de passe incorrect');
-                    }
+                    // Scroll to top to show form
+                    document.querySelector('.login-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Highlight the selected profile
+                    profileCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
                 });
+            });
+
+            // Reset profile selection when username is manually changed
+            usernameField.addEventListener('focus', function() {
+                if (this.disabled) {
+                    this.disabled = false;
+                    this.style.opacity = '1';
+                    selectedProfileData = null;
+                    profileCards.forEach(c => c.classList.remove('selected'));
+                }
             });
         });
 
