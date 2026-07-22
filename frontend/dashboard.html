@@ -1653,35 +1653,35 @@
                     <div class="medical-card">
                         <div class="medical-card-header">
                             <div class="medical-card-title">🏥 Données Médicales</div>
-                            <button class="btn btn-icon btn-secondary">✏️</button>
+                            <button class="btn btn-icon btn-secondary" onclick="showMedicalDataModal()">✏️</button>
                         </div>
                         <div class="data-row">
                             <span class="data-label">Groupe Sanguin</span>
-                            <span class="data-value">A+</span>
+                            <span class="data-value" id="medical-blood-type">-</span>
                         </div>
                         <div class="data-row">
                             <span class="data-label">Allergies</span>
-                            <span class="data-value" style="color: var(--danger);">Pénicilline, Latex</span>
+                            <span class="data-value" id="medical-allergies" style="color: var(--danger);">-</span>
                         </div>
                         <div class="data-row">
                             <span class="data-label">Conditions</span>
-                            <span class="data-value">Diabète Type 2</span>
+                            <span class="data-value" id="medical-conditions">-</span>
                         </div>
                         <div class="data-row">
                             <span class="data-label">Médication</span>
-                            <span class="data-value">Metformine 850mg</span>
+                            <span class="data-value" id="medical-medications">-</span>
                         </div>
                         <div class="data-row">
-                            <span class="data-label">Dernier HbA1c</span>
-                            <span class="data-value">6.8%</span>
+                            <span class="data-label">Fumeur</span>
+                            <span class="data-value" id="medical-smoker">-</span>
                         </div>
                         <div class="data-row">
-                            <span class="data-label">Statut INAMI</span>
-                            <span class="data-value" style="color: var(--success);">✓ Actif</span>
+                            <span class="data-label">Diabète</span>
+                            <span class="data-value" id="medical-diabetes">-</span>
                         </div>
                         <div class="data-row">
                             <span class="data-label">N° Mutuelle</span>
-                            <span class="data-value">306-1234567-89</span>
+                            <span class="data-value" id="medical-mutuelle">-</span>
                         </div>
                     </div>
                 </div>
@@ -3067,9 +3067,77 @@
             try {
                 currentMedicalData = await DB.getLatestMedicalHistory(currentPatientId);
                 displayMedicalAlerts(currentMedicalData);
+                displayMedicalDataSection(currentMedicalData);
             } catch (error) {
                 console.error('Error loading medical data:', error);
                 displayMedicalAlerts(null);
+                displayMedicalDataSection(null);
+            }
+        }
+
+        function displayMedicalDataSection(medicalData) {
+            // Blood type (from patient, not medical_history)
+            const bloodTypeEl = document.getElementById('medical-blood-type');
+            if (bloodTypeEl && currentPatient) {
+                bloodTypeEl.textContent = currentPatient.blood_type || 'Non renseigné';
+            }
+
+            // Allergies
+            const allergiesEl = document.getElementById('medical-allergies');
+            if (allergiesEl) {
+                if (medicalData?.allergies && medicalData.allergies.length > 0) {
+                    allergiesEl.textContent = medicalData.allergies.join(', ');
+                    allergiesEl.style.color = 'var(--danger)';
+                } else {
+                    allergiesEl.textContent = 'Aucune';
+                    allergiesEl.style.color = 'var(--text-secondary)';
+                }
+            }
+
+            // Conditions
+            const conditionsEl = document.getElementById('medical-conditions');
+            if (conditionsEl) {
+                if (medicalData?.medical_conditions && medicalData.medical_conditions.length > 0) {
+                    conditionsEl.textContent = medicalData.medical_conditions.join(', ');
+                } else {
+                    conditionsEl.textContent = 'Aucune';
+                }
+            }
+
+            // Medications
+            const medicationsEl = document.getElementById('medical-medications');
+            if (medicationsEl) {
+                if (medicalData?.medications && medicalData.medications.length > 0) {
+                    medicationsEl.textContent = medicalData.medications.join(', ');
+                } else {
+                    medicationsEl.textContent = 'Aucune';
+                }
+            }
+
+            // Smoker (from patient)
+            const smokerEl = document.getElementById('medical-smoker');
+            if (smokerEl && currentPatient) {
+                smokerEl.textContent = currentPatient.smoker ? '🚬 Oui' : '✓ Non';
+                smokerEl.style.color = currentPatient.smoker ? 'var(--warning)' : 'var(--success)';
+            }
+
+            // Diabetes (from patient)
+            const diabetesEl = document.getElementById('medical-diabetes');
+            if (diabetesEl && currentPatient) {
+                diabetesEl.textContent = currentPatient.diabetes ? '⚠️ Oui' : '✓ Non';
+                diabetesEl.style.color = currentPatient.diabetes ? 'var(--warning)' : 'var(--success)';
+            }
+
+            // Mutuelle (from patient)
+            const mutuelleEl = document.getElementById('medical-mutuelle');
+            if (mutuelleEl && currentPatient) {
+                if (currentPatient.mutuelle_code && currentPatient.mutuelle_membership) {
+                    mutuelleEl.textContent = `${currentPatient.mutuelle_code}-${currentPatient.mutuelle_membership}`;
+                } else if (currentPatient.mutuelle_code) {
+                    mutuelleEl.textContent = currentPatient.mutuelle_code;
+                } else {
+                    mutuelleEl.textContent = 'Non renseigné';
+                }
             }
         }
 
