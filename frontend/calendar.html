@@ -1228,8 +1228,9 @@
                             <button class="nav-btn" id="todayBtn">Aujourd'hui</button>
                             <button class="nav-btn" id="nextMonth">Suivant →</button>
                             <div class="view-switcher">
-                                <button class="view-btn active" data-view="month">📅 Mois</button>
-                                <button class="view-btn" data-view="list">📋 Liste</button>
+                                <button class="view-btn active" data-view="day" id="dayViewBtn">📋 Jour</button>
+                                <button class="view-btn" data-view="week" id="weekViewBtn" disabled title="Vue semaine - Bientôt disponible">📅 Semaine</button>
+                                <button class="view-btn" data-view="month" id="monthViewBtn">🗓️ Mois</button>
                             </div>
                             <button class="btn btn-primary" onclick="openNewAppointmentModal()">
                                 ➕ Nouveau RDV
@@ -1475,7 +1476,7 @@
     <script src="js/supabase-client.js?v=4"></script>
     <script>
         let currentDate = new Date();
-        let currentView = 'month';
+        let currentView = 'list'; // Default to day view (list filtered by today)
         let appointments = [];
         let patients = [];
         let selectedDate = null;
@@ -1512,12 +1513,21 @@
 
                 await loadPatients();
                 await loadAppointments();
+
+                // Set default view to today's day view
+                document.getElementById('monthView').style.display = 'none';
+                document.getElementById('listView').style.display = 'block';
+
+                // Update view buttons
+                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-view="day"]')?.classList.add('active');
+
                 renderMiniCalendar();
-                renderMainCalendar();
+                renderListView(new Date()); // Show today by default
                 updateStats();
                 setupEventListeners();
 
-                console.log('✅ Calendar initialized successfully');
+                console.log('✅ Calendar initialized with TODAY view by default');
             } catch (error) {
                 console.error('Initialization error:', error);
                 alert('Erreur lors du chargement du calendrier. Veuillez rafraîchir la page.');
@@ -2190,15 +2200,15 @@
             });
 
             document.getElementById('todayBtn').addEventListener('click', () => {
-                console.log('📅 Bouton "Aujourd\'hui" cliqué - Affichage vue détaillée du jour');
+                console.log('📅 Bouton "Aujourd\'hui" cliqué - Affichage vue JOUR');
                 currentDate = new Date();
-                currentView = 'list'; // Force list view to show details
+                currentView = 'day'; // Force day view
 
                 // Update view buttons
                 document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelector('[data-view="list"]')?.classList.add('active');
+                document.querySelector('[data-view="day"]')?.classList.add('active');
 
-                // Hide month view, show list view
+                // Show day view (list filtered by today)
                 document.getElementById('monthView').style.display = 'none';
                 document.getElementById('listView').style.display = 'block';
 
@@ -2209,7 +2219,7 @@
                 // Smooth scroll to top
                 document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
 
-                console.log('✅ Vue détaillée du jour affichée');
+                console.log('✅ Vue JOUR affichée (aujourd\'hui)');
             });
 
             document.getElementById('miniPrev').addEventListener('click', () => {
@@ -2388,19 +2398,37 @@
             // View switcher
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
+                    if (btn.disabled) return; // Skip disabled buttons
+
                     document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentView = btn.dataset.view;
 
-                    if (currentView === 'month') {
-                        document.getElementById('monthView').classList.add('active');
-                        document.getElementById('listView').classList.remove('active');
+                    if (currentView === 'day') {
+                        // Day view: List filtered by today
+                        document.getElementById('monthView').style.display = 'none';
+                        document.getElementById('listView').style.display = 'block';
+                        renderListView(new Date());
+                        console.log('📋 Vue JOUR affichée');
+                    } else if (currentView === 'week') {
+                        // Week view: TODO - Timeline 8h-18h
+                        console.log('📅 Vue SEMAINE - En développement');
+                        alert('Vue semaine en cours de développement');
+                    } else if (currentView === 'month') {
+                        // Month view: Calendar grid
+                        document.getElementById('monthView').style.display = 'block';
+                        document.getElementById('listView').style.display = 'none';
                         renderMonthView(currentDate.getFullYear(), currentDate.getMonth());
+                        console.log('🗓️ Vue MOIS affichée');
                     } else {
-                        document.getElementById('monthView').classList.remove('active');
-                        document.getElementById('listView').classList.add('active');
+                        // List view: All appointments this month
+                        document.getElementById('monthView').style.display = 'none';
+                        document.getElementById('listView').style.display = 'block';
                         renderListView();
+                        console.log('📋 Vue LISTE affichée');
                     }
+
+                    updateStats();
                 });
             });
         }
