@@ -979,6 +979,78 @@
             background: var(--primary-dark);
             transform: translateY(-1px);
         }
+
+        /* Patient Autocomplete Dropdown in Modal */
+        .patient-autocomplete-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 2000;
+            box-shadow: var(--shadow);
+        }
+
+        .patient-autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .patient-autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .patient-autocomplete-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .patient-autocomplete-item.selected {
+            background: rgba(0, 102, 255, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .patient-autocomplete-avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 102, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .patient-autocomplete-info {
+            flex: 1;
+        }
+
+        .patient-autocomplete-name {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .patient-autocomplete-details {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .patient-autocomplete-empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -1251,11 +1323,11 @@
                 <input type="hidden" id="appointmentId">
 
                 <div class="form-grid">
-                    <div class="form-group full-width">
+                    <div class="form-group full-width" style="position: relative;">
                         <label>Patient *</label>
-                        <select id="patientSelect" required>
-                            <option value="">-- Sélectionner un patient --</option>
-                        </select>
+                        <input type="text" id="patientInput" placeholder="Taper le nom du patient..." autocomplete="off" required>
+                        <input type="hidden" id="patientId">
+                        <div id="patientDropdown" class="patient-autocomplete-dropdown" style="display: none;"></div>
                     </div>
 
                     <div class="form-group">
@@ -1374,40 +1446,14 @@
                 }
 
                 patients = data || [];
-                console.log(`✅ Loaded ${patients.length} patients:`, patients.slice(0, 3));
-
-                const select = document.getElementById('patientSelect');
-                if (!select) {
-                    console.error('❌ patientSelect element not found!');
-                    return;
-                }
-
-                select.innerHTML = '<option value="">-- Sélectionner un patient --</option>';
+                console.log(`✅ Loaded ${patients.length} patients`);
 
                 if (patients.length === 0) {
-                    const option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = '⚠️ Aucun patient dans la base de données';
-                    option.disabled = true;
-                    select.appendChild(option);
-                    console.warn('No patients found in database');
-                    return;
+                    console.warn('⚠️ No patients found in database');
                 }
-
-                patients.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.id;
-                    option.textContent = `${p.first_name} ${p.last_name}${p.niss ? ' - ' + p.niss : ''}`;
-                    select.appendChild(option);
-                });
-
-                console.log(`✅ Patient select populated with ${patients.length} options`);
             } catch (error) {
                 console.error('❌ Error loading patients:', error);
-                const select = document.getElementById('patientSelect');
-                if (select) {
-                    select.innerHTML = '<option value="">❌ Erreur de chargement - Voir console</option>';
-                }
+                alert('Erreur lors du chargement des patients. Vérifiez la console.');
             }
         }
 
@@ -1721,7 +1767,13 @@
 
             document.getElementById('modalTitle').textContent = 'Modifier Rendez-vous';
             document.getElementById('appointmentId').value = apt.id;
-            document.getElementById('patientSelect').value = apt.patient_id;
+
+            // Set patient
+            if (apt.patient) {
+                document.getElementById('patientInput').value = `${apt.patient.first_name} ${apt.patient.last_name}`;
+                document.getElementById('patientId').value = apt.patient_id;
+            }
+
             document.getElementById('appointmentDate').value = apt.appointment_date;
             document.getElementById('startTime').value = apt.start_time;
             document.getElementById('duration').value = apt.duration_minutes || 30;
@@ -1786,7 +1838,7 @@
             e.preventDefault();
 
             const appointmentId = document.getElementById('appointmentId').value;
-            const patientId = document.getElementById('patientSelect').value;
+            const patientId = document.getElementById('patientId').value;
             const date = document.getElementById('appointmentDate').value;
             const startTime = document.getElementById('startTime').value;
             const duration = parseInt(document.getElementById('duration').value);
@@ -1794,6 +1846,11 @@
             const type = document.getElementById('appointmentType').value;
             const reason = document.getElementById('reason').value;
             const notes = document.getElementById('notes').value;
+
+            if (!patientId) {
+                alert('⚠️ Veuillez sélectionner un patient');
+                return;
+            }
 
             const endTime = addMinutes(startTime, duration);
 
@@ -1961,6 +2018,58 @@
                 }
             });
 
+            // Patient autocomplete in modal
+            const patientInput = document.getElementById('patientInput');
+            const patientDropdown = document.getElementById('patientDropdown');
+
+            patientInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+
+                if (query.length < 1) {
+                    patientDropdown.style.display = 'none';
+                    document.getElementById('patientId').value = '';
+                    return;
+                }
+
+                const filtered = patients.filter(p => {
+                    const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
+                    const niss = (p.niss || '').toLowerCase();
+                    return fullName.includes(query) || niss.includes(query);
+                });
+
+                if (filtered.length === 0) {
+                    patientDropdown.innerHTML = '<div class="patient-autocomplete-empty">Aucun patient trouvé</div>';
+                    patientDropdown.style.display = 'block';
+                    return;
+                }
+
+                patientDropdown.innerHTML = filtered.slice(0, 10).map(p => `
+                    <div class="patient-autocomplete-item" onclick="selectPatientInModal('${p.id}', '${p.first_name.replace(/'/g, "\\'")} ${p.last_name.replace(/'/g, "\\'")}')">
+                        <div class="patient-autocomplete-avatar">👤</div>
+                        <div class="patient-autocomplete-info">
+                            <div class="patient-autocomplete-name">${p.first_name} ${p.last_name}</div>
+                            <div class="patient-autocomplete-details">
+                                ${p.niss ? `NISS: ${p.niss}` : 'Sans NISS'}
+                                ${p.phone || p.mobile ? ' • ' + (p.phone || p.mobile) : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                patientDropdown.style.display = 'block';
+            });
+
+            patientInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    patientDropdown.style.display = 'none';
+                }, 200);
+            });
+
+            patientInput.addEventListener('focus', (e) => {
+                if (e.target.value.length >= 1) {
+                    e.target.dispatchEvent(new Event('input'));
+                }
+            });
+
             // View switcher
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1993,10 +2102,21 @@
         function createAppointmentForPatient(patientId) {
             openNewAppointmentModal();
             setTimeout(() => {
-                document.getElementById('patientSelect').value = patientId;
+                const patient = patients.find(p => p.id === patientId);
+                if (patient) {
+                    document.getElementById('patientInput').value = `${patient.first_name} ${patient.last_name}`;
+                    document.getElementById('patientId').value = patient.id;
+                }
                 document.getElementById('appointmentDate').value = new Date().toISOString().split('T')[0];
                 showAISuggestions();
             }, 100);
+        }
+
+        // Select patient in modal autocomplete
+        function selectPatientInModal(patientId, patientName) {
+            document.getElementById('patientInput').value = patientName;
+            document.getElementById('patientId').value = patientId;
+            document.getElementById('patientDropdown').style.display = 'none';
         }
 
         // Theme toggle
