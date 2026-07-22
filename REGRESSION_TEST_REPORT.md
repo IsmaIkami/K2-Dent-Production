@@ -405,11 +405,38 @@ WHERE appointment_id = (SELECT id FROM appointments ORDER BY created_at DESC LIM
 
 ### Prochaines étapes:
 
-1. [ ] Déployer SQL script sur Supabase
-2. [ ] Effectuer tests manuels complets
-3. [ ] Créer quelques RDV de test
-4. [ ] Tester génération rappels
-5. [ ] Configurer APIs SMS/Email (optionnel pour MVP)
+1. [x] ~~Déployer SQL script sur Supabase~~ - DONE
+2. [x] ~~Fix Supabase credentials~~ - FIXED (commit ce51516)
+3. [ ] Effectuer tests manuels complets
+4. [ ] Créer quelques RDV de test
+5. [ ] Tester génération rappels
+6. [ ] Configurer APIs SMS/Email (optionnel pour MVP)
+
+---
+
+## 🔧 Correctifs Post-Rapport (2026-07-22)
+
+### Fix Credentials Supabase - commit ce51516
+
+**Problème identifié:**
+Le fichier `/frontend/js/config.js` contenait une URL Supabase INVALIDE (`iibdamkqxmyyvxsijsgc.supabase.co`) qui causait des erreurs DNS:
+```
+[Error] A server with the specified hostname could not be found.
+```
+
+**Solution appliquée:**
+1. ✅ Mis à jour `SUPABASE_URL` avec l'URL correcte: `https://sqgxscrwcffjfomlsoyf.supabase.co`
+2. ✅ Mis à jour `SUPABASE_ANON_KEY` avec la clé correcte du projet production
+3. ✅ Incrémenté cache version à `v=4` dans calendar.html
+4. ✅ Créé `SUPABASE_CONFIG_REFERENCE.md` pour documentation et sessions futures
+
+**Fichiers modifiés:**
+- `/frontend/js/config.js` - Credentials corrigées
+- `/frontend/calendar.html` - Cache v=3 → v=4
+- `/SUPABASE_CONFIG_REFERENCE.md` - Nouveau fichier de référence
+
+**Résultat:**
+Calendar.html peut maintenant se connecter correctement à la base de données Supabase production et charger les patients existants.
 
 ---
 
