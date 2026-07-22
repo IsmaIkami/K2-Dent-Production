@@ -303,11 +303,13 @@ const DB = {
         .from('timeline_events')
         .insert([{
           patient_id: patientId,
-          event_type: event.type,
+          type: event.type,
           title: event.title,
           description: event.description || '',
           badge: event.badge || '',
-          event_data: event.data || {}
+          related_id: event.relatedId || null,
+          related_type: event.relatedType || null,
+          created_by: event.createdBy || '00000000-0000-0000-0000-000000000000'
         }])
         .select()
         .single();
@@ -813,54 +815,6 @@ const DB = {
         actsLast30Days: 0
       };
     }
-  }
-};
-
-// ============================================================================
-// REALTIME SUBSCRIPTIONS
-// ============================================================================
-
-const Realtime = {
-  /**
-   * Subscribe to patient changes
-   * @param {function} callback - Called when patient data changes
-   */
-  subscribeToPatients(callback) {
-    return supabaseClient
-      .channel('patients-changes')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'patients' },
-        callback
-      )
-      .subscribe();
-  },
-
-  /**
-   * Subscribe to today's appointments
-   * @param {function} callback - Called when appointments change
-   */
-  subscribeToTodaysAppointments(callback) {
-    const today = new Date().toISOString().split('T')[0];
-    return supabaseClient
-      .channel('appointments-today')
-      .on('postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'appointments',
-          filter: `appointment_date=eq.${today}`
-        },
-        callback
-      )
-      .subscribe();
-  },
-
-  /**
-   * Unsubscribe from channel
-   * @param {Object} subscription - Subscription object
-   */
-  unsubscribe(subscription) {
-    return supabaseClient.removeChannel(subscription);
   },
 
   // ==========================================================================
@@ -969,7 +923,7 @@ const Realtime = {
         this.getPatientTimeline(patientId),
         this.getPatientPrescriptions(patientId),
         this.getPatientCertificates(patientId),
-        this.getPatientDentalCharts(patientId),
+        this.getDentalChart(patientId),
         this.getPatientXrays(patientId)
       ]);
 
@@ -988,6 +942,54 @@ const Realtime = {
       console.error('Error exporting patient dossier:', error);
       throw error;
     }
+  }
+};
+
+// ============================================================================
+// REALTIME SUBSCRIPTIONS
+// ============================================================================
+
+const Realtime = {
+  /**
+   * Subscribe to patient changes
+   * @param {function} callback - Called when patient data changes
+   */
+  subscribeToPatients(callback) {
+    return supabaseClient
+      .channel('patients-changes')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'patients' },
+        callback
+      )
+      .subscribe();
+  },
+
+  /**
+   * Subscribe to today's appointments
+   * @param {function} callback - Called when appointments change
+   */
+  subscribeToTodaysAppointments(callback) {
+    const today = new Date().toISOString().split('T')[0];
+    return supabaseClient
+      .channel('appointments-today')
+      .on('postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'appointments',
+          filter: `appointment_date=eq.${today}`
+        },
+        callback
+      )
+      .subscribe();
+  },
+
+  /**
+   * Unsubscribe from channel
+   * @param {Object} subscription - Subscription object
+   */
+  unsubscribe(subscription) {
+    return supabaseClient.removeChannel(subscription);
   }
 };
 

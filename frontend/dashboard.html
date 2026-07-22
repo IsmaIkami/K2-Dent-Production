@@ -1872,6 +1872,144 @@
         </div>
     </div>
 
+    <!-- Medical Data Modal -->
+    <div class="modal-overlay" id="medicalDataModal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="modal-header">
+                <div class="modal-title">🏥 Données Médicales</div>
+                <button class="close-btn" onclick="closeMedicalDataModal()">✕</button>
+            </div>
+
+            <form id="medicalDataForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label">🩸 Groupe Sanguin</label>
+                        <select class="form-select" id="bloodType">
+                            <option value="">Non renseigné</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🚬 Fumeur</label>
+                        <select class="form-select" id="smoker">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🍷 Consommation d'Alcool</label>
+                        <select class="form-select" id="alcoholConsumption">
+                            <option value="">Non renseigné</option>
+                            <option value="NONE">Aucune</option>
+                            <option value="OCCASIONAL">Occasionnelle</option>
+                            <option value="MODERATE">Modérée</option>
+                            <option value="HEAVY">Importante</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">💊 Traitement Anticoagulant</label>
+                        <select class="form-select" id="anticoagulantTherapy">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🩺 Diabète</label>
+                        <select class="form-select" id="diabetes">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">💔 Hypertension</label>
+                        <select class="form-select" id="hypertension">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">❤️ Maladie Cardiaque</label>
+                        <select class="form-select" id="heartDisease">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🤰 Grossesse</label>
+                        <select class="form-select" id="pregnant">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🍼 Allaitement</label>
+                        <select class="form-select" id="breastfeeding">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📅 Dernière Visite Dentaire</label>
+                        <input type="date" class="form-input" id="lastDentalVisit">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🦷 Fréquence Brossage</label>
+                    <input type="text" class="form-input" id="dentalHygieneFrequency" placeholder="Ex: 2 fois par jour">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🔖 Allergies (séparées par virgules)</label>
+                    <input type="text" class="form-input" id="allergies" placeholder="Ex: Pénicilline, Latex">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">💊 Médicaments Actuels (séparés par virgules)</label>
+                    <input type="text" class="form-input" id="medications" placeholder="Ex: Aspirine, Metformine">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🏥 Conditions Médicales (séparées par virgules)</label>
+                    <input type="text" class="form-input" id="medicalConditions" placeholder="Ex: Asthme, Reflux gastrique">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🦷 Préoccupations Dentaires</label>
+                    <textarea class="form-textarea" id="dentalConcerns" rows="3" placeholder="Douleurs, sensibilités, préoccupations esthétiques..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📝 Notes du Praticien</label>
+                    <textarea class="form-textarea" id="practitionerNotes" rows="3" placeholder="Notes internes, observations..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeMedicalDataModal()">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMedicalDataModal()">
+                        💾 Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div style="text-align: center;">
@@ -2044,18 +2182,14 @@
                 const anamnesisContent = document.getElementById('anamnesisText')?.textContent || '';
                 const transcriptionText = document.getElementById('transcriptionText')?.textContent || '';
 
-                // Save anamnesis to Supabase
-                const anamnesisData = {
-                    patient_id: currentPatientId,
-                    content: anamnesisContent,
-                    type: 'AI',
-                    ai_model: 'claude-sonnet-4',
-                    transcription_text: transcriptionText,
-                    transcription_duration_sec: recordingSeconds,
-                    created_by: '00000000-0000-0000-0000-000000000000'
-                };
-
-                const savedAnamnesis = await DB.saveAnamnesis(anamnesisData);
+                // Save anamnesis to Supabase with correct parameter order
+                const savedAnamnesis = await DB.saveAnamnesis(
+                    currentPatientId,
+                    anamnesisContent,
+                    'AI',
+                    transcriptionText,
+                    recordingSeconds
+                );
                 console.log('✅ Anamnèse sauvegardée:', savedAnamnesis);
 
                 // Extract medical data from anamnesis and create medical_history entry
@@ -2803,16 +2937,16 @@
 
                 // Add each event
                 timeline.forEach(event => {
-                    const eventDate = new Date(event.event_date);
+                    const eventDate = new Date(event.created_at);
                     const timeStr = formatDateTime(eventDate);
 
                     const newItem = document.createElement('div');
-                    newItem.className = `timeline-item ${event.event_type}`;
+                    newItem.className = `timeline-item ${event.type}`;
                     newItem.innerHTML = `
                         <div class="timeline-content">
                             <div class="timeline-meta">
                                 <span class="timeline-date">${timeStr}</span>
-                                <span class="timeline-badge ${event.badge}">${event.badge.replace('badge-', '').toUpperCase()}</span>
+                                <span class="timeline-badge ${event.badge || 'badge-info'}">${(event.badge || 'info').replace('badge-', '').toUpperCase()}</span>
                             </div>
                             <div class="timeline-text">
                                 <strong>${event.title}</strong><br>
@@ -2953,8 +3087,116 @@
             alertsDiv.innerHTML = html || '<span style="color: var(--text-secondary); font-size: 13px;">Aucune alerte</span>';
         }
 
-        function showMedicalDataModal() {
-            alert('📋 Section Données Médicales\n\nCette fonctionnalité nécessite:\n\n1. Exécuter medical-data-enhancement.sql sur Supabase\n2. Créer la table medical_history\n3. Créer la vue patient_complete_view\n\nUne fois la DB mise à jour, vous pourrez:\n• Éditer allergies, médicaments, conditions\n• Voir l\'historique versionné\n• Auto-remplissage via anamnèse IA\n\n💡 Instructions dans supabase/medical-data-enhancement.sql');
+        async function showMedicalDataModal() {
+            if (!currentPatient) {
+                alert('❌ Aucun patient sélectionné');
+                return;
+            }
+
+            try {
+                // Load current medical data
+                const medicalHistory = await DB.getLatestMedicalHistory(currentPatient.id);
+
+                // Populate patient fields
+                document.getElementById('bloodType').value = currentPatient.blood_type || '';
+                document.getElementById('smoker').value = currentPatient.smoker ? 'true' : 'false';
+                document.getElementById('alcoholConsumption').value = currentPatient.alcohol_consumption || '';
+                document.getElementById('anticoagulantTherapy').value = currentPatient.anticoagulant_therapy ? 'true' : 'false';
+                document.getElementById('diabetes').value = currentPatient.diabetes ? 'true' : 'false';
+                document.getElementById('hypertension').value = currentPatient.hypertension ? 'true' : 'false';
+                document.getElementById('heartDisease').value = currentPatient.heart_disease ? 'true' : 'false';
+                document.getElementById('pregnant').value = currentPatient.pregnant ? 'true' : 'false';
+                document.getElementById('breastfeeding').value = currentPatient.breastfeeding ? 'true' : 'false';
+                document.getElementById('lastDentalVisit').value = currentPatient.last_dental_visit || '';
+                document.getElementById('dentalHygieneFrequency').value = currentPatient.dental_hygiene_frequency || '';
+
+                // Populate medical history fields
+                if (medicalHistory) {
+                    document.getElementById('allergies').value = (medicalHistory.allergies || []).join(', ');
+                    document.getElementById('medications').value = (medicalHistory.medications || []).join(', ');
+                    document.getElementById('medicalConditions').value = (medicalHistory.medical_conditions || []).join(', ');
+                    document.getElementById('dentalConcerns').value = medicalHistory.dental_concerns || '';
+                    document.getElementById('practitionerNotes').value = medicalHistory.practitioner_notes || '';
+                } else {
+                    // Clear fields if no history
+                    document.getElementById('allergies').value = '';
+                    document.getElementById('medications').value = '';
+                    document.getElementById('medicalConditions').value = '';
+                    document.getElementById('dentalConcerns').value = '';
+                    document.getElementById('practitionerNotes').value = '';
+                }
+
+                // Show modal
+                document.getElementById('medicalDataModal').classList.add('active');
+            } catch (error) {
+                console.error('Error loading medical data:', error);
+                alert('❌ Erreur lors du chargement des données médicales');
+            }
+        }
+
+        function closeMedicalDataModal() {
+            document.getElementById('medicalDataModal').classList.remove('active');
+        }
+
+        async function saveMedicalDataModal() {
+            if (!currentPatient) {
+                alert('❌ Aucun patient sélectionné');
+                return;
+            }
+
+            showLoading('Enregistrement des données médicales...');
+
+            try {
+                // Update patient fields
+                const patientUpdate = {
+                    blood_type: document.getElementById('bloodType').value || null,
+                    smoker: document.getElementById('smoker').value === 'true',
+                    alcohol_consumption: document.getElementById('alcoholConsumption').value || null,
+                    anticoagulant_therapy: document.getElementById('anticoagulantTherapy').value === 'true',
+                    diabetes: document.getElementById('diabetes').value === 'true',
+                    hypertension: document.getElementById('hypertension').value === 'true',
+                    heart_disease: document.getElementById('heartDisease').value === 'true',
+                    pregnant: document.getElementById('pregnant').value === 'true',
+                    breastfeeding: document.getElementById('breastfeeding').value === 'true',
+                    last_dental_visit: document.getElementById('lastDentalVisit').value || null,
+                    dental_hygiene_frequency: document.getElementById('dentalHygieneFrequency').value || null
+                };
+
+                await DB.updatePatient(currentPatient.id, patientUpdate);
+
+                // Create medical history version
+                const allergiesText = document.getElementById('allergies').value.trim();
+                const medicationsText = document.getElementById('medications').value.trim();
+                const conditionsText = document.getElementById('medicalConditions').value.trim();
+
+                const medicalData = {
+                    allergies: allergiesText ? allergiesText.split(',').map(s => s.trim()) : [],
+                    medications: medicationsText ? medicationsText.split(',').map(s => s.trim()) : [],
+                    medical_conditions: conditionsText ? conditionsText.split(',').map(s => s.trim()) : [],
+                    surgical_history: [],
+                    dental_concerns: document.getElementById('dentalConcerns').value || null,
+                    previous_dental_treatments: [],
+                    dental_anxiety_level: null,
+                    brushing_frequency: document.getElementById('dentalHygieneFrequency').value || null,
+                    flossing_frequency: null,
+                    mouthwash_use: false,
+                    practitioner_notes: document.getElementById('practitionerNotes').value || null
+                };
+
+                await DB.saveMedicalHistory(currentPatient.id, medicalData);
+
+                // Reload patient data and medical data
+                currentPatient = await DB.getPatient(currentPatient.id);
+                await loadMedicalData();
+
+                hideLoading();
+                closeMedicalDataModal();
+                alert('✅ Données médicales enregistrées avec succès');
+            } catch (error) {
+                console.error('Error saving medical data:', error);
+                hideLoading();
+                alert('❌ Erreur lors de l\'enregistrement: ' + error.message);
+            }
         }
 
         // =================================================================
