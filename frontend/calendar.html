@@ -1963,7 +1963,15 @@
 
         // Render week view (7 days starting Monday)
         function renderWeekView() {
+            console.log('📅 renderWeekView called');
             const container = document.getElementById('weekContent');
+            console.log('📦 weekContent container:', container);
+
+            if (!container) {
+                console.error('❌ weekContent container not found!');
+                return;
+            }
+
             container.innerHTML = '';
 
             // Get Monday of current week
@@ -1972,6 +1980,9 @@
             const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
             startOfWeek.setDate(diff);
             startOfWeek.setHours(0, 0, 0, 0);
+
+            console.log('📅 Week starts:', startOfWeek.toLocaleDateString('fr-FR'));
+            console.log('📊 Total appointments:', appointments.length);
 
             // Header with week dates
             const headerDiv = document.createElement('div');
@@ -2101,6 +2112,13 @@
             const completedApts = appointments.filter(a => a.status === 'completed').length;
             const totalApts = appointments.filter(a => ['completed', 'no_show'].includes(a.status)).length;
             const presenceRate = totalApts > 0 ? Math.round((completedApts / totalApts) * 100) : 0;
+
+            console.log('📊 Presence stats:');
+            console.log('  - Completed:', completedApts);
+            console.log('  - Total (completed + no_show):', totalApts);
+            console.log('  - Rate:', presenceRate + '%');
+            console.log('  - All statuses:', appointments.map(a => a.status).join(', '));
+
             document.getElementById('statPresence').textContent = `${presenceRate}%`;
         }
 
@@ -2239,6 +2257,9 @@
                 notes: notes,
                 status: status
             };
+
+            console.log('💾 Saving appointment with status:', status);
+            console.log('📋 Full appointment data:', appointmentData);
 
             try {
                 if (appointmentId) {
