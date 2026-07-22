@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Date - DentalCockpit Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #0A0E1A;
+            color: white;
+        }
+        .result {
+            background: #141B2D;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .ok { color: #34C759; }
+        .error { color: #FF3B30; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Date JavaScript</h1>
+
+    <div class="result">
+        <h2>new Date()</h2>
+        <p id="date1"></p>
+    </div>
+
+    <div class="result">
+        <h2>Mois actuel</h2>
+        <p id="month"></p>
+    </div>
+
+    <div class="result">
+        <h2>Année actuelle</h2>
+        <p id="year"></p>
+    </div>
+
+    <div class="result">
+        <h2>Date formatée</h2>
+        <p id="formatted"></p>
+    </div>
+
+    <div class="result">
+        <h2>Test currentDate (comme dans calendar.html)</h2>
+        <p id="currentDate"></p>
+    </div>
+
+    <script>
+        const today = new Date();
+
+        document.getElementById('date1').textContent = today.toString();
+        document.getElementById('month').textContent = `Mois: ${today.getMonth()} (0=Jan, 6=Jul)`;
+        document.getElementById('year').textContent = `Année: ${today.getFullYear()}`;
+        document.getElementById('formatted').textContent = today.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        // Simulate calendar.html
+        let currentDate = new Date();
+        const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear();
+
+        document.getElementById('currentDate').innerHTML = `
+            <strong>${monthNames[month]} ${year}</strong><br>
+            getMonth(): ${month}<br>
+            getFullYear(): ${year}
+        `;
+
+        console.log('🔍 Date actuelle:', today);
+        console.log('🔍 Mois:', month, monthNames[month]);
+        console.log('🔍 Année:', year);
+
+        // Test si on est bien en juillet
+        if (month === 6) { // Juillet = 6
+            console.log('✅ On est bien en juillet 2026!');
+        } else {
+            console.error('❌ ERREUR: On n\'est pas en juillet! Mois détecté:', month);
+        }
+    </script>
+</body>
+</html>

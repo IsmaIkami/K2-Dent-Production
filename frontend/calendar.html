@@ -1479,10 +1479,12 @@
         </div>
     </div>
 
-    <script src="js/config.js?v=5"></script>
-    <script src="js/supabase-client.js?v=5"></script>
+    <script src="js/config.js?v=20260722"></script>
+    <script src="js/supabase-client.js?v=20260722"></script>
     <script>
+        // FORCE DATE TO TODAY (Bug fix: showing January instead of current month)
         let currentDate = new Date();
+        console.log('🔍 INITIAL DATE:', currentDate.toLocaleDateString('fr-FR'), 'Month:', currentDate.getMonth(), 'Year:', currentDate.getFullYear());
         let currentView = 'list'; // Default to day view (list filtered by today)
         let appointments = [];
         let patients = [];
@@ -1676,8 +1678,12 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
 
+            console.log('📅 renderMiniCalendar called with:', { year, month, currentDate: currentDate.toLocaleDateString('fr-FR') });
+
             const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-            document.getElementById('miniMonthYear').textContent = `${monthNames[month]} ${year}`;
+            const displayText = `${monthNames[month]} ${year}`;
+            console.log('📅 Mini calendar will display:', displayText);
+            document.getElementById('miniMonthYear').textContent = displayText;
 
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
