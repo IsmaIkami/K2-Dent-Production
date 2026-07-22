@@ -657,7 +657,7 @@
             <div class="topbar">
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Rechercher un patient par nom, NISS, téléphone...">
+                    <input type="text" id="globalSearchInput" placeholder="Rechercher un patient par nom, NISS, téléphone..." oninput="searchPatients(this.value)">
                 </div>
                 <div class="topbar-actions">
                     <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
@@ -1077,6 +1077,35 @@
 
                 container.appendChild(patientEl);
             });
+        }
+
+        // Search patients
+        function searchPatients(query) {
+            if (!query || query.trim() === '') {
+                displayPatients(allPatients);
+                return;
+            }
+
+            const searchTerm = query.toLowerCase().trim();
+            const filtered = allPatients.filter(patient => {
+                // Search in name
+                const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();
+                if (fullName.includes(searchTerm)) return true;
+
+                // Search in NISS
+                if (patient.niss && patient.niss.includes(searchTerm)) return true;
+
+                // Search in phone/mobile
+                if (patient.phone && patient.phone.includes(searchTerm)) return true;
+                if (patient.mobile && patient.mobile.includes(searchTerm)) return true;
+
+                // Search in email
+                if (patient.email && patient.email.toLowerCase().includes(searchTerm)) return true;
+
+                return false;
+            });
+
+            displayPatients(filtered);
         }
 
         // Update statistics

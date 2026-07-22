@@ -1541,7 +1541,7 @@
                 item.className = 'patient-item';
                 item.onclick = () => selectPatient(patient);
 
-                const isBIM = patient.bim_status === true;
+                const isBIM = patient.bim === true || patient.bim_status === true;
                 const age = patient.date_of_birth ? new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() : null;
                 const ageDisplay = age ? `${age} ans` : 'Âge non renseigné';
                 const phone = patient.phone || patient.mobile || 'Pas de téléphone';
@@ -2163,7 +2163,7 @@
             const reimbursed = price * reimbRate;
             const patient = price - reimbursed;
 
-            const finalReimb = currentPatient && currentPatient.bim_status ? reimbursed * 1.15 : reimbursed;
+            const finalReimb = currentPatient && (currentPatient.bim === true || currentPatient.bim_status === true) ? reimbursed * 1.15 : reimbursed;
             const finalPatient = price - finalReimb;
 
             document.getElementById('breakdownTotal').textContent = price.toFixed(2) + ' €';
@@ -2419,7 +2419,7 @@
                         <p><strong>Nom:</strong> ${currentPatient.first_name} ${currentPatient.last_name}</p>
                         <p><strong>Numéro National:</strong> ${currentPatient.national_number || 'N/A'}</p>
                         <p><strong>Mutuelle:</strong> ${currentPatient.mutuelle || 'Non renseignée'}</p>
-                        <p><strong>BIM:</strong> ${currentPatient.bim_status ? 'Oui' : 'Non'}</p>
+                        <p><strong>BIM:</strong> ${(currentPatient.bim === true || currentPatient.bim_status === true) ? 'Oui' : 'Non'}</p>
                     </div>
 
                     <h3>Détail des Traitements</h3>
