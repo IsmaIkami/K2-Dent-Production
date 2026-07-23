@@ -2154,11 +2154,9 @@
             document.getElementById('modalTitle').textContent = 'Nouveau Rendez-vous';
             document.getElementById('deleteBtn').style.display = 'none';
 
-            // Refresh patient list to ensure it's up to date
-            if (patients.length === 0) {
-                console.log('No patients loaded, reloading...');
-                await loadPatients();
-            }
+            // Always refresh patient list to ensure it's up to date
+            console.log('Refreshing patient list...');
+            await loadPatients();
 
             if (selectedDate) {
                 document.getElementById('appointmentDate').value = selectedDate;
