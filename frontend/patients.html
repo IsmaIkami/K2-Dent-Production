@@ -50,6 +50,7 @@
             display: grid;
             grid-template-columns: 280px 1fr;
             min-height: 100vh;
+            max-width: 100%;
         }
 
         /* Sidebar */
@@ -340,11 +341,558 @@
             border-radius: 10px;
         }
 
-        /* Content Area */
+        /* Content Area - Split View Architecture */
         .content {
-            padding: 32px;
+            padding: 0;
             display: grid;
-            gap: 24px;
+            grid-template-columns: 35% 65%;
+            gap: 0;
+            height: calc(100vh - 64px);
+            overflow: hidden;
+        }
+
+        /* Patient List Panel (35% left) */
+        .patient-list-panel {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .patient-list-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .patient-list-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .patient-list-search {
+            position: relative;
+        }
+
+        .patient-list-search input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .patient-list-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .patient-list-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Patient Card Compact */
+        .patient-card-compact {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .patient-card-compact:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .patient-card-compact.selected {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            border-width: 2px;
+        }
+
+        .patient-card-avatar-small {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .patient-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .patient-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .patient-card-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .patient-card-score {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .score-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            border: 3px solid;
+        }
+
+        .score-excellent { background: rgba(52, 199, 89, 0.15); border-color: #34C759; color: #34C759; }
+        .score-good { background: rgba(255, 149, 0, 0.15); border-color: #FF9500; color: #FF9500; }
+        .score-warning { background: rgba(255, 107, 0, 0.15); border-color: #FF6B00; color: #FF6B00; }
+        .score-poor { background: rgba(255, 59, 48, 0.15); border-color: #FF3B30; color: #FF3B30; }
+
+        /* Patient Detail Panel (65% right) */
+        .patient-detail-panel {
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .patient-detail-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+        }
+
+        .patient-detail-empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Patient Detail Header with Score */
+        .patient-detail-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .patient-detail-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            flex-shrink: 0;
+        }
+
+        .patient-detail-info {
+            flex: 1;
+        }
+
+        .patient-detail-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .patient-detail-meta {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .patient-detail-summary {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Score Ring Chart */
+        .score-ring-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            flex-shrink: 0;
+        }
+
+        .score-ring {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--primary) 0deg,
+                var(--primary) calc(var(--score) * 3.6deg),
+                var(--bg-main) calc(var(--score) * 3.6deg)
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-ring::before {
+            content: '';
+            width: 120px;
+            height: 120px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .score-ring-value {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .score-ring-number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .score-ring-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Quick Stats Bar */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .quick-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quick-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .quick-stat-info {
+            flex: 1;
+        }
+
+        .quick-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .quick-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Timeline Visual */
+        .timeline-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .timeline-visual {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .timeline-dot.completed {
+            background: var(--success);
+        }
+
+        .timeline-dot.upcoming {
+            background: var(--text-secondary);
+            opacity: 0.3;
+        }
+
+        .timeline-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            position: relative;
+        }
+
+        .timeline-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        /* Health Widgets Grid */
+        .health-widgets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .health-widget {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .health-widget:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .health-widget-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .health-widget-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .health-widget-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .health-widget-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .health-widget-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .health-widget-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .status-success {
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(255, 149, 0, 0.15);
+            color: var(--warning);
+        }
+
+        .status-info {
+            background: rgba(0, 102, 255, 0.15);
+            color: var(--primary);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-main);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Smart Actions */
+        .smart-actions {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .smart-actions-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .smart-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .smart-action-btn {
+            padding: 14px 20px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .smart-action-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        }
+
+        .smart-action-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .smart-action-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Score Breakdown */
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .score-category {
+            background: var(--bg-main);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .score-category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .score-category-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .score-category-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .score-category-bar {
+            height: 4px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .score-category-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
 
         /* Hero Search Section - Modern & Clean */
@@ -1016,78 +1564,35 @@
                 </div>
             </div>
 
-            <!-- Content -->
+            <!-- Content - Split View Case Management -->
             <div class="content">
-                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 8px;">👥 Gestion des Patients</h1>
-                <p style="color: var(--text-secondary); margin-bottom: 32px;">Vue d'ensemble et gestion complète de votre base de patients</p>
-
-                <!-- Hero Search Section -->
-                <div class="hero-search">
-                    <div class="hero-search-container">
-                        <div class="hero-search-input-wrapper">
-                            <span class="hero-search-icon">🔍</span>
+                <!-- Patient List Panel (35% Left) -->
+                <div class="patient-list-panel">
+                    <div class="patient-list-header">
+                        <div class="patient-list-title">👥 Patients</div>
+                        <div class="patient-list-search">
+                            <span class="patient-list-search-icon">🔍</span>
                             <input
                                 type="text"
-                                id="heroSearchInput"
-                                class="hero-search-input"
-                                placeholder="Rechercher un patient par nom, prénom ou NISS..."
+                                id="patientListSearch"
+                                placeholder="Rechercher..."
                                 autocomplete="off"
                             >
-                            <button class="hero-search-clear" id="heroClearBtn">✕</button>
-                            <div class="hero-dropdown" id="heroDropdown"></div>
                         </div>
+                    </div>
 
-                        <button class="hero-scan-btn" id="heroScanBtn">
-                            <span style="font-size: 20px;">💳</span>
-                            <span>Scanner Carte</span>
-                        </button>
+                    <div class="patient-list-scroll" id="patientListScroll">
+                        <!-- Patient cards will be loaded here dynamically -->
                     </div>
                 </div>
 
-                <!-- Stats Bar -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(0, 102, 255, 0.15); color: var(--primary);">👥</div>
-                        <div class="stat-header">
-                            <div class="stat-value">847</div>
-                            <div class="stat-title">Patients</div>
-                        </div>
+                <!-- Patient Detail Panel (65% Right) -->
+                <div class="patient-detail-panel" id="patientDetailPanel">
+                    <div class="patient-detail-empty">
+                        <div class="patient-detail-empty-icon">👤</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Sélectionnez un patient</div>
+                        <div style="font-size: 14px;">Cliquez sur un patient dans la liste pour afficher son dossier complet</div>
                     </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(52, 199, 89, 0.15); color: var(--success);">📈</div>
-                        <div class="stat-header">
-                            <div class="stat-value">42</div>
-                            <div class="stat-title">Nouveaux (30j)</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(255, 149, 0, 0.15); color: var(--warning);">📅</div>
-                        <div class="stat-header">
-                            <div class="stat-value">28</div>
-                            <div class="stat-title">RDV Aujourd'hui</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">🔔</div>
-                        <div class="stat-header">
-                            <div class="stat-value">15</div>
-                            <div class="stat-title">Rappels</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Patients List -->
-                <div class="patients-panel">
-                    <div class="panel-header">
-                        <div class="panel-title">📋 Liste des Patients</div>
-                        <button class="btn btn-primary" onclick="showNewPatientModal()">
-                            ➕ Nouveau Patient
-                        </button>
-                    </div>
-                    <!-- La liste sera chargée dynamiquement depuis Supabase -->
                 </div>
             </div>
         </main>
@@ -1350,25 +1855,62 @@
             }
         }
 
-        // Display patients in the list
+        // =====================================================================
+        // PATIENT SCORE CALCULATION SYSTEM
+        // =====================================================================
+
+        let selectedPatientId = null;
+        let patientAppointments = {}; // Cache for appointments
+
+        // Calculate patient score (0-100) based on 4 categories
+        function calculatePatientScore(patient) {
+            // For now, using mock scores based on patient characteristics
+            // TODO: Replace with real calculations from appointment/payment data
+
+            let complianceScore = 35; // Out of 40
+            let reliabilityScore = 25; // Out of 30
+            let financialScore = 18;   // Out of 20
+            let engagementScore = 8;   // Out of 10
+
+            // Mock calculation based on patient data
+            // In production, this would fetch appointments, payments, etc.
+            if (patient.email) engagementScore += 1;
+            if (patient.phone || patient.mobile) engagementScore += 1;
+            if (patient.mutuelle_code) financialScore += 2;
+
+            const totalScore = complianceScore + reliabilityScore + financialScore + engagementScore;
+
+            return {
+                total: Math.min(100, totalScore),
+                compliance: complianceScore,
+                reliability: reliabilityScore,
+                financial: financialScore,
+                engagement: engagementScore
+            };
+        }
+
+        // Get score class for badge color
+        function getScoreClass(score) {
+            if (score >= 90) return 'score-excellent';
+            if (score >= 70) return 'score-good';
+            if (score >= 50) return 'score-warning';
+            return 'score-poor';
+        }
+
+        // Display patients in the split-view list
         function displayPatients(patients) {
             console.log('🎨 displayPatients called with', patients.length, 'patients');
-            const container = document.querySelector('.patients-panel');
-            console.log('📦 Container found:', container);
+            const container = document.getElementById('patientListScroll');
 
             if (!container) {
-                console.error('❌ .patients-panel container not found!');
+                console.error('❌ #patientListScroll container not found!');
                 return;
             }
 
-            // Keep the header
-            const header = container.querySelector('.panel-header');
-            console.log('📋 Header found:', header);
             container.innerHTML = '';
-            if (header) container.appendChild(header);
 
             if (patients.length === 0) {
-                container.innerHTML += `
+                container.innerHTML = `
                     <div style="padding: 40px; text-align: center; color: var(--text-secondary);">
                         <div style="font-size: 48px; margin-bottom: 16px;">👥</div>
                         <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">
@@ -1382,49 +1924,299 @@
 
             patients.forEach(patient => {
                 const age = calculateAge(patient.date_of_birth);
-                const mutuelleNames = {
-                    '100': 'Mutualité Chrétienne',
-                    '200': 'Mutualités Libres',
-                    '300': 'Mutualité Socialiste',
-                    '400': 'Mutualité Neutre',
-                    '500': 'Mutualité Libérale',
-                    '600': 'CAAMI',
-                    '900': 'Autre'
-                };
-                const mutuelle = mutuelleNames[patient.mutuelle_code] || 'Non renseignée';
+                const score = calculatePatientScore(patient);
+                const scoreClass = getScoreClass(score.total);
+                const avatar = patient.gender === 'F' ? '👩' : patient.gender === 'M' ? '👨' : '👤';
 
-                const patientEl = document.createElement('div');
-                patientEl.className = 'patient-item';
-                patientEl.onclick = () => openPatientDashboard(patient);
+                const patientCard = document.createElement('div');
+                patientCard.className = 'patient-card-compact';
+                if (selectedPatientId === patient.id) {
+                    patientCard.classList.add('selected');
+                }
+                patientCard.onclick = () => selectPatient(patient.id);
 
-                patientEl.innerHTML = `
-                    <div class="patient-avatar">${patient.gender === 'F' ? '👩' : patient.gender === 'M' ? '👨' : '👤'}</div>
-                    <div class="patient-info">
-                        <div class="patient-name">${patient.first_name} ${patient.last_name}</div>
-                        <div class="patient-meta">
-                            <span>📧 ${patient.email || 'Non renseigné'}</span>
-                            <span>📞 ${patient.phone || 'Non renseigné'}</span>
-                            <span>🎂 ${formatDate(patient.date_of_birth)} ${age ? `(${age} ans)` : ''}</span>
-                            <span style="color: var(--success);">✓ ${mutuelle}</span>
-                            ${patient.bim ? '<span style="color: var(--warning);">⭐ BIM</span>' : ''}
+                patientCard.innerHTML = `
+                    <div class="patient-card-avatar">${avatar}</div>
+                    <div class="patient-card-info">
+                        <div class="patient-card-name">${patient.first_name} ${patient.last_name}</div>
+                        <div class="patient-card-details">
+                            ${age ? `${age} ans` : 'Âge inconnu'}
                         </div>
                     </div>
-                    <div class="patient-actions">
-                        <button class="btn btn-icon btn-primary" onclick="event.stopPropagation(); openPatientDashboard(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
-                            📂 Dossier
-                        </button>
-                        <button class="btn btn-icon btn-secondary" onclick="event.stopPropagation(); scheduleAppointment(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
-                            📅 RDV
-                        </button>
-                        <button class="btn btn-icon" onclick="event.stopPropagation(); editPatient('${patient.id}')" style="background: var(--warning);">
-                            ✏️
-                        </button>
+                    <div class="score-badge ${scoreClass}">
+                        ${score.total}
                     </div>
                 `;
 
-                container.appendChild(patientEl);
+                container.appendChild(patientCard);
             });
+
+            console.log(`✅ Rendered ${patients.length} patient cards in split-view`);
         }
+
+        // Select a patient and show detail panel
+        async function selectPatient(patientId) {
+            selectedPatientId = patientId;
+
+            // Update selected state in list
+            document.querySelectorAll('.patient-card-compact').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event?.currentTarget?.classList.add('selected');
+
+            // Find patient data
+            const patient = allPatients.find(p => p.id === patientId);
+            if (!patient) {
+                console.error('Patient not found:', patientId);
+                return;
+            }
+
+            // Render patient detail panel
+            await renderPatientDetail(patient);
+        }
+
+        // Render patient detail panel with full case management
+        async function renderPatientDetail(patient) {
+            const detailPanel = document.getElementById('patientDetailPanel');
+            if (!detailPanel) return;
+
+            const age = calculateAge(patient.date_of_birth);
+            const score = calculatePatientScore(patient);
+            const scoreClass = getScoreClass(score.total);
+            const avatar = patient.gender === 'F' ? '👩' : patient.gender === 'M' ? '👨' : '👤';
+
+            // Mock stats - replace with real data from DB
+            const stats = {
+                appointments: 12,
+                punctuality: 98,
+                spending: 2400,
+                planCompletion: 80,
+                noShows: 0,
+                nextReminder: 'Rappel dû'
+            };
+
+            detailPanel.innerHTML = `
+                <!-- Patient Header -->
+                <div class="patient-detail-header">
+                    <div class="patient-detail-avatar-large">${avatar}</div>
+                    <div class="patient-detail-header-info">
+                        <div class="patient-detail-name">${patient.first_name} ${patient.last_name}</div>
+                        <div class="patient-detail-age">${age ? `${age} ans` : 'Âge inconnu'} • NISS: ${patient.niss || 'Non renseigné'}</div>
+                    </div>
+                    <div class="score-ring" style="--score: ${score.total}">
+                        <div class="score-ring-inner">
+                            <div class="score-ring-value">${score.total}</div>
+                            <div class="score-ring-label">/100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="score-breakdown">
+                    <div class="score-category">
+                        <div class="score-category-header">
+                            <span class="score-category-name">Compliance</span>
+                            <span class="score-category-value">${score.compliance}/40</span>
+                        </div>
+                        <div class="score-category-bar">
+                            <div class="score-category-fill" style="width: ${(score.compliance/40)*100}%;"></div>
+                        </div>
+                    </div>
+                    <div class="score-category">
+                        <div class="score-category-header">
+                            <span class="score-category-name">Reliability</span>
+                            <span class="score-category-value">${score.reliability}/30</span>
+                        </div>
+                        <div class="score-category-bar">
+                            <div class="score-category-fill" style="width: ${(score.reliability/30)*100}%;"></div>
+                        </div>
+                    </div>
+                    <div class="score-category">
+                        <div class="score-category-header">
+                            <span class="score-category-name">Financial</span>
+                            <span class="score-category-value">${score.financial}/20</span>
+                        </div>
+                        <div class="score-category-bar">
+                            <div class="score-category-fill" style="width: ${(score.financial/20)*100}%;"></div>
+                        </div>
+                    </div>
+                    <div class="score-category">
+                        <div class="score-category-header">
+                            <span class="score-category-name">Engagement</span>
+                            <span class="score-category-value">${score.engagement}/10</span>
+                        </div>
+                        <div class="score-category-bar">
+                            <div class="score-category-fill" style="width: ${(score.engagement/10)*100}%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats-bar">
+                    <div class="quick-stat">
+                        <div class="quick-stat-value">${stats.appointments}</div>
+                        <div class="quick-stat-label">RDV</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value">${stats.punctuality}%</div>
+                        <div class="quick-stat-label">Ponctuel</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value">€${stats.spending.toLocaleString()}</div>
+                        <div class="quick-stat-label">Dépensé</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value">${stats.planCompletion}%</div>
+                        <div class="quick-stat-label">Plan</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value">${stats.noShows}</div>
+                        <div class="quick-stat-label">No-show</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value status-warning">⏰</div>
+                        <div class="quick-stat-label">${stats.nextReminder}</div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="patient-detail-section">
+                    <div class="patient-detail-section-title">Historique RDV</div>
+                    <div class="timeline-visual">
+                        <div class="timeline-item">
+                            <div class="timeline-dot completed"></div>
+                            <div class="timeline-label">Jan</div>
+                        </div>
+                        <div class="timeline-connector"></div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot completed"></div>
+                            <div class="timeline-label">Fév</div>
+                        </div>
+                        <div class="timeline-connector"></div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot completed"></div>
+                            <div class="timeline-label">Mar</div>
+                        </div>
+                        <div class="timeline-connector"></div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot scheduled"></div>
+                            <div class="timeline-label">Avr</div>
+                        </div>
+                        <div class="timeline-connector"></div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot pending"></div>
+                            <div class="timeline-label">Mai</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Widgets -->
+                <div class="health-widgets">
+                    <div class="health-widget">
+                        <div class="health-widget-icon">🦷</div>
+                        <div class="health-widget-title">Santé Bucco-Dentaire</div>
+                        <div class="health-widget-content">
+                            <div class="health-widget-stat">
+                                <span class="health-widget-value status-success">0</span>
+                                <span class="health-widget-label">caries actives</span>
+                            </div>
+                            <div class="health-widget-stat">
+                                <span class="status-badge status-success">Gencives saines</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="health-widget">
+                        <div class="health-widget-icon">🩹</div>
+                        <div class="health-widget-title">Traitements</div>
+                        <div class="health-widget-content">
+                            <div class="health-widget-stat">
+                                <span class="health-widget-value">${stats.planCompletion}%</span>
+                                <span class="health-widget-label">plan complété</span>
+                            </div>
+                            <div class="health-widget-stat">
+                                <span class="status-badge status-info">Orthodontie en cours</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="health-widget">
+                        <div class="health-widget-icon">💰</div>
+                        <div class="health-widget-title">Situation Financière</div>
+                        <div class="health-widget-content">
+                            <div class="health-widget-stat">
+                                <span class="health-widget-value status-success">€0</span>
+                                <span class="health-widget-label">en attente</span>
+                            </div>
+                            <div class="health-widget-stat">
+                                <span class="status-badge">${patient.mutuelle_code ? 'MC Mutuelle' : 'Pas de mutuelle'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Actions -->
+                <div class="patient-detail-section">
+                    <div class="patient-detail-section-title">Actions</div>
+                    <div class="smart-actions-grid">
+                        <button class="smart-action-btn" onclick="scheduleAppointment(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
+                            <span class="smart-action-icon">📅</span>
+                            <span class="smart-action-text">Planifier RDV</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="window.location.href='tel:${patient.phone || patient.mobile}'">
+                            <span class="smart-action-icon">📞</span>
+                            <span class="smart-action-text">Appeler</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="openPatientDashboard(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
+                            <span class="smart-action-icon">📋</span>
+                            <span class="smart-action-text">Dossier Complet</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="alert('Facturation en développement')">
+                            <span class="smart-action-icon">💰</span>
+                            <span class="smart-action-text">Facture</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="alert('Rappel en développement')">
+                            <span class="smart-action-icon">🔔</span>
+                            <span class="smart-action-text">Rappel</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="window.location.href='mailto:${patient.email}'">
+                            <span class="smart-action-icon">📧</span>
+                            <span class="smart-action-text">Email</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            console.log('✅ Rendered patient detail for:', patient.first_name, patient.last_name);
+        }
+
+        // Patient list search filter
+        function filterPatientList(query) {
+            const searchQuery = query.toLowerCase().trim();
+
+            if (searchQuery.length === 0) {
+                // Show all patients
+                displayPatients(allPatients);
+                return;
+            }
+
+            // Filter patients by name, NISS, email, phone
+            const filtered = allPatients.filter(p => {
+                const searchStr = `${p.first_name} ${p.last_name} ${p.niss || ''} ${p.email || ''} ${p.phone || ''} ${p.mobile || ''}`.toLowerCase();
+                return searchStr.includes(searchQuery);
+            });
+
+            displayPatients(filtered);
+            console.log(`🔍 Filtered ${filtered.length} patients from ${allPatients.length} total`);
+        }
+
+        // Initialize patient list search
+        document.addEventListener('DOMContentLoaded', () => {
+            const patientListSearch = document.getElementById('patientListSearch');
+            if (patientListSearch) {
+                patientListSearch.addEventListener('input', (e) => {
+                    filterPatientList(e.target.value);
+                });
+            }
+        });
 
         // Update statistics
         function updateStats(patients) {
