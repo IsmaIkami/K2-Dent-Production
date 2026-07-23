@@ -205,31 +205,31 @@
 
         <div class="demo-users">
             <div class="demo-title">Comptes de démonstration</div>
-            <div class="demo-user" onclick="fillLogin('ismail', 'ismail')">
+            <div class="demo-user" onclick="fillLogin('Dr. Sialyen', 'dentalcockpitk2')">
                 <div>
-                    <div class="demo-user-name">Ismail Sialyen</div>
-                    <div class="demo-user-role">Propriétaire (Admin complet)</div>
+                    <div class="demo-user-name">👨‍⚕️ Dr. Sialyen</div>
+                    <div class="demo-user-role">Dentiste Principal</div>
                 </div>
-                <div style="color: #0066FF;">👤</div>
+                <div style="color: #0066FF;">🦷</div>
             </div>
-            <div class="demo-user" onclick="fillLogin('katja', 'katja')">
+            <div class="demo-user" onclick="fillLogin('Dr. Martin', 'dentalcockpitk2')">
                 <div>
-                    <div class="demo-user-name">Katja Sialyen</div>
-                    <div class="demo-user-role">Propriétaire (Admin complet)</div>
-                </div>
-                <div style="color: #0066FF;">👤</div>
-            </div>
-            <div class="demo-user" onclick="fillLogin('ekaterina', 'ekaterina')">
-                <div>
-                    <div class="demo-user-name">Dr. Ekaterina SIALYEN</div>
-                    <div class="demo-user-role">Dentiste (INAMI 3-02462-81-001)</div>
+                    <div class="demo-user-name">👨‍⚕️ Dr. Martin</div>
+                    <div class="demo-user-role">Dentiste</div>
                 </div>
                 <div style="color: #00C896;">🦷</div>
             </div>
-            <div class="demo-user" onclick="fillLogin('marie', 'marie')">
+            <div class="demo-user" onclick="fillLogin('Dr. Dubois', 'dentalcockpitk2')">
                 <div>
-                    <div class="demo-user-name">Marie Dupont</div>
-                    <div class="demo-user-role">Assistante (Accès limité)</div>
+                    <div class="demo-user-name">👨‍⚕️ Dr. Dubois</div>
+                    <div class="demo-user-role">Orthodontiste</div>
+                </div>
+                <div style="color: #00C896;">🦷</div>
+            </div>
+            <div class="demo-user" onclick="fillLogin('Sophie', 'dentalcockpitk2')">
+                <div>
+                    <div class="demo-user-name">👩‍💼 Sophie</div>
+                    <div class="demo-user-role">Assistante Dentaire</div>
                 </div>
                 <div style="color: #8B92A8;">👥</div>
             </div>
@@ -259,25 +259,60 @@
             document.getElementById('username').focus();
         }
 
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('error');
+            const submitBtn = event.target.querySelector('button[type="submit"]');
 
-            // Login using Auth module
-            const user = Auth.login(username, password);
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Connexion en cours...';
 
-            if (user) {
-                // Success - redirect to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                // Error
-                errorDiv.textContent = '❌ Identifiants invalides. Veuillez réessayer.';
+            try {
+                // Call backend API
+                const config = window.CONFIG[window.location.hostname === 'localhost' ? 'development' : 'production'];
+                const response = await fetch(`${config.BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.user) {
+                    // Store user in localStorage
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+
+                    // Success - redirect to dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // Error
+                    errorDiv.textContent = '❌ Identifiants invalides. Veuillez réessayer.';
+                    errorDiv.classList.add('show');
+
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Se connecter';
+
+                    // Hide error after 5 seconds
+                    setTimeout(() => {
+                        errorDiv.classList.remove('show');
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = '❌ Erreur de connexion. Vérifiez votre connexion internet.';
                 errorDiv.classList.add('show');
 
-                // Hide error after 5 seconds
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Se connecter';
+
                 setTimeout(() => {
                     errorDiv.classList.remove('show');
                 }, 5000);
@@ -285,7 +320,8 @@
         }
 
         // Check if already logged in
-        if (Auth.isLoggedIn()) {
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
             window.location.href = 'dashboard.html';
         }
     </script>

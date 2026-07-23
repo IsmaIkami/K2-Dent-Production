@@ -9,37 +9,23 @@
     // Petit délai pour laisser le temps à la session d'être disponible
     setTimeout(function() {
         // Vérifier si l'utilisateur est authentifié
-        const isAuthenticated = sessionStorage.getItem('dental_authenticated') === 'true';
-        const loginTime = sessionStorage.getItem('dental_login_time');
+        const currentUserStr = localStorage.getItem('currentUser');
 
-        // Session expire après 8 heures
-        const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 heures en millisecondes
-
-        if (!isAuthenticated) {
+        if (!currentUserStr) {
             // Pas authentifié - rediriger vers la page de connexion
-            window.location.href = '/K2-Dent-Production/login.html';
+            window.location.href = 'login.html';
             return;
         }
 
-    if (loginTime) {
-        const loginDate = new Date(loginTime);
-        const now = new Date();
-        const elapsed = now - loginDate;
-
-        if (elapsed > SESSION_DURATION) {
-            // Session expirée
-            sessionStorage.clear();
-            alert('⏰ Votre session a expiré. Veuillez vous reconnecter.');
-            window.location.href = '/K2-Dent-Production/login.html';
+        try {
+            const currentUser = JSON.parse(currentUserStr);
+            console.log('✅ Utilisateur connecté:', currentUser.full_name, `(${currentUser.role})`);
+        } catch (e) {
+            // localStorage corrompu
+            localStorage.clear();
+            window.location.href = 'login.html';
             return;
         }
-    }
-
-    // Ajouter un indicateur visuel de l'utilisateur connecté
-    const currentUser = sessionStorage.getItem('dental_user');
-    if (currentUser) {
-        console.log('✅ Utilisateur connecté:', currentUser);
-    }
 
     // Ajouter un bouton de déconnexion dans la navigation
     document.addEventListener('DOMContentLoaded', function() {
@@ -54,8 +40,8 @@
             logoutBtn.style.cursor = 'pointer';
             logoutBtn.onclick = function() {
                 if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                    sessionStorage.clear();
-                    window.location.href = '/K2-Dent-Production/login.html';
+                    localStorage.clear();
+                    window.location.href = 'login.html';
                 }
             };
             topbarActions.appendChild(logoutBtn);

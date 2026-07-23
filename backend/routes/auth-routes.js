@@ -168,7 +168,7 @@ export default async function authRoutes(fastify, options) {
         if (!error) {
           results.push(data);
         } else {
-          fastify.log.warn(`Error inserting user ${user.username}:`, error.message);
+          console.log(`Error inserting user ${user.username}:`, JSON.stringify(error, null, 2));
         }
       }
 
