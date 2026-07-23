@@ -1335,11 +1335,11 @@
                     alert(`❌ Un patient avec ce NISS existe déjà :\n\n${existingPatient.first_name} ${existingPatient.last_name}\nNISS: ${existingPatient.niss}`);
                     return;
                 }
+                // Si null, patient n'existe pas = OK, continuer
             } catch (err) {
-                // Patient n'existe pas = OK, continuer
-                if (!err.message.includes('No rows')) {
-                    console.error('Erreur vérification NISS:', err);
-                }
+                console.error('Erreur vérification NISS:', err);
+                alert('❌ Erreur lors de la vérification du NISS');
+                return;
             }
 
             const patientData = {

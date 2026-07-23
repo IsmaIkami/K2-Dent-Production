@@ -129,10 +129,11 @@ const DB = {
         .from('patients')
         .select('*')
         .eq('niss', niss)
-        .single();
+        .maybeSingle(); // Use maybeSingle() to handle 0 results gracefully
 
-      if (error) throw error;
-      return data;
+      // PGRST116 means 0 rows found - this is OK, return null
+      if (error && error.code !== 'PGRST116') throw error;
+      return data; // Will be null if no patient found
     } catch (error) {
       console.error('Error fetching patient by NISS:', error);
       throw error;
