@@ -16,14 +16,14 @@ if (typeof window.K2_CONFIG_LOADED === 'undefined') {
     window.CONFIG = {
       development: {
         BACKEND_URL: 'http://localhost:3000',
-        SUPABASE_URL: 'https://sqgxscrwcffjfomlsoyf.supabase.co',
-        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxZ3hzY3J3Y2ZmamZvbWxzb3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTE2NjMsImV4cCI6MjEwMDIyNzY2M30.TtLYJKBM7XxrdsHiHS9EGOxnyniSdAhBLPUkhpReidU',
+        SUPABASE_URL: 'https://zkjhemeysleurnvqsclq.supabase.co',
+        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpramhlbWV5c2xldXJudnFzY2xxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3OTIxMjQsImV4cCI6MjEwMDM2ODEyNH0.kMb6uDXowRrsuyQC252d1DKYkEuKNOI7aGeEz90-ick',
         FRONTEND_URL: 'http://localhost:8000'
       },
       production: {
         BACKEND_URL: 'https://k2-dent-production-production.up.railway.app',
-        SUPABASE_URL: 'https://sqgxscrwcffjfomlsoyf.supabase.co',
-        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxZ3hzY3J3Y2ZmamZvbWxzb3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTE2NjMsImV4cCI6MjEwMDIyNzY2M30.TtLYJKBM7XxrdsHiHS9EGOxnyniSdAhBLPUkhpReidU',
+        SUPABASE_URL: 'https://zkjhemeysleurnvqsclq.supabase.co',
+        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpramhlbWV5c2xldXJudnFzY2xxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3OTIxMjQsImV4cCI6MjEwMDM2ODEyNH0.kMb6uDXowRrsuyQC252d1DKYkEuKNOI7aGeEz90-ick',
         FRONTEND_URL: 'https://ismaikami.github.io/K2-Dent-Production'
       }
     };
