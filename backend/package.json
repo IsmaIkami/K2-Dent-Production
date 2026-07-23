@@ -21,6 +21,7 @@
     "@anthropic-ai/sdk": "^0.30.0",
     "@fastify/cors": "^10.0.1",
     "@supabase/supabase-js": "^2.45.4",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "fastify": "^5.10.0"
   },

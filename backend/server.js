@@ -12,6 +12,7 @@ import cors from '@fastify/cors';
 import { config } from 'dotenv';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
+import authRoutes from './routes/auth-routes.js';
 
 // Load environment variables
 config();
@@ -92,6 +93,9 @@ fastify.addHook('onRequest', async (request, reply) => {
 // ============================================================================
 // ROUTES
 // ============================================================================
+
+// Register auth routes
+await fastify.register(authRoutes, { prefix: '/api/auth' });
 
 // Health Check
 fastify.get('/health', async (request, reply) => {
