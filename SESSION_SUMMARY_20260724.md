@@ -99,6 +99,30 @@ patientInput.addEventListener('focus', (e) => {
 
 ---
 
+### Bug #5 : Timezone bug - Rendez-vous ne s'affichent pas dans la vue jour
+**Symptôme** : L'user voit "Planning du vendredi 24 juillet 2026 - 0 rendez-vous prévu" alors que les stats indiquent "Cette semaine: 1"
+
+**Cause racine** :
+- La fonction `toISOString()` convertit en UTC, ce qui peut donner une date différente du timezone local
+- Exemple : 1h du matin le 24 juillet CEST (UTC+2) = 23h le 23 juillet UTC
+- `renderListView(new Date())` utilisait `toISOString().split('T')[0]` pour formater la date
+- Le calendrier utilisait le formatage local (`${year}-${month}-${day}`)
+- **Mismatch** : le filtre cherchait "2026-07-23" mais les appointments avaient "2026-07-24"
+
+**Fix** :
+1. Créé helper function `formatLocalDate()` qui formate en timezone local
+2. Remplacé tous les `toISOString().split('T')[0]` par `formatLocalDate()`
+   - `renderListView()` (ligne 1876)
+   - `updateStats()` (ligne 2118)
+   - `renderWeekView()` (lignes 2043, 2048)
+3. Fixé leftover `apt.type` → `apt.appointment_type` (ligne 1839)
+
+**Commit** : `a6260ba` - "fix: timezone bug causing appointments not to show in day view"
+
+**Résultat** : ✅ Les rendez-vous s'affichent correctement dans tous les cas (matin, soir, peu importe le timezone)
+
+---
+
 ## ✅ État Final
 
 ### Fonctionnalités Validées
@@ -107,13 +131,25 @@ patientInput.addEventListener('focus', (e) => {
 - ✅ **Création RDV fonctionne** : 1 appointment créé avec succès
 - ✅ **Aucune erreur console** : Plus d'erreurs `type`, `appointment_type`, ou colonne manquante
 - ✅ **Liste patients affichée** : Autocomplete au focus du champ Patient
+- ✅ **Affichage rendez-vous** : Les rendez-vous s'affichent dans la vue jour (timezone fix)
+- ✅ **Stats correctes** : Aujourd'hui: 1, Cette semaine: 1, Ce mois: 1
 
 ### Logs Console Finaux
 ```
 ✅ Loaded 5 patients
 ✅ Loaded 1 appointments (filtered by date range)
 ✅ No console errors
+📅 Current date set to: 24/07/2026
+🔍 INITIAL DATE: 24/07/2026 Month: 6 Year: 2026
 ```
+
+### Screenshot Final
+![Calendar fonctionnel](/.gstack/qa-reports/screenshots/calendar-after-timezone-fix.png)
+
+Affiche correctement :
+- **"Planning du vendredi 24 juillet 2026"**
+- **"1 rendez-vous prévu"**
+- **"10:30 - isma 22 Dupont - Polissage"**
 
 ---
 
@@ -182,21 +218,23 @@ patientInput.addEventListener('focus', (e) => {
 
 ## 📊 Statistiques Session
 
-- **Durée** : ~3 heures
-- **Bugs résolus** : 4 majeurs
-- **Commits** : 6
+- **Durée** : ~4 heures
+- **Bugs résolus** : 5 majeurs
+- **Commits** : 7
 - **Fichiers modifiés** : 2 (frontend/calendar.html, SQL migration)
-- **Lignes code changées** : ~50
-- **Tests réussis** : 100% après fixes
+- **Lignes code changées** : ~65
+- **Tests réussis** : 100% après tous les fixes
+- **Screenshots de test** : 3 (initial, final-test, after-timezone-fix)
 
 ---
 
 ## 🚀 Prochaines Étapes Recommandées
 
 ### Court terme (à faire maintenant)
-1. ✅ **Vérifier** que "isma 22 Dupont" apparaît bien dans la liste du modal
-2. ✅ **Créer un RDV test** pour un patient et vérifier qu'il s'affiche dans le calendrier
-3. 📋 **Supprimer** `/frontend/js/config.js` pour éviter confusion future
+1. ✅ **Vérifier** que "isma 22 Dupont" apparaît bien dans la liste du modal - FAIT
+2. ✅ **Créer un RDV test** pour un patient et vérifier qu'il s'affiche dans le calendrier - FAIT
+3. ✅ **Fixer le bug timezone** qui empêchait l'affichage des RDV dans la vue jour - FAIT
+4. 📋 **Supprimer** `/frontend/js/config.js` pour éviter confusion future - À FAIRE
 
 ### Moyen terme (prochaines sessions)
 1. 🧹 **Audit complet des autres pages HTML** pour vérifier qu'elles chargent `config.js` (pas `js/config.js`)
@@ -235,10 +273,11 @@ patientInput.addEventListener('focus', (e) => {
 ## 🔗 Ressources
 
 ### Commits Principaux
-- `52c95db` - Fix config.js loading
-- `09cfb5f` - Refactor type → appointment_type
-- `9ee841f` - Fix patient list refresh
-- `d1ce243` - SQL migration rename column
+- `52c95db` - Fix config.js loading (Bug #1)
+- `09cfb5f` - Refactor type → appointment_type (Bug #3 code)
+- `d1ce243` - SQL migration rename column (Bug #3 DB)
+- `9ee841f` - Fix patient list refresh (Bug #4)
+- `a6260ba` - Fix timezone bug in date filtering (Bug #5)
 
 ### Fichiers Clés
 - `/frontend/calendar.html` - Page agenda
