@@ -347,6 +347,196 @@
             gap: 24px;
         }
 
+        /* Hero Search Section */
+        .hero-search {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            padding: 48px 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 12px 48px rgba(0, 102, 255, 0.15);
+        }
+
+        .hero-search-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .hero-search-subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .hero-search-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .hero-search-input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .hero-search-input {
+            width: 100%;
+            padding: 20px 24px 20px 56px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            color: var(--text-primary);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .hero-search-input:focus {
+            outline: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .hero-search-input::placeholder {
+            color: #999;
+        }
+
+        .hero-search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        .hero-search-clear {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            display: none;
+            transition: color 0.2s;
+        }
+
+        .hero-search-clear:hover {
+            color: var(--text-primary);
+        }
+
+        .hero-search-clear.visible {
+            display: block;
+        }
+
+        .hero-scan-btn {
+            width: 100%;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .hero-scan-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-scan-btn:active {
+            transform: translateY(0);
+        }
+
+        .hero-dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .hero-dropdown.visible {
+            display: block;
+        }
+
+        .hero-dropdown-item {
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hero-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .hero-dropdown-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .hero-dropdown-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .hero-dropdown-info {
+            flex: 1;
+        }
+
+        .hero-dropdown-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .hero-dropdown-details {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .hero-dropdown-empty {
+            padding: 32px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -815,6 +1005,32 @@
             <div class="content">
                 <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 8px;">👥 Gestion des Patients</h1>
                 <p style="color: var(--text-secondary); margin-bottom: 32px;">Vue d'ensemble et gestion complète de votre base de patients</p>
+
+                <!-- Hero Search Section -->
+                <div class="hero-search">
+                    <h2 class="hero-search-title">🔍 Recherche Rapide Patient</h2>
+                    <p class="hero-search-subtitle">Trouvez instantanément un patient par nom, prénom ou NISS</p>
+
+                    <div class="hero-search-container">
+                        <div class="hero-search-input-wrapper">
+                            <span class="hero-search-icon">🔍</span>
+                            <input
+                                type="text"
+                                id="heroSearchInput"
+                                class="hero-search-input"
+                                placeholder="Commencez à taper un nom, prénom ou NISS..."
+                                autocomplete="off"
+                            >
+                            <button class="hero-search-clear" id="heroClearBtn">✕</button>
+                            <div class="hero-dropdown" id="heroDropdown"></div>
+                        </div>
+
+                        <button class="hero-scan-btn" id="heroScanBtn">
+                            <span style="font-size: 24px;">💳</span>
+                            <span>Scanner Carte d'Identité Belge</span>
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Stats Grid -->
                 <div class="stats-grid">
@@ -1359,17 +1575,17 @@
         }
 
         // Search patients
-        // Search autocomplete functionality
+        // Hero search autocomplete functionality
         function showSearchDropdown(query) {
-            const dropdown = document.getElementById('searchDropdown');
-            const clearBtn = document.getElementById('searchClearBtn');
+            const dropdown = document.getElementById('heroDropdown');
+            const clearBtn = document.getElementById('heroClearBtn');
 
             // Show/hide clear button
             if (query.length > 0) {
                 clearBtn.classList.add('visible');
             } else {
                 clearBtn.classList.remove('visible');
-                dropdown.classList.remove('visible');
+                dropdown.style.display = 'none';
                 return;
             }
 
@@ -1381,8 +1597,8 @@
 
             // Build dropdown HTML
             if (filtered.length === 0) {
-                dropdown.innerHTML = '<div class="search-dropdown-empty">Aucun patient trouvé</div>';
-                dropdown.classList.add('visible');
+                dropdown.innerHTML = '<div class="hero-dropdown-empty">Aucun patient trouvé</div>';
+                dropdown.style.display = 'block';
                 return;
             }
 
@@ -1392,11 +1608,11 @@
                 const phone = patient.phone || patient.mobile || 'Pas de téléphone';
 
                 return `
-                    <div class="search-dropdown-item" onclick="selectPatientFromSearch('${patient.id}')">
-                        <div class="search-dropdown-avatar">${initials || '👤'}</div>
-                        <div class="search-dropdown-info">
-                            <div class="search-dropdown-name">${patient.first_name} ${patient.last_name}</div>
-                            <div class="search-dropdown-details">
+                    <div class="hero-dropdown-item" onclick="selectPatientFromSearch('${patient.id}')">
+                        <div class="hero-dropdown-avatar">${initials || '👤'}</div>
+                        <div class="hero-dropdown-info">
+                            <div class="hero-dropdown-name">${patient.first_name} ${patient.last_name}</div>
+                            <div class="hero-dropdown-details">
                                 ${patient.niss ? `NISS: ${patient.niss}` : 'Sans NISS'}
                                 ${age ? ` • ${age} ans` : ''}
                                 • ${phone}
@@ -1406,7 +1622,7 @@
                 `;
             }).join('');
 
-            dropdown.classList.add('visible');
+            dropdown.style.display = 'block';
         }
 
         // Select patient from search dropdown
@@ -1418,18 +1634,18 @@
             openPatientDetail(patient.niss);
 
             // Clear search
-            const searchInput = document.getElementById('globalSearchInput');
-            const dropdown = document.getElementById('searchDropdown');
-            const clearBtn = document.getElementById('searchClearBtn');
+            const searchInput = document.getElementById('heroSearchInput');
+            const dropdown = document.getElementById('heroDropdown');
+            const clearBtn = document.getElementById('heroClearBtn');
 
             searchInput.value = '';
-            dropdown.classList.remove('visible');
+            dropdown.style.display = 'none';
             clearBtn.classList.remove('visible');
         }
 
         // Scan card functionality
         async function scanCard() {
-            const searchInput = document.getElementById('globalSearchInput');
+            const searchInput = document.getElementById('heroSearchInput');
 
             // Show instruction
             searchInput.placeholder = '📡 En attente du scan de carte...';
@@ -1467,7 +1683,7 @@
 
                     // Clear input and remove listeners
                     searchInput.value = '';
-                    searchInput.placeholder = 'Rechercher un patient par nom, prénom, NISS...';
+                    searchInput.placeholder = 'Commencez à taper un nom, prénom ou NISS...';
                     searchInput.removeEventListener('paste', handleCardInput);
                     searchInput.removeEventListener('input', handleCardInput);
                 }
@@ -1478,47 +1694,52 @@
 
             // Auto-remove listener after 30 seconds
             setTimeout(() => {
-                searchInput.placeholder = 'Rechercher un patient par nom, prénom, NISS...';
+                searchInput.placeholder = 'Commencez à taper un nom, prénom ou NISS...';
                 searchInput.removeEventListener('paste', handleCardInput);
             }, 30000);
         }
 
-        // Initialize search functionality
+        // Initialize hero search functionality
         document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('globalSearchInput');
-            const clearBtn = document.getElementById('searchClearBtn');
-            const dropdown = document.getElementById('searchDropdown');
-            const scanBtn = document.getElementById('scanCardBtn');
+            const heroSearchInput = document.getElementById('heroSearchInput');
+            const heroClearBtn = document.getElementById('heroClearBtn');
+            const heroDropdown = document.getElementById('heroDropdown');
+            const heroScanBtn = document.getElementById('heroScanBtn');
+
+            if (!heroSearchInput || !heroClearBtn || !heroDropdown || !heroScanBtn) {
+                console.warn('⚠️ Hero search elements not found');
+                return;
+            }
 
             // Search input
-            searchInput.addEventListener('input', (e) => {
+            heroSearchInput.addEventListener('input', (e) => {
                 showSearchDropdown(e.target.value);
             });
 
             // Clear button
-            clearBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                dropdown.classList.remove('visible');
-                clearBtn.classList.remove('visible');
-                searchInput.focus();
+            heroClearBtn.addEventListener('click', () => {
+                heroSearchInput.value = '';
+                heroDropdown.style.display = 'none';
+                heroClearBtn.classList.remove('visible');
+                heroSearchInput.focus();
             });
 
             // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.search-bar')) {
-                    dropdown.classList.remove('visible');
+                if (!e.target.closest('.hero-search-container')) {
+                    heroDropdown.style.display = 'none';
                 }
             });
 
             // Scan card button
-            scanBtn.addEventListener('click', scanCard);
+            heroScanBtn.addEventListener('click', scanCard);
 
             // ESC key to clear search
-            searchInput.addEventListener('keydown', (e) => {
+            heroSearchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    searchInput.value = '';
-                    dropdown.classList.remove('visible');
-                    clearBtn.classList.remove('visible');
+                    heroSearchInput.value = '';
+                    heroDropdown.style.display = 'none';
+                    heroClearBtn.classList.remove('visible');
                 }
             });
         });
