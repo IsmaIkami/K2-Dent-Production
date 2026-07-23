@@ -520,20 +520,20 @@
 
         .hero-dropdown-name {
             font-weight: 600;
-            color: var(--text-primary);
+            color: #1A1D29 !important;
             margin-bottom: 4px;
             font-size: 16px;
         }
 
         .hero-dropdown-details {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #6B7280 !important;
         }
 
         .hero-dropdown-empty {
             padding: 32px;
             text-align: center;
-            color: var(--text-secondary);
+            color: #6B7280 !important;
             font-size: 15px;
         }
 
@@ -1630,8 +1630,8 @@
             const patient = allPatients.find(p => p.id === patientId);
             if (!patient) return;
 
-            // Open patient detail modal
-            openPatientDetail(patient.niss);
+            // Open patient dashboard (same as clicking a patient card)
+            openPatientDashboard(patient);
 
             // Clear search
             const searchInput = document.getElementById('heroSearchInput');
@@ -1673,7 +1673,7 @@
 
                     if (patient) {
                         console.log('✅ Patient trouvé:', patient);
-                        openPatientDetail(patient.niss);
+                        openPatientDashboard(patient);
                     } else {
                         console.log('⚠️ Patient non trouvé, ouverture du modal création');
                         // Pre-fill NISS in new patient modal
