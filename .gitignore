@@ -95,3 +95,4 @@ $RECYCLE.BIN/
 *.pid
 *.seed
 *.pid.lock
+.gstack/
