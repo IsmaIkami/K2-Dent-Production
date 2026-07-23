@@ -124,20 +124,24 @@ const DB = {
    * @returns {Promise<Object>} Patient object
    */
   async getPatientByNISS(niss) {
-    try {
-      const { data, error } = await supabaseClient
-        .from('patients')
-        .select('*')
-        .eq('niss', niss)
-        .maybeSingle(); // Use maybeSingle() to handle 0 results gracefully
+    const { data, error } = await supabaseClient
+      .from('patients')
+      .select('*')
+      .eq('niss', niss)
+      .maybeSingle(); // Use maybeSingle() to handle 0 results gracefully
 
-      // PGRST116 means 0 rows found - this is OK, return null
-      if (error && error.code !== 'PGRST116') throw error;
-      return data; // Will be null if no patient found
-    } catch (error) {
+    // PGRST116 means 0 rows found - this is OK, return null
+    if (error && error.code === 'PGRST116') {
+      return null; // No patient found with this NISS
+    }
+
+    // For any other error, throw it
+    if (error) {
       console.error('Error fetching patient by NISS:', error);
       throw error;
     }
+
+    return data; // Will be null if no patient found, or the patient object
   },
 
   /**
