@@ -1491,6 +1491,15 @@
         let patients = [];
         let selectedDate = null;
 
+        // Helper function to format date as YYYY-MM-DD in LOCAL time (not UTC)
+        // This prevents timezone bugs where toISOString() gives wrong date
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         // Wait for Supabase to be ready (skip in demo mode)
         async function waitForSupabase() {
             // Skip wait in demo mode
@@ -1827,7 +1836,7 @@
             dayAppointments.slice(0, 4).forEach(apt => {
                 const chip = document.createElement('div');
                 chip.className = `appointment-chip ${apt.status}`;
-                if (apt.type && apt.type.toLowerCase().includes('urgence')) {
+                if (apt.appointment_type && apt.appointment_type.toLowerCase().includes('urgence')) {
                     chip.classList.add('urgent');
                 }
                 chip.textContent = `${apt.start_time?.slice(0,5) || ''} ${apt.patient?.first_name || ''}`;
@@ -1864,7 +1873,7 @@
             let filteredAppointments;
             if (filterDate) {
                 // Show only appointments for specific date (TODAY mode)
-                const dateStr = filterDate.toISOString().split('T')[0];
+                const dateStr = formatLocalDate(filterDate);
                 filteredAppointments = appointments.filter(a => a.appointment_date === dateStr);
             } else {
                 // Show appointments for entire month
@@ -2031,12 +2040,12 @@
             for (let i = 0; i < 7; i++) {
                 const dayDate = new Date(startOfWeek);
                 dayDate.setDate(startOfWeek.getDate() + i);
-                const dayStr = dayDate.toISOString().split('T')[0];
+                const dayStr = formatLocalDate(dayDate);
 
                 const dayAppointments = weekAppointments.filter(a => a.appointment_date === dayStr);
                 dayAppointments.sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
 
-                const isToday = dayStr === new Date().toISOString().split('T')[0];
+                const isToday = dayStr === formatLocalDate(new Date());
 
                 const dayCard = document.createElement('div');
                 dayCard.style.cssText = `
@@ -2106,7 +2115,7 @@
 
         // Update stats
         function updateStats() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = formatLocalDate(new Date());
             const todayApts = appointments.filter(a => a.appointment_date === today && a.status !== 'cancelled').length;
             document.getElementById('statToday').textContent = todayApts;
 
