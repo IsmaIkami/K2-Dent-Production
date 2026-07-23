@@ -104,6 +104,24 @@ fastify.get('/health', async (request, reply) => {
   };
 });
 
+// Diagnostic endpoint to check environment variables
+fastify.get('/debug/env', async (request, reply) => {
+  return {
+    supabase_url: process.env.SUPABASE_URL ? `${process.env.SUPABASE_URL.substring(0, 30)}...` : 'MISSING',
+    supabase_anon_key: process.env.SUPABASE_ANON_KEY ? {
+      prefix: process.env.SUPABASE_ANON_KEY.substring(0, 30),
+      length: process.env.SUPABASE_ANON_KEY.length,
+      starts_with_eyJ: process.env.SUPABASE_ANON_KEY.startsWith('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
+    } : 'MISSING',
+    supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY ? {
+      prefix: process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 30),
+      length: process.env.SUPABASE_SERVICE_ROLE_KEY.length,
+      starts_with_eyJ: process.env.SUPABASE_SERVICE_ROLE_KEY.startsWith('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ5')
+    } : 'MISSING',
+    anthropic_api_key: process.env.ANTHROPIC_API_KEY ? `${process.env.ANTHROPIC_API_KEY.substring(0, 10)}... (length: ${process.env.ANTHROPIC_API_KEY.length})` : 'MISSING'
+  };
+});
+
 // Root endpoint
 fastify.get('/', async (request, reply) => {
   return {
