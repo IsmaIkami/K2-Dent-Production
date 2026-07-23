@@ -17,6 +17,14 @@ import authRoutes from './routes/auth-routes.js';
 // Load environment variables
 config();
 
+// TEMPORARY FIX: Hardcode Supabase variables if Railway doesn't load them
+if (!process.env.SUPABASE_URL || process.env.SUPABASE_URL.includes('sqgxscrwcffjfomlsoyf')) {
+  console.warn('⚠️  Railway variables not loaded correctly, using hardcoded fallback');
+  process.env.SUPABASE_URL = 'https://zkjhemeysleurnvqsclq.supabase.co';
+  process.env.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpramhlbWV5c2xldXJudnFzY2xxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3OTIxMjQsImV4cCI6MjEwMDM2ODEyNH0.kMb6uDXowRrsuyQC252d1DKYkEuKNOI7aGeEz90-ick';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpramhlbWV5c2xldXJudnFzY2xxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDc5MjEyNCwiZXhwIjoyMTAwMzY4MTI0fQ.-A1Cu1BsnFcRE_oIPV8vTk8S1XK_7FMOr7p4ie6kzmw';
+}
+
 // Initialize Fastify
 const fastify = Fastify({
   logger: {
