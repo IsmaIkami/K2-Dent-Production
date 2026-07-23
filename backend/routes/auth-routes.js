@@ -12,6 +12,12 @@ const SALT_ROUNDS = 10;
 
 // Supabase client avec service key pour bypass RLS
 const getSupabaseAdmin = () => {
+  // Debug logging
+  console.log('🔍 Supabase Debug:');
+  console.log('- URL:', process.env.SUPABASE_URL ? `${process.env.SUPABASE_URL.substring(0, 30)}...` : 'MISSING');
+  console.log('- SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? `${process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 30)}... (length: ${process.env.SUPABASE_SERVICE_ROLE_KEY.length})` : 'MISSING');
+  console.log('- ANON_KEY:', process.env.SUPABASE_ANON_KEY ? `${process.env.SUPABASE_ANON_KEY.substring(0, 30)}... (length: ${process.env.SUPABASE_ANON_KEY.length})` : 'MISSING');
+
   return createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
