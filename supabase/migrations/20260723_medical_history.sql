@@ -47,34 +47,18 @@ CREATE INDEX idx_medical_history_created_at ON public.medical_history(created_at
 -- Enable RLS
 ALTER TABLE public.medical_history ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
-CREATE POLICY "Users can view medical history of their organization's patients"
+-- RLS Policies - Simplified (no organization concept yet)
+CREATE POLICY "Authenticated users can view all medical history"
     ON public.medical_history
     FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.patients p
-            WHERE p.id = medical_history.patient_id
-            AND p.organization_id IN (
-                SELECT organization_id FROM public.staff_profiles
-                WHERE user_id = auth.uid()
-            )
-        )
-    );
+    USING (auth.uid() IS NOT NULL);
 
-CREATE POLICY "Users can insert medical history for their organization's patients"
+CREATE POLICY "Authenticated users can insert medical history"
     ON public.medical_history
     FOR INSERT
     WITH CHECK (
-        created_by = auth.uid()
-        AND EXISTS (
-            SELECT 1 FROM public.patients p
-            WHERE p.id = medical_history.patient_id
-            AND p.organization_id IN (
-                SELECT organization_id FROM public.staff_profiles
-                WHERE user_id = auth.uid()
-            )
-        )
+        auth.uid() IS NOT NULL
+        AND created_by = auth.uid()
     );
 
 -- =============================================================================
@@ -104,16 +88,12 @@ AS $$
 DECLARE
     v_new_id UUID;
 BEGIN
-    -- Validate that patient exists and user has access
+    -- Validate that patient exists
     IF NOT EXISTS (
         SELECT 1 FROM public.patients p
         WHERE p.id = p_patient_id
-        AND p.organization_id IN (
-            SELECT organization_id FROM public.staff_profiles
-            WHERE user_id = p_created_by
-        )
     ) THEN
-        RAISE EXCEPTION 'Patient not found or access denied';
+        RAISE EXCEPTION 'Patient not found';
     END IF;
 
     -- Insert new medical history version
