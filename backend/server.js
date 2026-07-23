@@ -41,10 +41,7 @@ const supabase = createClient(
 
 // CORS Configuration
 await fastify.register(cors, {
-  origin: process.env.CORS_ORIGINS?.split(',') || [
-    'https://ismaikami.github.io',
-    'http://localhost:3000'
-  ],
+  origin: true, // Accept all origins temporarily for debugging
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 });
