@@ -2550,7 +2550,30 @@
             });
 
             patientInput.addEventListener('focus', (e) => {
-                if (e.target.value.length >= 1) {
+                const query = e.target.value.toLowerCase().trim();
+
+                // If field is empty, show ALL patients
+                if (query.length === 0) {
+                    if (patients.length === 0) {
+                        patientDropdown.innerHTML = '<div class="patient-autocomplete-empty">Chargement des patients...</div>';
+                        patientDropdown.style.display = 'block';
+                        return;
+                    }
+
+                    patientDropdown.innerHTML = patients.slice(0, 10).map(p => `
+                        <div class="patient-autocomplete-item" onclick="selectPatientInModal('${p.id}', '${p.first_name.replace(/'/g, "\\'")} ${p.last_name.replace(/'/g, "\\'")}')">
+                            <div class="patient-autocomplete-avatar">👤</div>
+                            <div class="patient-autocomplete-info">
+                                <div class="patient-autocomplete-name">${p.first_name} ${p.last_name}</div>
+                                <div class="patient-autocomplete-details">
+                                    ${p.niss ? `NISS: ${p.niss}` : 'Sans NISS'}
+                                    ${p.phone || p.mobile ? ' • ' + (p.phone || p.mobile) : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    patientDropdown.style.display = 'block';
+                } else if (e.target.value.length >= 1) {
                     e.target.dispatchEvent(new Event('input'));
                 }
             });
