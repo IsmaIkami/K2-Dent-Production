@@ -148,13 +148,20 @@
 
         .search-bar {
             flex: 1;
-            max-width: 500px;
+            max-width: 600px;
+            position: relative;
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
             position: relative;
         }
 
         .search-bar input {
             width: 100%;
-            padding: 12px 16px 12px 44px;
+            padding: 12px 48px 12px 44px;
             background: var(--bg-main);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -175,6 +182,124 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-secondary);
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+            display: none;
+            transition: color 0.2s;
+        }
+
+        .search-clear-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .search-clear-btn.visible {
+            display: block;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-dropdown.visible {
+            display: block;
+        }
+
+        .search-dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-dropdown-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .search-dropdown-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .search-dropdown-info {
+            flex: 1;
+        }
+
+        .search-dropdown-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .search-dropdown-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .search-dropdown-empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .scan-card-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .scan-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        }
+
+        .scan-card-btn:active {
+            transform: translateY(0);
         }
 
         .topbar-actions {
@@ -657,8 +782,21 @@
             <!-- Top Bar -->
             <div class="topbar">
                 <div class="search-bar">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="globalSearchInput" placeholder="Rechercher un patient par nom, NISS, téléphone..." oninput="searchPatients(this.value)">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            id="globalSearchInput"
+                            placeholder="Rechercher un patient par nom, prénom, NISS..."
+                            autocomplete="off"
+                        >
+                        <button class="search-clear-btn" id="searchClearBtn">✕</button>
+                        <div class="search-dropdown" id="searchDropdown"></div>
+                    </div>
+                    <button class="scan-card-btn" id="scanCardBtn">
+                        <span>💳</span>
+                        <span>Scanner Carte</span>
+                    </button>
                 </div>
                 <div class="topbar-actions">
                     <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
@@ -1221,25 +1359,169 @@
         }
 
         // Search patients
-        async function searchPatients(query) {
-            if (!query || query.trim() === '') {
-                displayPatients(allPatients);
+        // Search autocomplete functionality
+        function showSearchDropdown(query) {
+            const dropdown = document.getElementById('searchDropdown');
+            const clearBtn = document.getElementById('searchClearBtn');
+
+            // Show/hide clear button
+            if (query.length > 0) {
+                clearBtn.classList.add('visible');
+            } else {
+                clearBtn.classList.remove('visible');
+                dropdown.classList.remove('visible');
                 return;
             }
 
+            // Filter patients
             const filtered = allPatients.filter(p => {
-                const searchStr = `${p.first_name} ${p.last_name} ${p.niss} ${p.email || ''} ${p.phone || ''}`.toLowerCase();
+                const searchStr = `${p.first_name} ${p.last_name} ${p.niss} ${p.email || ''} ${p.phone || ''} ${p.mobile || ''}`.toLowerCase();
                 return searchStr.includes(query.toLowerCase());
             });
 
-            displayPatients(filtered);
+            // Build dropdown HTML
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="search-dropdown-empty">Aucun patient trouvé</div>';
+                dropdown.classList.add('visible');
+                return;
+            }
+
+            dropdown.innerHTML = filtered.slice(0, 8).map(patient => {
+                const initials = `${patient.first_name?.[0] || ''}${patient.last_name?.[0] || ''}`.toUpperCase();
+                const age = patient.date_of_birth ? calculateAge(patient.date_of_birth) : null;
+                const phone = patient.phone || patient.mobile || 'Pas de téléphone';
+
+                return `
+                    <div class="search-dropdown-item" onclick="selectPatientFromSearch('${patient.id}')">
+                        <div class="search-dropdown-avatar">${initials || '👤'}</div>
+                        <div class="search-dropdown-info">
+                            <div class="search-dropdown-name">${patient.first_name} ${patient.last_name}</div>
+                            <div class="search-dropdown-details">
+                                ${patient.niss ? `NISS: ${patient.niss}` : 'Sans NISS'}
+                                ${age ? ` • ${age} ans` : ''}
+                                • ${phone}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            dropdown.classList.add('visible');
         }
 
-        // Add search functionality to search input if it exists
-        const searchInput = document.querySelector('input[placeholder*="Chercher"]');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => searchPatients(e.target.value));
+        // Select patient from search dropdown
+        function selectPatientFromSearch(patientId) {
+            const patient = allPatients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            // Open patient detail modal
+            openPatientDetail(patient.niss);
+
+            // Clear search
+            const searchInput = document.getElementById('globalSearchInput');
+            const dropdown = document.getElementById('searchDropdown');
+            const clearBtn = document.getElementById('searchClearBtn');
+
+            searchInput.value = '';
+            dropdown.classList.remove('visible');
+            clearBtn.classList.remove('visible');
         }
+
+        // Scan card functionality
+        async function scanCard() {
+            const searchInput = document.getElementById('globalSearchInput');
+
+            // Show instruction
+            searchInput.placeholder = '📡 En attente du scan de carte...';
+            searchInput.focus();
+
+            // Create a temporary handler for paste or keyboard input
+            const handleCardInput = async (e) => {
+                let cardData = '';
+
+                if (e.type === 'paste') {
+                    cardData = e.clipboardData.getData('text');
+                } else if (e.type === 'input') {
+                    cardData = e.target.value;
+                }
+
+                // Extract NISS from card data (Belgian NISS is 11 digits)
+                const nissMatch = cardData.match(/\b\d{11}\b/);
+
+                if (nissMatch) {
+                    const niss = nissMatch[0];
+                    console.log('🔍 NISS détecté:', niss);
+
+                    // Search for patient with this NISS
+                    const patient = allPatients.find(p => p.niss === niss);
+
+                    if (patient) {
+                        console.log('✅ Patient trouvé:', patient);
+                        openPatientDetail(patient.niss);
+                    } else {
+                        console.log('⚠️ Patient non trouvé, ouverture du modal création');
+                        // Pre-fill NISS in new patient modal
+                        showNewPatientModal();
+                        document.getElementById('niss').value = niss;
+                    }
+
+                    // Clear input and remove listeners
+                    searchInput.value = '';
+                    searchInput.placeholder = 'Rechercher un patient par nom, prénom, NISS...';
+                    searchInput.removeEventListener('paste', handleCardInput);
+                    searchInput.removeEventListener('input', handleCardInput);
+                }
+            };
+
+            // Listen for paste or input
+            searchInput.addEventListener('paste', handleCardInput, { once: true });
+
+            // Auto-remove listener after 30 seconds
+            setTimeout(() => {
+                searchInput.placeholder = 'Rechercher un patient par nom, prénom, NISS...';
+                searchInput.removeEventListener('paste', handleCardInput);
+            }, 30000);
+        }
+
+        // Initialize search functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('globalSearchInput');
+            const clearBtn = document.getElementById('searchClearBtn');
+            const dropdown = document.getElementById('searchDropdown');
+            const scanBtn = document.getElementById('scanCardBtn');
+
+            // Search input
+            searchInput.addEventListener('input', (e) => {
+                showSearchDropdown(e.target.value);
+            });
+
+            // Clear button
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                dropdown.classList.remove('visible');
+                clearBtn.classList.remove('visible');
+                searchInput.focus();
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-bar')) {
+                    dropdown.classList.remove('visible');
+                }
+            });
+
+            // Scan card button
+            scanBtn.addEventListener('click', scanCard);
+
+            // ESC key to clear search
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    dropdown.classList.remove('visible');
+                    clearBtn.classList.remove('visible');
+                }
+            });
+        });
 
         // =====================================================================
         // NEW PATIENT MODAL FUNCTIONS
