@@ -852,27 +852,27 @@ const DB = {
   },
 
   // ==========================================================================
-  // MEDICAL HISTORY - Données médicales versionnées
+  // ANAMNESIS - Données médicales du patient
   // ==========================================================================
 
   /**
-   * Get latest medical history for a patient
+   * Get latest medical history for a patient (from anamnesis table)
    */
   async getLatestMedicalHistory(patientId) {
     try {
       const { data, error } = await supabaseClient
-        .from('medical_history')
+        .from('anamnesis')
         .select('*')
         .eq('patient_id', patientId)
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
+      // PGRST116 means no anamnesis exists yet for this patient
+      if (error && error.code === 'PGRST116') return null;
       if (error) throw error;
       return data;
     } catch (error) {
-      // Return null if no history exists yet
-      if (error.code === 'PGRST116') return null;
       console.error('Error fetching medical history:', error);
       throw error;
     }
@@ -880,46 +880,74 @@ const DB = {
 
   /**
    * Get all medical history versions for a patient
+   * Note: anamnesis table doesn't have versioning, returns single record
    */
   async getAllMedicalHistory(patientId) {
     try {
       const { data, error } = await supabaseClient
-        .from('medical_history')
+        .from('anamnesis')
         .select('*')
         .eq('patient_id', patientId)
-        .order('created_at', { ascending: false });
+        .order('updated_at', { ascending: false });
 
+      if (error && error.code === 'PGRST116') return [];
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error fetching medical history versions:', error);
+      console.error('Error fetching medical history:', error);
       throw error;
     }
   },
 
   /**
-   * Create or update medical history (creates new version)
+   * Create or update medical history (anamnesis)
    */
   async saveMedicalHistory(patientId, medicalData, createdBy = '00000000-0000-0000-0000-000000000000') {
     try {
-      const { data, error } = await supabaseClient.rpc('create_medical_history_version', {
-        p_patient_id: patientId,
-        p_allergies: medicalData.allergies || [],
-        p_medications: medicalData.medications || [],
-        p_medical_conditions: medicalData.medical_conditions || [],
-        p_surgical_history: medicalData.surgical_history || [],
-        p_dental_concerns: medicalData.dental_concerns || null,
-        p_previous_dental_treatments: medicalData.previous_dental_treatments || [],
-        p_dental_anxiety_level: medicalData.dental_anxiety_level || null,
-        p_brushing_frequency: medicalData.brushing_frequency || null,
-        p_flossing_frequency: medicalData.flossing_frequency || null,
-        p_mouthwash_use: medicalData.mouthwash_use || false,
-        p_practitioner_notes: medicalData.practitioner_notes || null,
-        p_created_by: createdBy
-      });
+      // Check if anamnesis exists for this patient
+      const existing = await this.getLatestMedicalHistory(patientId);
 
-      if (error) throw error;
-      return data; // Returns new medical_history ID
+      const anamnesisData = {
+        patient_id: patientId,
+        allergies: medicalData.allergies || null,
+        medications: medicalData.medications || null,
+        medical_conditions: medicalData.medical_conditions || null,
+        smoking_status: medicalData.smoking_status || null,
+        alcohol_consumption: medicalData.alcohol_consumption || null,
+        pregnancy_status: medicalData.pregnancy_status || null,
+        blood_type: medicalData.blood_type || null,
+        ai_analysis: medicalData.ai_analysis || null,
+        ai_risk_score: medicalData.ai_risk_score || null,
+        ai_recommendations: medicalData.ai_recommendations || null,
+        created_by: createdBy,
+        updated_by: createdBy
+      };
+
+      let result;
+      if (existing) {
+        // Update existing anamnesis
+        const { data, error } = await supabaseClient
+          .from('anamnesis')
+          .update(anamnesisData)
+          .eq('id', existing.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        result = data;
+      } else {
+        // Create new anamnesis
+        const { data, error } = await supabaseClient
+          .from('anamnesis')
+          .insert(anamnesisData)
+          .select()
+          .single();
+
+        if (error) throw error;
+        result = data;
+      }
+
+      return result;
     } catch (error) {
       console.error('Error saving medical history:', error);
       throw error;
