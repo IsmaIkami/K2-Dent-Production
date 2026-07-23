@@ -347,88 +347,83 @@
             gap: 24px;
         }
 
-        /* Hero Search Section */
+        /* Hero Search Section - Modern & Clean */
         .hero-search {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 48px 40px;
-            margin-bottom: 32px;
-            box-shadow: 0 12px 48px rgba(0, 102, 255, 0.15);
+            padding: 24px 32px;
+            margin-bottom: 24px;
         }
 
         .hero-search-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 8px;
-            text-align: center;
+            display: none;
         }
 
         .hero-search-subtitle {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 32px;
-            text-align: center;
+            display: none;
         }
 
         .hero-search-container {
-            max-width: 700px;
-            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .hero-search-input-wrapper {
+            flex: 1;
             position: relative;
-            margin-bottom: 20px;
         }
 
         .hero-search-input {
             width: 100%;
-            padding: 20px 24px 20px 56px;
-            font-size: 18px;
-            border: none;
+            padding: 16px 52px 16px 48px;
+            font-size: 16px;
+            border: 2px solid var(--border);
             border-radius: 12px;
-            background: white !important;
-            color: #1A1D29 !important;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            background: var(--bg-main) !important;
+            color: var(--text-primary) !important;
             transition: all 0.2s;
         }
 
         .hero-search-input:focus {
             outline: none;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
         }
 
         .hero-search-input::placeholder {
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .hero-search-icon {
             position: absolute;
-            left: 20px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 24px;
-            color: #6B7280 !important;
+            font-size: 20px;
+            color: var(--text-secondary);
         }
 
         .hero-search-clear {
             position: absolute;
-            right: 20px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: #6B7280 !important;
+            color: var(--text-secondary);
             cursor: pointer;
-            font-size: 20px;
-            padding: 8px;
+            font-size: 18px;
+            padding: 6px;
             display: none;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            border-radius: 50%;
         }
 
         .hero-search-clear:hover {
-            color: var(--text-primary);
+            color: var(--danger);
+            background: rgba(255, 59, 48, 0.1);
         }
 
         .hero-search-clear.visible {
@@ -436,28 +431,25 @@
         }
 
         .hero-scan-btn {
-            width: 100%;
-            padding: 18px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 16px 24px;
+            background: var(--primary);
+            border: none;
             border-radius: 12px;
-            color: white;
+            color: white !important;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            gap: 8px;
+            white-space: nowrap;
         }
 
         .hero-scan-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 102, 255, 0.3);
         }
 
         .hero-scan-btn:active {
@@ -537,82 +529,92 @@
             font-size: 15px;
         }
 
-        /* Stats Grid */
+        /* Stats Bar - Horizontal Inline */
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
             margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 24px;
         }
 
         .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: none;
+            border: none;
+            padding: 0;
+            transition: none;
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow);
-            border-color: var(--primary);
+            transform: none;
+            box-shadow: none;
+            border-color: transparent;
         }
 
         .stat-header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
+            align-items: center;
+            gap: 0px;
+            margin-bottom: 0;
         }
 
         .stat-title {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
             font-weight: 500;
+            margin-right: 8px;
         }
 
         .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 18px;
+            flex-shrink: 0;
         }
 
         .stat-value {
-            font-size: 36px;
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 0px;
+            margin-right: 4px;
         }
 
         .stat-change {
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
-        /* Patients List */
+        /* Patients List - Compact & Modern */
         .patients-panel {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px;
+            border-radius: 16px;
+            padding: 24px;
         }
 
         .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .panel-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
         }
 
@@ -643,12 +645,12 @@
         .patient-item {
             background: var(--bg-main);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 12px;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -656,27 +658,33 @@
         .patient-item:hover {
             background: var(--bg-hover);
             border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .patient-item:last-child {
+            margin-bottom: 0;
         }
 
         .patient-avatar {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: rgba(0, 102, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             flex-shrink: 0;
         }
 
         .patient-info {
             flex: 1;
+            min-width: 0;
         }
 
         .patient-name {
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 600;
             margin-bottom: 4px;
         }
 
@@ -684,13 +692,20 @@
             font-size: 13px;
             color: var(--text-secondary);
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
+        }
+
+        .patient-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .patient-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
         .btn-icon {
@@ -1008,9 +1023,6 @@
 
                 <!-- Hero Search Section -->
                 <div class="hero-search">
-                    <h2 class="hero-search-title">🔍 Recherche Rapide Patient</h2>
-                    <p class="hero-search-subtitle">Trouvez instantanément un patient par nom, prénom ou NISS</p>
-
                     <div class="hero-search-container">
                         <div class="hero-search-input-wrapper">
                             <span class="hero-search-icon">🔍</span>
@@ -1018,7 +1030,7 @@
                                 type="text"
                                 id="heroSearchInput"
                                 class="hero-search-input"
-                                placeholder="Commencez à taper un nom, prénom ou NISS..."
+                                placeholder="Rechercher un patient par nom, prénom ou NISS..."
                                 autocomplete="off"
                             >
                             <button class="hero-search-clear" id="heroClearBtn">✕</button>
@@ -1026,63 +1038,43 @@
                         </div>
 
                         <button class="hero-scan-btn" id="heroScanBtn">
-                            <span style="font-size: 24px;">💳</span>
-                            <span>Scanner Carte d'Identité Belge</span>
+                            <span style="font-size: 20px;">💳</span>
+                            <span>Scanner Carte</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Stats Grid -->
+                <!-- Stats Bar -->
                 <div class="stats-grid">
                     <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(0, 102, 255, 0.15); color: var(--primary);">👥</div>
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-title">Patients Actifs</div>
-                                <div class="stat-value">847</div>
-                                <div class="stat-change">Total enregistrés</div>
-                            </div>
-                            <div class="stat-icon" style="background: rgba(0, 102, 255, 0.15); color: var(--primary);">
-                                👥
-                            </div>
+                            <div class="stat-value">847</div>
+                            <div class="stat-title">Patients</div>
                         </div>
                     </div>
 
                     <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(52, 199, 89, 0.15); color: var(--success);">📈</div>
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-title">Nouveaux (30j)</div>
-                                <div class="stat-value">42</div>
-                                <div class="stat-change">+12% vs mois dernier</div>
-                            </div>
-                            <div class="stat-icon" style="background: rgba(52, 199, 89, 0.15); color: var(--success);">
-                                📈
-                            </div>
+                            <div class="stat-value">42</div>
+                            <div class="stat-title">Nouveaux (30j)</div>
                         </div>
                     </div>
 
                     <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(255, 149, 0, 0.15); color: var(--warning);">📅</div>
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-title">RDV Aujourd'hui</div>
-                                <div class="stat-value">28</div>
-                                <div class="stat-change">8 confirmés</div>
-                            </div>
-                            <div class="stat-icon" style="background: rgba(255, 149, 0, 0.15); color: var(--warning);">
-                                📅
-                            </div>
+                            <div class="stat-value">28</div>
+                            <div class="stat-title">RDV Aujourd'hui</div>
                         </div>
                     </div>
 
                     <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">🔔</div>
                         <div class="stat-header">
-                            <div>
-                                <div class="stat-title">Rappels à Faire</div>
-                                <div class="stat-value">15</div>
-                                <div class="stat-change">Contrôles 6 mois</div>
-                            </div>
-                            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">
-                                🔔
-                            </div>
+                            <div class="stat-value">15</div>
+                            <div class="stat-title">Rappels</div>
                         </div>
                     </div>
                 </div>
