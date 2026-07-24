@@ -475,8 +475,40 @@
         }
 
         .patient-card-meta {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .patient-card-niss {
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .mini-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 2px 6px;
+            background: rgba(0, 102, 255, 0.15);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .mini-badge-bim {
+            background: rgba(255, 149, 0, 0.15);
+            border-color: rgba(255, 149, 0, 0.3);
+            color: var(--warning);
         }
 
         .patient-card-score {
@@ -2003,13 +2035,32 @@
                 }
                 patientCard.onclick = () => selectPatient(patient.id);
 
+                // Format NISS for display (e.g., 85.05.18-223.34)
+                const formattedNISS = patient.niss
+                    ? `${patient.niss.slice(0,2)}.${patient.niss.slice(2,4)}.${patient.niss.slice(4,6)}-${patient.niss.slice(6,9)}.${patient.niss.slice(9,11)}`
+                    : 'Sans NISS';
+
+                // Mutuelle badge
+                const mutuelleCode = patient.mutuelle_code || '';
+                const mutuelleBadge = mutuelleCode
+                    ? `<span class="mini-badge" title="Mutuelle ${mutuelleCode}">🏥 ${mutuelleCode}</span>`
+                    : '';
+
+                // BIM badge
+                const bimBadge = patient.bim
+                    ? `<span class="mini-badge mini-badge-bim" title="Bénéficiaire Intervention Majorée">BIM</span>`
+                    : '';
+
                 patientCard.innerHTML = `
-                    <div class="patient-card-avatar">${avatar}</div>
+                    <div class="patient-card-avatar-small">${avatar}</div>
                     <div class="patient-card-info">
                         <div class="patient-card-name">${patient.first_name} ${patient.last_name}</div>
-                        <div class="patient-card-details">
-                            ${age ? `${age} ans` : 'Âge inconnu'}
+                        <div class="patient-card-meta">
+                            <span>${age ? `${age} ans` : 'Âge inconnu'}</span>
+                            ${mutuelleBadge}
+                            ${bimBadge}
                         </div>
+                        <div class="patient-card-niss">${formattedNISS}</div>
                     </div>
                     <div class="score-badge ${scoreClass}">
                         ${score.total}
