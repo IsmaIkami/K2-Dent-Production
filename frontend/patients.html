@@ -2787,9 +2787,9 @@
             window.location.href = `dashboard.html?niss=${encodeURIComponent(patient.niss)}`;
         }
 
-        // Schedule appointment
+        // Schedule appointment - pass patient ID to auto-fill appointment form
         function scheduleAppointment(patient) {
-            window.location.href = `calendar.html?niss=${encodeURIComponent(patient.niss)}`;
+            window.location.href = `calendar.html?patientId=${encodeURIComponent(patient.id)}`;
         }
 
         // Edit patient - show modal

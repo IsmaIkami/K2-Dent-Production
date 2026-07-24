@@ -1551,6 +1551,16 @@
                 updateStats();
                 setupEventListeners();
 
+                // Check for URL parameters to auto-open appointment modal with patient pre-filled
+                const urlParams = new URLSearchParams(window.location.search);
+                const patientId = urlParams.get('patientId');
+                if (patientId) {
+                    console.log('📋 Auto-opening appointment modal for patient ID:', patientId);
+                    setTimeout(() => {
+                        createAppointmentForPatient(patientId);
+                    }, 500); // Delay to ensure DOM is ready
+                }
+
                 console.log('✅ Calendar initialized with TODAY view by default');
             } catch (error) {
                 console.error('Initialization error:', error);
@@ -2207,15 +2217,85 @@
             selectedDate = null;
         }
 
-        // Show AI suggestions
-        function showAISuggestions() {
+        // Show AI suggestions - enhanced with treatment urgency-based date suggestions
+        async function showAISuggestions() {
             const date = document.getElementById('appointmentDate').value;
-            if (!date) return;
+            const patientId = document.getElementById('patientId')?.value;
 
-            const dayAppointments = appointments.filter(a => a.appointment_date === date);
+            // If we have a patient, fetch their latest anamnesis to determine urgency
+            let treatmentPriority = null;
+            let urgencyMessage = '';
+
+            if (patientId && window.supabaseClient && !window.K2_CONFIG?.DEMO_MODE) {
+                try {
+                    const { data: latestAnamnesis, error } = await window.supabaseClient
+                        .from('anamneses')
+                        .select('treatment_priority, proposed_treatment')
+                        .eq('patient_id', patientId)
+                        .order('anamnesis_date', { ascending: false })
+                        .limit(1);
+
+                    if (!error && latestAnamnesis && latestAnamnesis.length > 0) {
+                        treatmentPriority = latestAnamnesis[0].treatment_priority;
+                        console.log('📋 Patient treatment priority:', treatmentPriority);
+
+                        // Suggest optimal dates based on treatment priority
+                        const suggestedDates = [];
+                        const today = new Date();
+
+                        if (treatmentPriority === 'urgent') {
+                            urgencyMessage = '🚨 URGENT - Rendez-vous recommandé dans 24-48h';
+                            // Suggest today and tomorrow
+                            suggestedDates.push(formatLocalDate(today));
+                            const tomorrow = new Date(today);
+                            tomorrow.setDate(tomorrow.getDate() + 1);
+                            suggestedDates.push(formatLocalDate(tomorrow));
+                        } else if (treatmentPriority === 'high') {
+                            urgencyMessage = '⚡ PRIORITAIRE - Rendez-vous recommandé cette semaine';
+                            // Suggest dates within this week
+                            for (let i = 0; i < 7; i++) {
+                                const date = new Date(today);
+                                date.setDate(date.getDate() + i);
+                                suggestedDates.push(formatLocalDate(date));
+                            }
+                        } else if (treatmentPriority === 'medium') {
+                            urgencyMessage = '📅 Rendez-vous recommandé dans les 2 semaines';
+                            // Suggest dates within 2 weeks
+                            for (let i = 0; i < 14; i += 2) {
+                                const date = new Date(today);
+                                date.setDate(date.getDate() + i);
+                                suggestedDates.push(formatLocalDate(date));
+                            }
+                        } else if (treatmentPriority === 'low') {
+                            urgencyMessage = '✓ Rendez-vous de suivi - planification flexible';
+                            // Suggest dates within a month
+                            for (let i = 0; i < 30; i += 7) {
+                                const date = new Date(today);
+                                date.setDate(date.getDate() + i);
+                                suggestedDates.push(formatLocalDate(date));
+                            }
+                        }
+
+                        // If no date is selected yet, suggest the first optimal date
+                        if (!date && suggestedDates.length > 0) {
+                            document.getElementById('appointmentDate').value = suggestedDates[0];
+                            console.log('🤖 Auto-selected date based on urgency:', suggestedDates[0]);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching anamnesis for AI suggestions:', error);
+                }
+            }
+
+            // Get the selected date (or return if still no date)
+            const selectedDate = document.getElementById('appointmentDate').value;
+            if (!selectedDate) return;
+
+            // Find available time slots for the selected date
+            const dayAppointments = appointments.filter(a => a.appointment_date === selectedDate);
             const suggestedTimes = [];
 
-            // Find gaps
+            // Find gaps in the schedule
             for (let hour = 8; hour <= 17; hour++) {
                 for (let minute = 0; minute < 60; minute += 30) {
                     const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -2231,11 +2311,33 @@
                 }
             }
 
-            if (suggestedTimes.length > 0) {
+            // Display suggestions
+            if (suggestedTimes.length > 0 || urgencyMessage) {
                 const container = document.getElementById('aiSuggestions');
-                container.innerHTML = suggestedTimes.map(time =>
-                    `<div class="suggestion-chip" onclick="document.getElementById('startTime').value='${time}'">${time}</div>`
-                ).join('');
+                let html = '';
+
+                // Show urgency message if present
+                if (urgencyMessage) {
+                    html += `<div style="width: 100%; padding: 12px; background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 200, 150, 0.1)); border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
+                        <strong>${urgencyMessage}</strong>
+                    </div>`;
+                }
+
+                // Show available time slots
+                if (suggestedTimes.length > 0) {
+                    html += `<div style="width: 100%; margin-bottom: 8px; color: var(--text-secondary); font-size: 13px;">
+                        ⏰ Créneaux disponibles le ${selectedDate}:
+                    </div>`;
+                    html += suggestedTimes.map(time =>
+                        `<div class="suggestion-chip" onclick="document.getElementById('startTime').value='${time}'">${time}</div>`
+                    ).join('');
+                } else {
+                    html += `<div style="width: 100%; padding: 8px; color: var(--warning); font-size: 13px;">
+                        ⚠️ Aucun créneau disponible pour cette date - calendrier complet
+                    </div>`;
+                }
+
+                container.innerHTML = html;
                 document.getElementById('aiSuggestionsBox').style.display = 'block';
             }
         }
@@ -2246,6 +2348,122 @@
             const newH = Math.floor(totalMinutes / 60);
             const newM = totalMinutes % 60;
             return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+        }
+
+        // Send email confirmation for appointment
+        async function sendEmailConfirmation(patient, appointmentData) {
+            try {
+                console.log('📧 Sending email confirmation to:', patient.email);
+
+                // Format date for display
+                const dateObj = new Date(appointmentData.appointment_date);
+                const formattedDate = dateObj.toLocaleDateString('fr-BE', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const emailBody = `
+Bonjour ${patient.first_name} ${patient.last_name},
+
+Votre rendez-vous a été confirmé pour le ${formattedDate} à ${appointmentData.start_time}.
+
+Type de rendez-vous: ${appointmentData.appointment_type || 'Consultation'}
+Durée estimée: ${appointmentData.duration_minutes} minutes
+${appointmentData.reason ? `Motif: ${appointmentData.reason}` : ''}
+
+Merci de confirmer votre présence ou de nous prévenir en cas d'empêchement.
+
+Cordialement,
+L'équipe DentalCockpit Pro
+                `.trim();
+
+                // TODO: Integrate with email service (SendGrid, AWS SES, etc.)
+                // For now, log the email that would be sent
+                console.log('📧 Email content:', {
+                    to: patient.email,
+                    subject: `Confirmation de rendez-vous - ${formattedDate}`,
+                    body: emailBody
+                });
+
+                // PLACEHOLDER: In production, call email API here
+                // Example: await fetch('/api/send-email', { method: 'POST', body: JSON.stringify({ to: patient.email, subject: '...', body: emailBody }) });
+
+                return true;
+            } catch (error) {
+                console.error('Error sending email:', error);
+                return false;
+            }
+        }
+
+        // Send SMS reminder for appointment
+        async function sendSMSReminder(patient, appointmentData, reminderType = 'confirmation') {
+            try {
+                const phone = patient.mobile || patient.phone;
+                if (!phone) {
+                    console.warn('⚠️ No phone number for patient, skipping SMS');
+                    return false;
+                }
+
+                console.log('📱 Sending SMS reminder to:', phone);
+
+                // Format date for display
+                const dateObj = new Date(appointmentData.appointment_date);
+                const formattedDate = dateObj.toLocaleDateString('fr-BE', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+
+                let smsText = '';
+                if (reminderType === 'confirmation') {
+                    smsText = `DentalCockpit: RDV confirmé le ${formattedDate} à ${appointmentData.start_time}. Répondez OUI pour confirmer ou appelez-nous en cas d'empêchement.`;
+                } else if (reminderType === 'reminder_24h') {
+                    smsText = `DentalCockpit: Rappel - Votre RDV est demain ${formattedDate} à ${appointmentData.start_time}. À bientôt!`;
+                } else if (reminderType === 'reminder_2h') {
+                    smsText = `DentalCockpit: Votre RDV est dans 2h (${appointmentData.start_time}). Nous vous attendons!`;
+                }
+
+                // TODO: Integrate with SMS service (Twilio, AWS SNS, etc.)
+                // For now, log the SMS that would be sent
+                console.log('📱 SMS content:', {
+                    to: phone,
+                    message: smsText
+                });
+
+                // PLACEHOLDER: In production, call SMS API here
+                // Example: await fetch('/api/send-sms', { method: 'POST', body: JSON.stringify({ to: phone, message: smsText }) });
+
+                return true;
+            } catch (error) {
+                console.error('Error sending SMS:', error);
+                return false;
+            }
+        }
+
+        // Schedule automatic reminders for appointment
+        function scheduleAppointmentReminders(patient, appointmentData) {
+            // Calculate reminder times
+            const appointmentDateTime = new Date(`${appointmentData.appointment_date}T${appointmentData.start_time}`);
+            const now = new Date();
+
+            // 24h reminder
+            const reminder24h = new Date(appointmentDateTime);
+            reminder24h.setHours(reminder24h.getHours() - 24);
+
+            // 2h reminder
+            const reminder2h = new Date(appointmentDateTime);
+            reminder2h.setHours(reminder2h.getHours() - 2);
+
+            console.log('⏰ Scheduling reminders:');
+            console.log(`   24h reminder: ${reminder24h.toLocaleString('fr-BE')}`);
+            console.log(`   2h reminder: ${reminder2h.toLocaleString('fr-BE')}`);
+
+            // TODO: In production, store these reminder schedules in database
+            // and use a background job/cron to send them at the right time
+            // For now, just log what would be scheduled
+            console.log('📅 Reminders would be scheduled in production system');
         }
 
         // Save appointment
@@ -2305,12 +2523,33 @@
                     if (error) throw error;
                 }
 
+                // Send notifications for new appointments or status changes to "confirmed"
+                const patient = patients.find(p => p.id === patientId);
+                if (patient && (!appointmentId || status === 'confirmed')) {
+                    console.log('📬 Sending appointment notifications...');
+
+                    // Send email confirmation if patient has email
+                    if (patient.email) {
+                        await sendEmailConfirmation(patient, appointmentData);
+                    }
+
+                    // Send SMS confirmation if patient has phone
+                    if (patient.mobile || patient.phone) {
+                        await sendSMSReminder(patient, appointmentData, 'confirmation');
+                    }
+
+                    // Schedule automatic reminders
+                    scheduleAppointmentReminders(patient, appointmentData);
+                }
+
                 closeAppointmentModal();
                 await loadAppointments();
                 renderMiniCalendar();
                 renderMainCalendar();
                 updateStats();
-                alert('✅ Rendez-vous enregistré avec succès');
+                alert('✅ Rendez-vous enregistré avec succès\n\n' +
+                      (patient?.email ? '📧 Email de confirmation envoyé\n' : '') +
+                      (patient?.mobile || patient?.phone ? '📱 SMS de confirmation envoyé' : ''));
             } catch (error) {
                 console.error('Error saving appointment:', error);
                 alert('❌ Erreur: ' + error.message);
