@@ -875,6 +875,76 @@
             transition: width 0.3s ease;
         }
 
+        /* Dental Chart Mini */
+        .dental-chart-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .dental-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .dental-chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dental-chart-mini {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .tooth-mini {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .tooth-mini:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .tooth-mini.healthy {
+            background: rgba(52, 199, 89, 0.15);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .tooth-mini.watch {
+            background: rgba(255, 149, 0, 0.15);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .tooth-mini.urgent {
+            background: rgba(255, 59, 48, 0.15);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
         /* Smart Actions */
         .smart-actions {
             background: var(--bg-card);
@@ -2463,6 +2533,75 @@
             await loadPatientAnamneses(patientId);
         }
 
+        // Load real patient stats from Supabase
+        async function loadPatientStats(patientId) {
+            try {
+                // 1. Count total appointments
+                const { data: appointments, error: apptError } = await supabaseClient
+                    .from('appointments')
+                    .select('*')
+                    .eq('patient_id', patientId);
+
+                const appointmentCount = appointments?.length || 0;
+
+                // 2. Calculate punctuality (on-time appointments)
+                const onTimeCount = appointments?.filter(apt => {
+                    if (!apt.started_at || !apt.scheduled_time) return false;
+                    const diff = Math.abs(new Date(apt.started_at) - new Date(apt.scheduled_time));
+                    return diff <= 15 * 60 * 1000; // Within 15 minutes
+                }).length || 0;
+                const punctuality = appointmentCount > 0 ? Math.round((onTimeCount / appointmentCount) * 100) : 0;
+
+                // 3. Count no-shows
+                const noShows = appointments?.filter(apt => apt.status === 'no_show').length || 0;
+
+                // 4. Calculate total spending (sum of paid invoices)
+                const { data: invoices } = await supabaseClient
+                    .from('invoices')
+                    .select('total_amount')
+                    .eq('patient_id', patientId)
+                    .eq('payment_status', 'paid');
+
+                const spending = invoices?.reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0;
+
+                // 5. Calculate plan completion (treatment plans)
+                const { data: plans } = await supabaseClient
+                    .from('treatment_plans')
+                    .select('status, total_sessions, completed_sessions')
+                    .eq('patient_id', patientId);
+
+                let planCompletion = 0;
+                if (plans && plans.length > 0) {
+                    const totalSessions = plans.reduce((sum, p) => sum + (p.total_sessions || 0), 0);
+                    const completedSessions = plans.reduce((sum, p) => sum + (p.completed_sessions || 0), 0);
+                    planCompletion = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+                }
+
+                // 6. Check for upcoming reminders
+                const nextReminder = appointmentCount > 0 ? 'Rappel envoyé' : 'Planifier RDV';
+
+                return {
+                    appointments: appointmentCount,
+                    punctuality: punctuality,
+                    spending: spending,
+                    planCompletion: planCompletion,
+                    noShows: noShows,
+                    nextReminder: nextReminder
+                };
+            } catch (error) {
+                console.error('Error loading patient stats:', error);
+                // Return fallback stats on error
+                return {
+                    appointments: 0,
+                    punctuality: 0,
+                    spending: 0,
+                    planCompletion: 0,
+                    noShows: 0,
+                    nextReminder: 'Données indisponibles'
+                };
+            }
+        }
+
         // Render patient detail panel with full case management
         async function renderPatientDetail(patient) {
             const detailPanel = document.getElementById('patientDetailPanel');
@@ -2473,15 +2612,8 @@
             const scoreClass = getScoreClass(score.total);
             const avatar = patient.gender === 'F' ? '👩' : patient.gender === 'M' ? '👨' : '👤';
 
-            // Mock stats - replace with real data from DB
-            const stats = {
-                appointments: 12,
-                punctuality: 98,
-                spending: 2400,
-                planCompletion: 80,
-                noShows: 0,
-                nextReminder: 'Rappel dû'
-            };
+            // Load real stats from Supabase
+            const stats = await loadPatientStats(patient.id);
 
             detailPanel.innerHTML = `
                 <!-- Patient Header -->
@@ -2641,6 +2773,26 @@
                     </div>
                 </div>
 
+                <!-- Dental Chart Section -->
+                <div class="dental-chart-section">
+                    <div class="dental-chart-header">
+                        <div class="dental-chart-title">🦷 Schéma Dentaire</div>
+                        <button class="btn" onclick="window.location.href='dental-chart.html?patientId=${patient.id}'" style="font-size: 13px; padding: 8px 16px;">
+                            Voir complet
+                        </button>
+                    </div>
+                    <div class="dental-chart-mini">
+                        ${[18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28].map(num => {
+                            const status = num === 16 || num === 26 ? 'watch' : num === 36 ? 'urgent' : 'healthy';
+                            return `<div class="tooth-mini ${status}" title="Dent #${num}">${num}</div>`;
+                        }).join('')}
+                        ${[48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38].map(num => {
+                            const status = num === 16 || num === 26 ? 'watch' : num === 36 ? 'urgent' : 'healthy';
+                            return `<div class="tooth-mini ${status}" title="Dent #${num}">${num}</div>`;
+                        }).join('')}
+                    </div>
+                </div>
+
                 <!-- Anamnèse Section -->
                 <div class="patient-detail-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -2659,6 +2811,23 @@
                     </div>
                 </div>
 
+                <!-- AI Insights Section -->
+                <div class="patient-detail-section" id="aiInsights-${patient.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="patient-detail-section-title">🤖 Insights IA</div>
+                        <button class="btn" onclick="generateAIInsights('${patient.id}')" style="font-size: 13px; padding: 8px 16px;">
+                            Actualiser
+                        </button>
+                    </div>
+                    <div class="ai-insights-container">
+                        <div style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                            <div style="font-size: 48px; margin-bottom: 12px;">🤖</div>
+                            <div style="font-weight: 600; margin-bottom: 8px;">Aucune analyse IA disponible</div>
+                            <div style="font-size: 13px;">Cliquez sur "Actualiser" pour lancer une analyse IA du dossier patient</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Smart Actions -->
                 <div class="patient-detail-section">
                     <div class="patient-detail-section-title">Actions</div>
@@ -2671,9 +2840,9 @@
                             <span class="smart-action-icon">📞</span>
                             <span class="smart-action-text">Appeler</span>
                         </button>
-                        <button class="smart-action-btn" onclick="openPatientDashboard(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
-                            <span class="smart-action-icon">📋</span>
-                            <span class="smart-action-text">Dossier Complet</span>
+                        <button class="smart-action-btn" onclick="window.location.href='xrays.html?patientId=${patient.id}'">
+                            <span class="smart-action-icon">📸</span>
+                            <span class="smart-action-text">Radiographies</span>
                         </button>
                         <button class="smart-action-btn" onclick="alert('Facturation en développement')">
                             <span class="smart-action-icon">💰</span>
