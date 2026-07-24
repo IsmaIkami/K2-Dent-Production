@@ -1846,22 +1846,8 @@
         <main class="main-content">
             <!-- Top Bar -->
             <div class="topbar">
-                <div class="search-bar">
-                    <div class="search-input-wrapper">
-                        <span class="search-icon">🔍</span>
-                        <input
-                            type="text"
-                            id="globalSearchInput"
-                            placeholder="Rechercher un patient par nom, prénom, NISS..."
-                            autocomplete="off"
-                        >
-                        <button class="search-clear-btn" id="searchClearBtn">✕</button>
-                        <div class="search-dropdown" id="searchDropdown"></div>
-                    </div>
-                    <button class="scan-card-btn" id="scanCardBtn">
-                        <span>💳</span>
-                        <span>Scanner Carte</span>
-                    </button>
+                <div class="topbar-title">
+                    <h1 style="margin: 0; font-size: 24px; color: var(--text-primary);">Gestion des Patients</h1>
                 </div>
                 <div class="topbar-actions">
                     <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
@@ -1885,6 +1871,26 @@
                             <div class="patient-list-title">👥 Patients</div>
                             <button class="btn-add-patient" onclick="showNewPatientModal()" title="Créer un nouveau patient">
                                 <span style="font-size: 18px;">➕</span>
+                            </button>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                            <div class="search-input-wrapper" style="flex: 1;">
+                                <span class="search-icon">🔍</span>
+                                <input
+                                    type="text"
+                                    id="patientListSearch"
+                                    placeholder="Rechercher un patient par nom, prénom, NISS..."
+                                    autocomplete="off"
+                                    style="width: 100%; padding: 10px 36px 10px 36px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--card-bg); color: var(--text-primary);"
+                                >
+                                <button class="search-clear-btn" id="patientSearchClearBtn" style="display: none;">✕</button>
+                                <div class="search-dropdown" id="patientSearchDropdown" style="display: none;"></div>
+                            </div>
+                            <button class="scan-card-btn" id="scanCardBtn" onclick="scanBelgianEID()" title="Scanner une carte d'identité">
+                                <span style="font-size: 16px; margin-right: 4px;">💳</span>
+                                <span style="font-size: 13px; font-weight: 500;">Scanner Carte</span>
                             </button>
                         </div>
                     </div>
@@ -2889,8 +2895,6 @@
             console.log(`🔍 Filtered ${filtered.length} patients from ${allPatients.length} total`);
         }
 
-        // Patient list search is now handled by globalSearchInput in topbar
-
         // Update statistics
         function updateStats(patients) {
             const totalPatients = patients.length;
@@ -3034,14 +3038,16 @@
         // Search patients
         // Hero search autocomplete functionality
         function showSearchDropdown(query) {
-            const dropdown = document.getElementById('searchDropdown');
-            const clearBtn = document.getElementById('searchClearBtn');
+            const dropdown = document.getElementById('patientSearchDropdown');
+            const clearBtn = document.getElementById('patientSearchClearBtn');
+
+            if (!dropdown || !clearBtn) return;
 
             // Show/hide clear button
             if (query.length > 0) {
-                clearBtn.classList.add('visible');
+                clearBtn.style.display = 'block';
             } else {
-                clearBtn.classList.remove('visible');
+                clearBtn.style.display = 'none';
                 dropdown.style.display = 'none';
                 return;
             }
@@ -3087,24 +3093,29 @@
             const patient = allPatients.find(p => p.id === patientId);
             if (!patient) return;
 
-            // Open patient dashboard (same as clicking a patient card)
-            openPatientDashboard(patient);
+            // Select patient in case management view (stay on this page)
+            selectPatient(patientId);
 
             // Clear search
-            const searchInput = document.getElementById('globalSearchInput');
-            const dropdown = document.getElementById('searchDropdown');
-            const clearBtn = document.getElementById('searchClearBtn');
+            const searchInput = document.getElementById('patientListSearch');
+            const dropdown = document.getElementById('patientSearchDropdown');
+            const clearBtn = document.getElementById('patientSearchClearBtn');
 
-            searchInput.value = '';
-            dropdown.style.display = 'none';
-            clearBtn.classList.remove('visible');
+            if (searchInput) searchInput.value = '';
+            if (dropdown) dropdown.style.display = 'none';
+            if (clearBtn) clearBtn.style.display = 'none';
         }
 
         // Scan card functionality
         async function scanCard() {
-            const searchInput = document.getElementById('globalSearchInput');
+            const searchInput = document.getElementById('patientListSearch');
+            if (!searchInput) {
+                console.error('Search input not found');
+                return;
+            }
 
             // Show instruction
+            const originalPlaceholder = searchInput.placeholder;
             searchInput.placeholder = '📡 En attente du scan de carte...';
             searchInput.focus();
 
@@ -3130,17 +3141,19 @@
 
                     if (patient) {
                         console.log('✅ Patient trouvé:', patient);
-                        openPatientDashboard(patient);
+                        // Select patient in case management view (stay on this page)
+                        selectPatient(patient.id);
                     } else {
                         console.log('⚠️ Patient non trouvé, ouverture du modal création');
                         // Pre-fill NISS in new patient modal
                         showNewPatientModal();
-                        document.getElementById('niss').value = niss;
+                        const nissField = document.getElementById('niss');
+                        if (nissField) nissField.value = niss;
                     }
 
                     // Clear input and remove listeners
                     searchInput.value = '';
-                    searchInput.placeholder = 'Commencez à taper un nom, prénom ou NISS...';
+                    searchInput.placeholder = originalPlaceholder;
                     searchInput.removeEventListener('paste', handleCardInput);
                     searchInput.removeEventListener('input', handleCardInput);
                 }
@@ -3151,55 +3164,59 @@
 
             // Auto-remove listener after 30 seconds
             setTimeout(() => {
-                searchInput.placeholder = 'Commencez à taper un nom, prénom ou NISS...';
+                searchInput.placeholder = originalPlaceholder;
                 searchInput.removeEventListener('paste', handleCardInput);
             }, 30000);
         }
 
-        // Initialize global search functionality
+        // Initialize patient list search functionality
         document.addEventListener('DOMContentLoaded', () => {
-            const globalSearchInput = document.getElementById('globalSearchInput');
-            const searchClearBtn = document.getElementById('searchClearBtn');
-            const searchDropdown = document.getElementById('searchDropdown');
+            const patientListSearch = document.getElementById('patientListSearch');
+            const searchClearBtn = document.getElementById('patientSearchClearBtn');
+            const searchDropdown = document.getElementById('patientSearchDropdown');
             const scanCardBtn = document.getElementById('scanCardBtn');
 
-            if (!globalSearchInput || !searchClearBtn || !searchDropdown || !scanCardBtn) {
-                console.warn('⚠️ Global search elements not found');
+            if (!patientListSearch || !searchClearBtn || !searchDropdown) {
+                console.warn('⚠️ Patient list search elements not found');
                 return;
             }
 
             // Search input - filter patient list AND show dropdown
-            globalSearchInput.addEventListener('input', (e) => {
+            patientListSearch.addEventListener('input', (e) => {
                 const query = e.target.value;
                 filterPatientList(query);
                 showSearchDropdown(query);
+
+                // Show/hide clear button based on input
+                if (query.length > 0) {
+                    searchClearBtn.style.display = 'block';
+                } else {
+                    searchClearBtn.style.display = 'none';
+                }
             });
 
             // Clear button - reset search and show all patients
             searchClearBtn.addEventListener('click', () => {
-                globalSearchInput.value = '';
+                patientListSearch.value = '';
                 searchDropdown.style.display = 'none';
-                searchClearBtn.classList.remove('visible');
+                searchClearBtn.style.display = 'none';
                 filterPatientList(''); // Show all patients
-                globalSearchInput.focus();
+                patientListSearch.focus();
             });
 
             // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.search-bar')) {
+                if (!e.target.closest('.search-input-wrapper')) {
                     searchDropdown.style.display = 'none';
                 }
             });
 
-            // Scan card button
-            scanCardBtn.addEventListener('click', scanCard);
-
             // ESC key to clear search and show all patients
-            globalSearchInput.addEventListener('keydown', (e) => {
+            patientListSearch.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    globalSearchInput.value = '';
+                    patientListSearch.value = '';
                     searchDropdown.style.display = 'none';
-                    searchClearBtn.classList.remove('visible');
+                    searchClearBtn.style.display = 'none';
                     filterPatientList(''); // Show all patients
                 }
             });
