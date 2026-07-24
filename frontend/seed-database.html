@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2 Dent - Seed Database</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0e1a;
+            color: #e5e7eb;
+        }
+        .container {
+            background: #141b2d;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #00f0ff;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+        button {
+            background: linear-gradient(135deg, #0066ff, #00f0ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #output {
+            background: #0a0e1a;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .log {
+            margin: 5px 0;
+        }
+        .log.success {
+            color: #00ff88;
+        }
+        .log.error {
+            color: #ff3b30;
+        }
+        .log.info {
+            color: #00f0ff;
+        }
+        .log.warning {
+            color: #ff9500;
+        }
+        .patient-select {
+            background: #0a0e1a;
+            border: 1px solid #2d3748;
+            color: #e5e7eb;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00f0ff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 K2 Dent - Database Seeder</h1>
+        <p class="subtitle">Remplir la base de données avec des données de test réalistes</p>
+
+        <div id="patient-selector" style="display: none;">
+            <label for="patientSelect" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                Sélectionner un patient:
+            </label>
+            <select id="patientSelect" class="patient-select">
+                <option value="">Chargement...</option>
+            </select>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;"></div>
+
+        <div style="margin-top: 20px;">
+            <button id="loadBtn" onclick="loadPatients()">1. Charger les patients</button>
+            <button id="seedBtn" onclick="seedData()" disabled>2. Remplir les données</button>
+            <button onclick="clearLog()" style="background: #374151;">Effacer le log</button>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = window.K2_CONFIG.SUPABASE_URL;
+        const supabaseKey = window.K2_CONFIG.SUPABASE_ANON_KEY;
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let selectedPatient = null;
+        let allPatients = [];
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log ${type}`;
+
+            const timestamp = new Date().toLocaleTimeString('fr-BE');
+            const icon = {
+                'success': '✅',
+                'error': '❌',
+                'info': 'ℹ️',
+                'warning': '⚠️'
+            }[type] || 'ℹ️';
+
+            logEntry.textContent = `[${timestamp}] ${icon} ${message}`;
+            output.appendChild(logEntry);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('output').innerHTML = '';
+        }
+
+        function updateStats(stats) {
+            const statsDiv = document.getElementById('stats');
+            statsDiv.style.display = 'grid';
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.appointments || 0}</div>
+                    <div class="stat-label">Rendez-vous</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.anamneses || 0}</div>
+                    <div class="stat-label">Anamnèses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.timeline || 0}</div>
+                    <div class="stat-label">Timeline</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.charts || 0}</div>
+                    <div class="stat-label">Schémas</div>
+                </div>
+            `;
+        }
+
+        async function loadPatients() {
+            try {
+                log('Chargement des patients depuis Supabase...', 'info');
+
+                const { data: patients, error } = await supabase
+                    .from('patients')
+                    .select('id, first_name, last_name, niss')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (error) throw error;
+
+                if (!patients || patients.length === 0) {
+                    log('Aucun patient trouvé dans la base de données.', 'error');
+                    log('Veuillez créer au moins un patient avant d\'exécuter le seed.', 'warning');
+                    return;
+                }
+
+                allPatients = patients;
+                log(`✅ ${patients.length} patient(s) trouvé(s)`, 'success');
+
+                // Populate select
+                const select = document.getElementById('patientSelect');
+                select.innerHTML = patients.map(p =>
+                    `<option value="${p.id}">${p.first_name} ${p.last_name} (${p.niss || 'Sans NISS'})</option>`
+                ).join('');
+
+                document.getElementById('patient-selector').style.display = 'block';
+                document.getElementById('seedBtn').disabled = false;
+                selectedPatient = patients[0];
+
+                log(`Patient sélectionné par défaut: ${selectedPatient.first_name} ${selectedPatient.last_name}`, 'info');
+
+            } catch (error) {
+                log(`Erreur: ${error.message}`, 'error');
+                console.error('Error loading patients:', error);
+            }
+        }
+
+        document.getElementById('patientSelect')?.addEventListener('change', (e) => {
+            const patientId = e.target.value;
+            selectedPatient = allPatients.find(p => p.id === patientId);
+            if (selectedPatient) {
+                log(`Patient sélectionné: ${selectedPatient.first_name} ${selectedPatient.last_name}`, 'info');
+            }
+        });
+
+        async function seedData() {
+            if (!selectedPatient) {
+                log('Veuillez sélectionner un patient', 'error');
+                return;
+            }
+
+            const seedBtn = document.getElementById('seedBtn');
+            seedBtn.disabled = true;
+            seedBtn.textContent = 'Remplissage en cours...';
+
+            try {
+                log(`🌱 Début du remplissage pour ${selectedPatient.first_name} ${selectedPatient.last_name}`, 'info');
+
+                const stats = {
+                    appointments: 0,
+                    anamneses: 0,
+                    timeline: 0,
+                    charts: 0
+                };
+
+                // Get practitioner ID (first admin/dentist user)
+                const { data: users } = await supabase
+                    .from('users')
+                    .select('id')
+                    .or('role.eq.admin,role.eq.dentist')
+                    .limit(1);
+
+                const practitionerId = users?.[0]?.id || null;
+
+                // ============================================
+                // 1. CREATE APPOINTMENTS
+                // ============================================
+                log('Création des rendez-vous...', 'info');
+
+                const appointments = [
+                    // Past appointment 1 (completed, 3 months ago)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '09:00',
+                        end_time: '09:45',
+                        duration_minutes: 45,
+                        type: 'Consultation',
+                        status: 'completed',
+                        reason: 'Contrôle semestriel',
+                        notes: 'Examen complet. Patient en bonne santé bucco-dentaire. Détartrage effectué.',
+                        practitioner_id: practitionerId
+                    },
+                    // Past appointment 2 (completed, 2 months ago)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '14:30',
+                        end_time: '15:15',
+                        duration_minutes: 45,
+                        type: 'Détartrage',
+                        status: 'completed',
+                        reason: 'Détartrage prophylactique',
+                        notes: 'Détartrage complet. Pas de caries détectées. Conseils d\'hygiène donnés.',
+                        practitioner_id: practitionerId
+                    },
+                    // Past appointment 3 (completed, 1 month ago)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '10:15',
+                        end_time: '11:00',
+                        duration_minutes: 45,
+                        type: 'Soins',
+                        status: 'completed',
+                        reason: 'Pose composite dent 16',
+                        notes: 'Composite esthétique dent 16 face occlusale. Anesthésie locale. Pas de complications.',
+                        practitioner_id: practitionerId
+                    },
+                    // Past appointment 4 (completed, 2 weeks ago)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '16:00',
+                        end_time: '16:30',
+                        duration_minutes: 30,
+                        type: 'Consultation',
+                        status: 'completed',
+                        reason: 'Suivi post-soins',
+                        notes: 'Contrôle composite dent 16. Cicatrisation parfaite. Patient satisfait.',
+                        practitioner_id: practitionerId
+                    },
+                    // No-show (5 months ago)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() - 150 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '11:00',
+                        end_time: '11:45',
+                        duration_minutes: 45,
+                        type: 'Consultation',
+                        status: 'no_show',
+                        reason: 'Contrôle',
+                        notes: 'Patient ne s\'est pas présenté.',
+                        practitioner_id: practitionerId,
+                        cancellation_reason: 'Patient n\'a pas prévenu'
+                    },
+                    // Upcoming appointment 1 (tomorrow)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '14:00',
+                        end_time: '14:45',
+                        duration_minutes: 45,
+                        type: 'Consultation',
+                        status: 'confirmed',
+                        reason: 'Contrôle trimestriel',
+                        notes: 'Examen de routine programmé.',
+                        practitioner_id: practitionerId,
+                        reminder_sent: true,
+                        reminder_sent_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    // Upcoming appointment 2 (next week)
+                    {
+                        patient_id: selectedPatient.id,
+                        appointment_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        start_time: '09:30',
+                        end_time: '10:30',
+                        duration_minutes: 60,
+                        type: 'Radiographie',
+                        status: 'scheduled',
+                        reason: 'Panoramique dentaire',
+                        notes: 'Radiographie panoramique de contrôle.',
+                        practitioner_id: practitionerId,
+                        reminder_sent: false
+                    }
+                ];
+
+                for (const appointment of appointments) {
+                    const { error } = await supabase
+                        .from('appointments')
+                        .insert([appointment]);
+
+                    if (error) throw error;
+                    stats.appointments++;
+                }
+
+                log(`✅ ${stats.appointments} rendez-vous créés`, 'success');
+
+                // ============================================
+                // 2. CREATE ANAMNESIS
+                // ============================================
+                log('Création de l\'anamnèse...', 'info');
+
+                const { data: anamnesis, error: anamnesisError } = await supabase
+                    .from('anamneses')
+                    .insert([{
+                        patient_id: selectedPatient.id,
+                        anamnesis_date: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        practitioner_name: 'Dr. Sialyen',
+                        practitioner_id: practitionerId?.toString(),
+                        chief_complaint: 'Contrôle semestriel de routine',
+                        medical_conditions: ['Aucune'],
+                        allergies: ['Aucune allergie connue'],
+                        current_medications: ['Aucun traitement en cours'],
+                        smoking_status: 'non-fumeur',
+                        alcohol_consumption: 'occasional',
+                        last_dental_visit: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        dental_pain: false,
+                        bleeding_gums: false,
+                        sensitivity: false,
+                        previous_treatments: ['Détartrage', 'Composite dent 24 (2020)'],
+                        oral_hygiene_score: 8,
+                        periodontal_status: 'healthy',
+                        caries_risk: 'low',
+                        proposed_treatment: 'Détartrage prophylactique recommandé. Surveillance dent 16.',
+                        treatment_priority: 'medium',
+                        estimated_cost: 85.00,
+                        clinical_notes: 'Patient en bonne santé bucco-dentaire générale. Hygiène correcte. Poursuivre les contrôles semestriels.',
+                        patient_concerns: 'Préoccupé par la couleur des dents, intéressé par blanchiment.',
+                        created_by: practitionerId?.toString()
+                    }])
+                    .select();
+
+                if (anamnesisError) throw anamnesisError;
+                stats.anamneses++;
+                log(`✅ Anamnèse créée`, 'success');
+
+                // ============================================
+                // 3. CREATE TIMELINE EVENTS
+                // ============================================
+                log('Création des événements timeline...', 'info');
+
+                const timelineEvents = [
+                    {
+                        patient_id: selectedPatient.id,
+                        type: 'anamnesis',
+                        title: 'Anamnèse complétée',
+                        description: 'Anamnèse médicale initiale enregistrée par le praticien.',
+                        badge: 'AI',
+                        related_id: anamnesis?.[0]?.id,
+                        related_type: 'anamnesis',
+                        event_date: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+                        created_by: practitionerId?.toString()
+                    },
+                    {
+                        patient_id: selectedPatient.id,
+                        type: 'consultation',
+                        title: 'Première consultation',
+                        description: 'Contrôle semestriel - examen complet et détartrage.',
+                        badge: 'Manual',
+                        event_date: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+                        created_by: practitionerId?.toString()
+                    },
+                    {
+                        patient_id: selectedPatient.id,
+                        type: 'treatment',
+                        title: 'Composite dent 16',
+                        description: 'Pose composite esthétique face occlusale dent 16.',
+                        badge: 'Manual',
+                        event_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                        created_by: practitionerId?.toString()
+                    },
+                    {
+                        patient_id: selectedPatient.id,
+                        type: 'xray',
+                        title: 'Radiographie panoramique prévue',
+                        description: `Radiographie de contrôle programmée pour ${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-BE')}`,
+                        badge: 'X-Ray',
+                        event_date: new Date().toISOString(),
+                        created_by: practitionerId?.toString()
+                    },
+                    {
+                        patient_id: selectedPatient.id,
+                        type: 'note',
+                        title: 'Note praticien',
+                        description: 'Patient très coopératif. Bonne hygiène bucco-dentaire. Suivi régulier recommandé.',
+                        badge: 'Manual',
+                        event_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+                        created_by: practitionerId?.toString()
+                    }
+                ];
+
+                for (const event of timelineEvents) {
+                    const { error } = await supabase
+                        .from('timeline_events')
+                        .insert([event]);
+
+                    if (error) {
+                        log(`Avertissement: Impossible de créer l'événement timeline (table n'existe peut-être pas)`, 'warning');
+                        console.error(error);
+                    } else {
+                        stats.timeline++;
+                    }
+                }
+
+                if (stats.timeline > 0) {
+                    log(`✅ ${stats.timeline} événements timeline créés`, 'success');
+                }
+
+                // ============================================
+                // 4. SUMMARY
+                // ============================================
+                updateStats(stats);
+
+                log('', 'info');
+                log('═══════════════════════════════════════', 'success');
+                log('✨ SEED TERMINÉ AVEC SUCCÈS', 'success');
+                log('═══════════════════════════════════════', 'success');
+                log(`Patient: ${selectedPatient.first_name} ${selectedPatient.last_name}`, 'info');
+                log(`- ${stats.appointments} rendez-vous créés`, 'success');
+                log(`- ${stats.anamneses} anamnèse créée`, 'success');
+                log(`- ${stats.timeline} événements timeline`, 'success');
+                log('', 'info');
+                log('🎯 Vous pouvez maintenant aller sur patients.html', 'info');
+                log(`   et cliquer sur ${selectedPatient.first_name} ${selectedPatient.last_name} pour voir la fiche complète!`, 'info');
+
+            } catch (error) {
+                log(`❌ ERREUR: ${error.message}`, 'error');
+                console.error('Seed error:', error);
+            } finally {
+                seedBtn.disabled = false;
+                seedBtn.textContent = '2. Remplir les données';
+            }
+        }
+
+        // Auto-load on page load
+        window.addEventListener('load', () => {
+            log('🚀 Seed Database chargé et prêt', 'success');
+            log('Cliquez sur "Charger les patients" pour commencer', 'info');
+        });
+    </script>
+</body>
+</html>
