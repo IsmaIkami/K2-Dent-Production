@@ -1558,6 +1558,30 @@
             animation: pulse 1.5s infinite;
         }
 
+        .btn-ai-suggest {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-ai-suggest:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-ai-suggest:active {
+            transform: translateY(0);
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -2039,7 +2063,7 @@
                     <!-- Motif de consultation -->
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Motif de consultation *</label>
-                        <textarea name="chief_complaint" rows="2" required placeholder="Ex: Douleur molaire inf. droite"></textarea>
+                        <textarea name="chief_complaint" rows="4" required placeholder="Ex: Douleur molaire inf. droite" style="resize: vertical;"></textarea>
                     </div>
 
                     <!-- Antécédents médicaux -->
@@ -2112,7 +2136,7 @@
 
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Description de la douleur</label>
-                        <input type="text" name="dental_pain_description" placeholder="Localisation, intensité, type...">
+                        <textarea name="dental_pain_description" rows="4" placeholder="Localisation, intensité, type..." style="resize: vertical;"></textarea>
                     </div>
 
                     <!-- Symptômes -->
@@ -2152,8 +2176,13 @@
 
                     <!-- Plan de traitement -->
                     <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Traitement proposé</label>
-                        <textarea name="proposed_treatment" rows="3" placeholder="Description du plan de traitement..."></textarea>
+                        <label style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Traitement proposé</span>
+                            <button type="button" class="btn-ai-suggest" onclick="suggestTreatment()" title="Suggérer un traitement avec l'IA">
+                                ✨ Suggérer avec IA
+                            </button>
+                        </label>
+                        <textarea name="proposed_treatment" rows="6" placeholder="Description du plan de traitement..." style="resize: vertical;"></textarea>
                     </div>
 
                     <div class="form-group">
@@ -2173,12 +2202,12 @@
                     <!-- Notes -->
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Notes cliniques</label>
-                        <textarea name="clinical_notes" rows="3" placeholder="Observations, recommandations..."></textarea>
+                        <textarea name="clinical_notes" rows="6" placeholder="Observations, recommandations..." style="resize: vertical;"></textarea>
                     </div>
 
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Préoccupations du patient</label>
-                        <textarea name="patient_concerns" rows="2" placeholder="Ce que le patient exprime..."></textarea>
+                        <textarea name="patient_concerns" rows="4" placeholder="Ce que le patient exprime..." style="resize: vertical;"></textarea>
                     </div>
                 </div>
 
@@ -3598,6 +3627,109 @@
             form.estimated_cost.value = '850.00';
             form.clinical_notes.value = 'Carie profonde avec atteinte pulpaire probable. Test de vitalité négatif.';
             form.patient_concerns.value = 'Patient anxieux concernant le traitement. Souhaite préserver la dent.';
+        }
+
+        // ===========================
+        // AI TREATMENT SUGGESTION
+        // ===========================
+
+        function suggestTreatment() {
+            const form = document.getElementById('anamnesisForm');
+            if (!form) return;
+
+            // Analyze form data
+            const chiefComplaint = (form.chief_complaint.value || '').toLowerCase();
+            const dentalPain = form.dental_pain.value === 'true';
+            const painDescription = (form.dental_pain_description.value || '').toLowerCase();
+            const bleedingGums = form.querySelector('[name="bleeding_gums"]')?.checked || false;
+            const sensitivity = form.querySelector('[name="sensitivity"]')?.checked || false;
+            const cariesRisk = form.caries_risk.value || '';
+            const periodontalStatus = form.periodontal_status.value || '';
+            const hygieneScore = parseInt(form.oral_hygiene_score.value) || 5;
+
+            // Build intelligent treatment suggestion
+            let treatment = [];
+            let priority = 'medium';
+
+            // Pain-based treatments
+            if (dentalPain) {
+                if (painDescription.includes('pulsatile') || painDescription.includes('intense') || painDescription.includes('nuit')) {
+                    treatment.push('Traitement endodontique probable (pulpite irréversible).');
+                    treatment.push('RX périapicale pour confirmer le diagnostic.');
+                    priority = 'urgent';
+                } else if (chiefComplaint.includes('molaire') || chiefComplaint.includes('dent')) {
+                    treatment.push('Examen clinique approfondi + tests de vitalité.');
+                    treatment.push('RX rétro-alvéolaire de la dent concernée.');
+                    priority = 'high';
+                }
+            }
+
+            // Caries risk
+            if (cariesRisk === 'high') {
+                treatment.push('Restaurations composites des lésions carieuses actives.');
+                treatment.push('Programme de prévention renforcé (fluorure, scellement).');
+                if (priority === 'medium') priority = 'high';
+            } else if (cariesRisk === 'medium' && chiefComplaint.includes('carie')) {
+                treatment.push('Restaurations des caries avec composites.');
+            }
+
+            // Periodontal issues
+            if (periodontalStatus === 'gingivitis' || bleedingGums) {
+                treatment.push('Détartrage et polissage.');
+                treatment.push('Instructions d\'hygiène orale renforcées.');
+            } else if (periodontalStatus === 'periodontitis') {
+                treatment.push('Surfaçage radiculaire + détartrage en profondeur.');
+                treatment.push('Réévaluation parodontale à 6 semaines.');
+                treatment.push('Orientation vers parodontiste si sévère.');
+                if (priority === 'medium') priority = 'high';
+            }
+
+            // Sensitivity
+            if (sensitivity && !dentalPain) {
+                treatment.push('Application de vernis fluoré ou désensibilisant.');
+                treatment.push('Évaluation de l\'usure dentaire et des récessions gingivales.');
+            }
+
+            // Hygiene-based prevention
+            if (hygieneScore < 5) {
+                treatment.push('Motivation à l\'hygiène orale + démonstration technique de brossage.');
+                treatment.push('Suivi rapproché (3-4 mois).');
+            }
+
+            // Default if nothing specific detected
+            if (treatment.length === 0) {
+                treatment.push('Examen clinique complet + bilan radiologique.');
+                treatment.push('Nettoyage prophylactique.');
+                treatment.push('Conseils d\'hygiène personnalisés.');
+            }
+
+            // Format the treatment plan
+            const suggestion = treatment.join('\n');
+
+            // Fill the textarea
+            const treatmentField = form.proposed_treatment;
+            treatmentField.value = suggestion;
+
+            // Update priority field if needed
+            if (priority && form.treatment_priority.value === '') {
+                form.treatment_priority.value = priority;
+            }
+
+            // Visual feedback
+            treatmentField.style.background = 'rgba(0, 122, 255, 0.05)';
+            setTimeout(() => {
+                treatmentField.style.background = '';
+            }, 1500);
+
+            // Show notification
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Suggestion générée';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 2000);
         }
 
         // ===========================
