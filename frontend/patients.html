@@ -3672,7 +3672,7 @@
 
             try {
                 // 1. Récupérer l'historique des anamnèses du patient
-                const { data: anamnesisHistory, error: historyError } = await window.supabase
+                const { data: anamnesisHistory, error: historyError } = await window.supabaseClient
                     .from('anamneses')
                     .select('*')
                     .eq('patient_id', selectedPatientId)
