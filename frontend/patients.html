@@ -1875,22 +1875,24 @@
                         </div>
 
                         <!-- Search Bar -->
-                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                            <div class="search-input-wrapper" style="flex: 1;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 16px; align-items: center;">
+                            <div class="search-input-wrapper" style="flex: 1; position: relative;">
                                 <span class="search-icon">🔍</span>
                                 <input
                                     type="text"
                                     id="patientListSearch"
                                     placeholder="Rechercher un patient par nom, prénom, NISS..."
                                     autocomplete="off"
-                                    style="width: 100%; padding: 10px 36px 10px 36px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--card-bg); color: var(--text-primary);"
+                                    style="width: 100%; padding: 11px 40px 11px 40px; border: 1.5px solid rgba(255, 255, 255, 0.15); border-radius: 10px; font-size: 14px; background: rgba(255, 255, 255, 0.05); color: var(--text-primary); transition: all 0.2s ease;"
+                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(59, 130, 246, 0.5)';"
+                                    onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.15)';"
                                 >
                                 <button class="search-clear-btn" id="patientSearchClearBtn" style="display: none;">✕</button>
                                 <div class="search-dropdown" id="patientSearchDropdown" style="display: none;"></div>
                             </div>
-                            <button class="scan-card-btn" id="scanCardBtn" onclick="scanBelgianEID()" title="Scanner une carte d'identité">
-                                <span style="font-size: 16px; margin-right: 4px;">💳</span>
-                                <span style="font-size: 13px; font-weight: 500;">Scanner Carte</span>
+                            <button class="scan-card-btn" id="scanCardBtn" onclick="scanBelgianEID()" title="Scanner une carte d'identité" style="white-space: nowrap; padding: 10px 14px;">
+                                <span style="font-size: 16px; margin-right: 6px;">💳</span>
+                                <span style="font-size: 13px; font-weight: 500;">Scanner</span>
                             </button>
                         </div>
                     </div>
