@@ -4775,18 +4775,20 @@
             if (insights.alerts.length > 0) {
                 html += '<div>';
                 insights.alerts.forEach(alert => {
-                    const bgColor = alert.type === 'danger' ? '#FEE2E2' :
-                                   alert.type === 'warning' ? '#FEF3C7' : '#DBEAFE';
-                    const textColor = alert.type === 'danger' ? '#991B1B' :
-                                     alert.type === 'warning' ? '#92400E' : '#1E40AF';
+                    const bgColor = alert.type === 'danger' ? 'rgba(220, 38, 38, 0.15)' :
+                                   alert.type === 'warning' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)';
+                    const borderColor = alert.type === 'danger' ? '#EF4444' :
+                                       alert.type === 'warning' ? '#F59E0B' : '#3B82F6';
+                    const textColor = alert.type === 'danger' ? '#FCA5A5' :
+                                     alert.type === 'warning' ? '#FCD34D' : '#93C5FD';
 
                     html += `
-                        <div style="background: ${bgColor}; border-left: 4px solid ${textColor}; padding: 12px 16px; border-radius: 4px; margin-bottom: 8px;">
+                        <div style="background: ${bgColor}; border-left: 4px solid ${borderColor}; padding: 14px 18px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s;" onmouseover="this.style.background='${alert.type === 'danger' ? 'rgba(220, 38, 38, 0.22)' : alert.type === 'warning' ? 'rgba(245, 158, 11, 0.22)' : 'rgba(59, 130, 246, 0.22)'}'" onmouseout="this.style.background='${bgColor}'">
                             <div style="display: flex; align-items: start; gap: 12px;">
-                                <span style="font-size: 20px;">${alert.icon}</span>
+                                <span style="font-size: 22px;">${alert.icon}</span>
                                 <div style="flex: 1;">
-                                    <div style="font-weight: 600; color: ${textColor}; margin-bottom: 4px;">${alert.title}</div>
-                                    <div style="font-size: 13px; color: ${textColor};">${alert.message}</div>
+                                    <div style="font-weight: 600; color: rgba(255, 255, 255, 0.95); margin-bottom: 5px; font-size: 13.5px;">${alert.title}</div>
+                                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75);">${alert.message}</div>
                                 </div>
                             </div>
                         </div>
@@ -4797,12 +4799,12 @@
 
             // Risks section
             if (insights.risks.length > 0) {
-                html += '<div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">';
-                html += '<div style="font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">⚠️ Facteurs de risque</div>';
-                html += '<div style="display: flex; flex-direction: column; gap: 12px;">';
+                html += '<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px; backdrop-filter: blur(10px);">';
+                html += '<div style="font-weight: 600; margin-bottom: 14px; color: rgba(255, 255, 255, 0.95); font-size: 14px;">⚠️ Facteurs de risque</div>';
+                html += '<div style="display: flex; flex-direction: column; gap: 10px;">';
 
                 insights.risks.forEach(risk => {
-                    const levelColor = risk.level === 'high' ? '#DC2626' :
+                    const levelColor = risk.level === 'high' ? '#EF4444' :
                                       risk.level === 'medium' ? '#F59E0B' : '#10B981';
 
                     // Check if risk has an actionable button
@@ -4810,31 +4812,32 @@
                         <button
                             onclick="handleInsightAction('${risk.action.type}', '${currentPatientId}')"
                             style="
-                                margin-top: 8px;
-                                padding: 6px 12px;
-                                background: #3B82F6;
+                                margin-top: 10px;
+                                padding: 7px 14px;
+                                background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
                                 color: white;
                                 border: none;
-                                border-radius: 6px;
+                                border-radius: 8px;
                                 font-size: 12px;
-                                font-weight: 500;
+                                font-weight: 600;
                                 cursor: pointer;
-                                transition: background 0.2s;
+                                transition: all 0.2s;
+                                box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
                             "
-                            onmouseover="this.style.background='#2563EB'"
-                            onmouseout="this.style.background='#3B82F6'"
+                            onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.4)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(59, 130, 246, 0.25)'"
                         >
                             ${risk.action.label}
                         </button>
                     ` : '';
 
                     html += `
-                        <div style="display: flex; align-items: start; gap: 12px; padding: 12px; background: #F9FAFB; border-radius: 6px;">
-                            <span style="font-size: 18px;">${risk.icon}</span>
+                        <div style="display: flex; align-items: start; gap: 12px; padding: 14px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.background='rgba(15, 23, 42, 0.7)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'" onmouseout="this.style.background='rgba(15, 23, 42, 0.5)'; this.style.borderColor='rgba(255, 255, 255, 0.06)'">
+                            <span style="font-size: 20px;">${risk.icon}</span>
                             <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">${risk.title}</div>
-                                <div style="font-size: 13px; color: ${levelColor}; font-weight: 600; margin-bottom: 4px;">${risk.value}</div>
-                                <div style="font-size: 12px; color: var(--text-secondary);">→ ${risk.suggestion}</div>
+                                <div style="font-weight: 600; color: rgba(255, 255, 255, 0.95); margin-bottom: 3px; font-size: 13.5px;">${risk.title}</div>
+                                <div style="font-size: 13px; color: ${levelColor}; font-weight: 700; margin-bottom: 5px;">${risk.value}</div>
+                                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">→ ${risk.suggestion}</div>
                                 ${actionButton}
                             </div>
                         </div>
@@ -4846,15 +4849,15 @@
 
             // Recommendations section
             if (insights.recommendations.length > 0) {
-                html += '<div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">';
-                html += '<div style="font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">💡 Recommandations</div>';
+                html += '<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px; backdrop-filter: blur(10px);">';
+                html += '<div style="font-weight: 600; margin-bottom: 14px; color: rgba(255, 255, 255, 0.95); font-size: 14px;">💡 Recommandations</div>';
                 html += '<div style="display: flex; flex-direction: column; gap: 8px;">';
 
                 insights.recommendations.forEach(rec => {
                     html += `
-                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #F9FAFB; border-radius: 6px;">
-                            <span style="font-size: 18px;">${rec.icon}</span>
-                            <div style="font-size: 13px; color: var(--text-primary);">${rec.text}</div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.background='rgba(15, 23, 42, 0.7)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'" onmouseout="this.style.background='rgba(15, 23, 42, 0.5)'; this.style.borderColor='rgba(255, 255, 255, 0.06)'">
+                            <span style="font-size: 20px;">${rec.icon}</span>
+                            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.85);">${rec.text}</div>
                         </div>
                     `;
                 });
@@ -4864,17 +4867,17 @@
 
             // Opportunities section
             if (insights.opportunities.length > 0) {
-                html += '<div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">';
-                html += '<div style="font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">✨ Opportunités</div>';
-                html += '<div style="display: flex; flex-direction: column; gap: 12px;">';
+                html += '<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px; backdrop-filter: blur(10px);">';
+                html += '<div style="font-weight: 600; margin-bottom: 14px; color: rgba(255, 255, 255, 0.95); font-size: 14px;">✨ Opportunités</div>';
+                html += '<div style="display: flex; flex-direction: column; gap: 10px;">';
 
                 insights.opportunities.forEach(opp => {
                     html += `
-                        <div style="display: flex; align-items: start; gap: 12px; padding: 12px; background: #ECFDF5; border-radius: 6px;">
-                            <span style="font-size: 18px;">${opp.icon}</span>
+                        <div style="display: flex; align-items: start; gap: 12px; padding: 14px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.background='rgba(16, 185, 129, 0.18)'; this.style.borderColor='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(16, 185, 129, 0.12)'; this.style.borderColor='rgba(16, 185, 129, 0.2)'">
+                            <span style="font-size: 20px;">${opp.icon}</span>
                             <div>
-                                <div style="font-weight: 600; color: #065F46; margin-bottom: 4px;">${opp.title}</div>
-                                <div style="font-size: 13px; color: #047857;">${opp.message}</div>
+                                <div style="font-weight: 600; color: rgba(16, 185, 129, 0.95); margin-bottom: 5px; font-size: 13.5px;">${opp.title}</div>
+                                <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75);">${opp.message}</div>
                             </div>
                         </div>
                     `;
@@ -4917,5 +4920,42 @@
         console.log('📦 K2 Dent Patients - Supabase integration loaded');
 
     </script>
+
+    <!-- Modern Footer -->
+    <footer style="position: relative; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%); backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 24px 32px; margin-top: 40px; z-index: 10;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <!-- Left: Developer Info -->
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 15px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">K2</div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">K2 DentalCockpit Pro</div>
+                    <div style="font-size: 11.5px; color: rgba(255, 255, 255, 0.5); margin-top: 3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Développé par <span style="color: rgba(59, 130, 246, 0.95); font-weight: 600;">Ismail Sialyen</span></div>
+                </div>
+            </div>
+
+            <!-- Center: Version Badge -->
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 18px; background: rgba(59, 130, 246, 0.14); border: 1.5px solid rgba(59, 130, 246, 0.3); border-radius: 24px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);">
+                <span style="font-size: 10px; color: rgba(34, 197, 94, 0.9); animation: pulse 2s ease-in-out infinite;">●</span>
+                <span style="font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, 0.9); letter-spacing: 0.8px; font-family: 'JetBrains Mono', 'Courier New', monospace;">v1.0.0</span>
+            </div>
+
+            <!-- Right: Copyright & Certification -->
+            <div style="font-size: 11.5px; color: rgba(255, 255, 255, 0.45); text-align: right; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                <div style="font-weight: 500;">© 2026 K2 Dental. Tous droits réservés.</div>
+                <div style="margin-top: 4px; font-size: 10.5px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                    <span style="color: rgba(34, 197, 94, 0.7);">✓</span>
+                    <span>Certifié NIC Belgium</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+
 </body>
 </html>
