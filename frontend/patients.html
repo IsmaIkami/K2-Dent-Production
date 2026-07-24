@@ -2544,13 +2544,10 @@
 
                 const appointmentCount = appointments?.length || 0;
 
-                // 2. Calculate punctuality (on-time appointments)
-                const onTimeCount = appointments?.filter(apt => {
-                    if (!apt.started_at || !apt.scheduled_time) return false;
-                    const diff = Math.abs(new Date(apt.started_at) - new Date(apt.scheduled_time));
-                    return diff <= 15 * 60 * 1000; // Within 15 minutes
-                }).length || 0;
-                const punctuality = appointmentCount > 0 ? Math.round((onTimeCount / appointmentCount) * 100) : 0;
+                // 2. Calculate punctuality (completed appointments vs total)
+                // For now, we consider completed appointments as "on-time" since we don't track exact arrival time
+                const completedCount = appointments?.filter(apt => apt.status === 'completed').length || 0;
+                const punctuality = appointmentCount > 0 ? Math.round((completedCount / appointmentCount) * 100) : 0;
 
                 // 3. Count no-shows
                 const noShows = appointments?.filter(apt => apt.status === 'no_show').length || 0;
@@ -2628,6 +2625,37 @@
                             <div class="score-ring-value">${score.total}</div>
                             <div class="score-ring-label">/100</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Smart Actions (déplacé en haut pour accès rapide) -->
+                <div class="patient-detail-section" style="margin-top: 20px;">
+                    <div class="patient-detail-section-title">⚡ Actions Rapides</div>
+                    <div class="smart-actions-grid">
+                        <button class="smart-action-btn" onclick="scheduleAppointment(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
+                            <span class="smart-action-icon">📅</span>
+                            <span class="smart-action-text">Planifier RDV</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="window.location.href='tel:${patient.phone || patient.mobile}'">
+                            <span class="smart-action-icon">📞</span>
+                            <span class="smart-action-text">Appeler</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="window.location.href='xrays.html?patientId=${patient.id}'">
+                            <span class="smart-action-icon">📸</span>
+                            <span class="smart-action-text">Radiographies</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="alert('Facturation en développement')">
+                            <span class="smart-action-icon">💰</span>
+                            <span class="smart-action-text">Facture</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="alert('Rappel en développement')">
+                            <span class="smart-action-icon">🔔</span>
+                            <span class="smart-action-text">Rappel</span>
+                        </button>
+                        <button class="smart-action-btn" onclick="window.location.href='mailto:${patient.email}'">
+                            <span class="smart-action-icon">📧</span>
+                            <span class="smart-action-text">Email</span>
+                        </button>
                     </div>
                 </div>
 
@@ -2825,37 +2853,6 @@
                             <div style="font-weight: 600; margin-bottom: 8px;">Aucune analyse IA disponible</div>
                             <div style="font-size: 13px;">Cliquez sur "Actualiser" pour lancer une analyse IA du dossier patient</div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Smart Actions -->
-                <div class="patient-detail-section">
-                    <div class="patient-detail-section-title">Actions</div>
-                    <div class="smart-actions-grid">
-                        <button class="smart-action-btn" onclick="scheduleAppointment(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
-                            <span class="smart-action-icon">📅</span>
-                            <span class="smart-action-text">Planifier RDV</span>
-                        </button>
-                        <button class="smart-action-btn" onclick="window.location.href='tel:${patient.phone || patient.mobile}'">
-                            <span class="smart-action-icon">📞</span>
-                            <span class="smart-action-text">Appeler</span>
-                        </button>
-                        <button class="smart-action-btn" onclick="window.location.href='xrays.html?patientId=${patient.id}'">
-                            <span class="smart-action-icon">📸</span>
-                            <span class="smart-action-text">Radiographies</span>
-                        </button>
-                        <button class="smart-action-btn" onclick="alert('Facturation en développement')">
-                            <span class="smart-action-icon">💰</span>
-                            <span class="smart-action-text">Facture</span>
-                        </button>
-                        <button class="smart-action-btn" onclick="alert('Rappel en développement')">
-                            <span class="smart-action-icon">🔔</span>
-                            <span class="smart-action-text">Rappel</span>
-                        </button>
-                        <button class="smart-action-btn" onclick="window.location.href='mailto:${patient.email}'">
-                            <span class="smart-action-icon">📧</span>
-                            <span class="smart-action-text">Email</span>
-                        </button>
                     </div>
                 </div>
             `;
