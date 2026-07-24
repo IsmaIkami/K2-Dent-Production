@@ -1082,7 +1082,7 @@
                 <nav>
                     <div class="nav-section">
                         <div class="nav-title">Navigation</div>
-                        <a href="dashboard.html" class="nav-item">
+                        <a href="dashboard-v2.html" class="nav-item">
                             <span>📊</span>
                             <span>Dashboard</span>
                         </a>
@@ -2013,7 +2013,7 @@
                 actionsDiv.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-left: auto;';
 
                 const dossierBtn = patient?.niss ?
-                    `<button class="action-btn" onclick="window.location.href='dashboard.html?niss=${patient.niss}'" style="white-space: nowrap;">👤 Dossier</button>` :
+                    `<button class="action-btn" onclick="window.location.href='dashboard-v2.html?niss=${patient.niss}'" style="white-space: nowrap;">👤 Dossier</button>` :
                     `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; white-space: nowrap;" title="Patient sans NISS">👤 Dossier</button>`;
 
                 const emailBtn = patient?.email ?
@@ -2144,7 +2144,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="action-btn" onclick="event.stopPropagation(); window.location.href='dashboard.html?niss=${patient?.niss || ''}'">
+                            <button class="action-btn" onclick="event.stopPropagation(); window.location.href='dashboard-v2.html?niss=${patient?.niss || ''}'">
                                 👤
                             </button>
                         `;
@@ -2706,7 +2706,7 @@ L'équipe DentalCockpit Pro
         function viewPatient(patientId) {
             const patient = patients.find(p => p.id === patientId);
             if (patient && patient.niss) {
-                window.location.href = `dashboard.html?niss=${patient.niss}`;
+                window.location.href = `dashboard-v2.html?niss=${patient.niss}`;
             }
         }
 
@@ -2995,7 +2995,7 @@ L'équipe DentalCockpit Pro
         function selectPatientFromSearch(patientId) {
             const patient = patients.find(p => p.id === patientId);
             if (patient && patient.niss) {
-                window.location.href = `dashboard.html?niss=${patient.niss}`;
+                window.location.href = `dashboard-v2.html?niss=${patient.niss}`;
             }
         }
 
