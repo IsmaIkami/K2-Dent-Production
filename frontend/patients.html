@@ -4417,14 +4417,26 @@
             `;
 
             try {
-                // Fetch all patient data in parallel
-                const [appointmentsRes, anamnesesRes, timelineRes, invoicesRes, treatmentPlansRes] = await Promise.all([
-                    supabaseClient.from('appointments').select('*').eq('patient_id', patientId),
-                    supabaseClient.from('anamneses').select('*').eq('patient_id', patientId).order('anamnesis_date', { ascending: false }),
-                    supabaseClient.from('timeline_events').select('*').eq('patient_id', patientId).order('event_date', { ascending: false }),
-                    supabaseClient.from('invoices').select('*').eq('patient_id', patientId).order('created_at', { ascending: false }).catch(() => ({ data: [] })),
-                    supabaseClient.from('treatment_plans').select('*').eq('patient_id', patientId).order('created_at', { ascending: false }).catch(() => ({ data: [] }))
-                ]);
+                // Fetch patient data
+                const appointmentsRes = await supabaseClient.from('appointments').select('*').eq('patient_id', patientId);
+                const anamnesesRes = await supabaseClient.from('anamneses').select('*').eq('patient_id', patientId).order('anamnesis_date', { ascending: false });
+                const timelineRes = await supabaseClient.from('timeline_events').select('*').eq('patient_id', patientId).order('event_date', { ascending: false });
+
+                // Try to fetch invoices (table may not exist)
+                let invoicesRes = { data: [] };
+                try {
+                    invoicesRes = await supabaseClient.from('invoices').select('*').eq('patient_id', patientId).order('created_at', { ascending: false });
+                } catch (e) {
+                    console.log('Invoices table not available');
+                }
+
+                // Try to fetch treatment plans (table may not exist)
+                let treatmentPlansRes = { data: [] };
+                try {
+                    treatmentPlansRes = await supabaseClient.from('treatment_plans').select('*').eq('patient_id', patientId).order('created_at', { ascending: false });
+                } catch (e) {
+                    console.log('Treatment plans table not available');
+                }
 
                 const appointments = appointmentsRes.data || [];
                 const anamneses = anamnesesRes.data || [];
