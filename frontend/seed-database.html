@@ -166,6 +166,9 @@
             document.getElementById('output').innerHTML = '';
         }
 
+        // Attach to window for onclick handlers
+        window.clearLog = clearLog;
+
         function updateStats(stats) {
             const statsDiv = document.getElementById('stats');
             statsDiv.style.display = 'grid';
@@ -515,6 +518,10 @@
                 seedBtn.textContent = '2. Remplir les données';
             }
         }
+
+        // Expose functions globally for onclick handlers
+        window.loadPatients = loadPatients;
+        window.seedData = seedData;
 
         // Auto-load on page load
         window.addEventListener('load', () => {
