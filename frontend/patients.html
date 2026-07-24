@@ -4400,6 +4400,417 @@
             });
         }
 
+        // ============================================
+        // AI INSIGHTS GENERATION
+        // ============================================
+
+        async function generateAIInsights(patientId) {
+            const container = document.querySelector(`#aiInsights-${patientId} .ai-insights-container`);
+
+            // Show loading state
+            container.innerHTML = `
+                <div style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                    <div style="font-size: 48px; margin-bottom: 12px;">⚙️</div>
+                    <div style="font-weight: 600; margin-bottom: 8px;">Analyse en cours...</div>
+                    <div style="font-size: 13px;">Analyse du dossier patient et génération des insights</div>
+                </div>
+            `;
+
+            try {
+                // Fetch all patient data in parallel
+                const [appointmentsRes, anamnesesRes, timelineRes, invoicesRes, treatmentPlansRes] = await Promise.all([
+                    supabaseClient.from('appointments').select('*').eq('patient_id', patientId),
+                    supabaseClient.from('anamneses').select('*').eq('patient_id', patientId).order('anamnesis_date', { ascending: false }),
+                    supabaseClient.from('timeline_events').select('*').eq('patient_id', patientId).order('event_date', { ascending: false }),
+                    supabaseClient.from('invoices').select('*').eq('patient_id', patientId).order('created_at', { ascending: false }).catch(() => ({ data: [] })),
+                    supabaseClient.from('treatment_plans').select('*').eq('patient_id', patientId).order('created_at', { ascending: false }).catch(() => ({ data: [] }))
+                ]);
+
+                const appointments = appointmentsRes.data || [];
+                const anamneses = anamnesesRes.data || [];
+                const timeline = timelineRes.data || [];
+                const invoices = invoicesRes.data || [];
+                const treatmentPlans = treatmentPlansRes.data || [];
+
+                // Generate insights
+                const insights = analyzePatientData({
+                    appointments,
+                    anamneses,
+                    timeline,
+                    invoices,
+                    treatmentPlans,
+                    patientId
+                });
+
+                // Display insights
+                displayAIInsights(container, insights);
+
+            } catch (error) {
+                console.error('Error generating AI insights:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 32px; color: var(--danger);">
+                        <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;">Erreur lors de l'analyse</div>
+                        <div style="font-size: 13px;">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function analyzePatientData({ appointments, anamneses, timeline, invoices, treatmentPlans }) {
+            const insights = {
+                alerts: [],
+                recommendations: [],
+                risks: [],
+                opportunities: [],
+                stats: {}
+            };
+
+            const now = new Date();
+
+            // ===== APPOINTMENTS ANALYSIS =====
+            const completedAppts = appointments.filter(a => a.status === 'completed');
+            const noShows = appointments.filter(a => a.status === 'no_show');
+            const upcomingAppts = appointments.filter(a => {
+                const apptDate = new Date(a.appointment_date);
+                return apptDate > now && a.status !== 'cancelled';
+            });
+
+            // Calculate last appointment
+            const sortedAppts = [...completedAppts].sort((a, b) =>
+                new Date(b.appointment_date) - new Date(a.appointment_date)
+            );
+            const lastAppt = sortedAppts[0];
+
+            if (lastAppt) {
+                const daysSinceLastAppt = Math.floor((now - new Date(lastAppt.appointment_date)) / (1000 * 60 * 60 * 24));
+                insights.stats.daysSinceLastVisit = daysSinceLastAppt;
+
+                // Alert if no visit in 6+ months
+                if (daysSinceLastAppt > 180) {
+                    insights.alerts.push({
+                        type: 'warning',
+                        icon: '⏰',
+                        title: 'Contrôle semestriel dépassé',
+                        message: `Dernière visite il y a ${Math.floor(daysSinceLastAppt / 30)} mois. Rappeler le patient pour un contrôle.`
+                    });
+                    insights.recommendations.push({
+                        icon: '📞',
+                        text: 'Planifier un contrôle semestriel'
+                    });
+                }
+            }
+
+            // No-show analysis
+            if (noShows.length > 0) {
+                const noShowRate = (noShows.length / appointments.length * 100).toFixed(0);
+                insights.risks.push({
+                    level: noShows.length >= 3 ? 'high' : 'medium',
+                    icon: '❌',
+                    title: 'Risque de no-show',
+                    value: `${noShows.length} no-show (${noShowRate}%)`,
+                    suggestion: 'Confirmer RDV 48h avant par SMS'
+                });
+            }
+
+            // Punctuality
+            const punctualityRate = completedAppts.length > 0
+                ? Math.round((completedAppts.length / (completedAppts.length + noShows.length)) * 100)
+                : 100;
+
+            if (punctualityRate >= 95) {
+                insights.opportunities.push({
+                    icon: '⭐',
+                    title: 'Patient fiable',
+                    message: `Taux de présence: ${punctualityRate}%. Excellent candidat pour traitements longs.`
+                });
+            }
+
+            // ===== ANAMNESIS ANALYSIS =====
+            const latestAnamnesis = anamneses[0];
+
+            if (latestAnamnesis) {
+                // Allergies check
+                if (latestAnamnesis.allergies && latestAnamnesis.allergies.length > 0) {
+                    const hasRealAllergies = latestAnamnesis.allergies.some(a =>
+                        !a.toLowerCase().includes('aucun')
+                    );
+
+                    if (hasRealAllergies) {
+                        insights.alerts.push({
+                            type: 'danger',
+                            icon: '⚠️',
+                            title: 'ALLERGIES CONNUES',
+                            message: `Allergies: ${latestAnamnesis.allergies.filter(a => !a.toLowerCase().includes('aucun')).join(', ')}`
+                        });
+                    }
+                }
+
+                // Caries risk assessment
+                if (latestAnamnesis.caries_risk) {
+                    const riskLevel = latestAnamnesis.caries_risk.toLowerCase();
+                    if (riskLevel === 'high') {
+                        insights.risks.push({
+                            level: 'high',
+                            icon: '🦷',
+                            title: 'Risque caries élevé',
+                            value: 'HAUT',
+                            suggestion: 'Contrôles trimestriels + fluor'
+                        });
+                        insights.recommendations.push({
+                            icon: '🛡️',
+                            text: 'Traitement préventif au fluor recommandé'
+                        });
+                    }
+                }
+
+                // Periodontal status
+                if (latestAnamnesis.periodontal_status) {
+                    const status = latestAnamnesis.periodontal_status.toLowerCase();
+                    if (status === 'gingivitis' || status === 'periodontitis') {
+                        insights.risks.push({
+                            level: status === 'periodontitis' ? 'high' : 'medium',
+                            icon: '🩸',
+                            title: 'Risque parodontal',
+                            value: status === 'periodontitis' ? 'Parodontite' : 'Gingivite',
+                            suggestion: 'Détartrage professionnel régulier'
+                        });
+                    }
+                }
+
+                // Oral hygiene score
+                if (latestAnamnesis.oral_hygiene_score) {
+                    const score = latestAnamnesis.oral_hygiene_score;
+                    if (score < 6) {
+                        insights.recommendations.push({
+                            icon: '🪥',
+                            text: `Hygiène bucco-dentaire à améliorer (${score}/10). Donner conseils de brossage.`
+                        });
+                    } else if (score >= 8) {
+                        insights.opportunities.push({
+                            icon: '✨',
+                            title: 'Excellente hygiène',
+                            message: `Score d'hygiène: ${score}/10. Féliciter le patient!`
+                        });
+                    }
+                }
+
+                // Smoking status
+                if (latestAnamnesis.smoking_status === 'current') {
+                    insights.risks.push({
+                        level: 'medium',
+                        icon: '🚬',
+                        title: 'Fumeur actif',
+                        value: 'Risque accru',
+                        suggestion: 'Conseiller arrêt tabac (implants/parodontie)'
+                    });
+                }
+            }
+
+            // ===== FINANCIAL ANALYSIS =====
+            if (invoices.length > 0) {
+                const totalSpent = invoices.reduce((sum, inv) => sum + (parseFloat(inv.total_amount) || 0), 0);
+                const unpaidInvoices = invoices.filter(inv => inv.status === 'unpaid' || inv.status === 'overdue');
+                const unpaidAmount = unpaidInvoices.reduce((sum, inv) => sum + (parseFloat(inv.total_amount) || 0), 0);
+
+                insights.stats.totalSpent = totalSpent;
+                insights.stats.unpaidAmount = unpaidAmount;
+
+                // VIP patient (high spender)
+                if (totalSpent > 2000) {
+                    insights.opportunities.push({
+                        icon: '💎',
+                        title: 'Patient VIP',
+                        message: `CA total: €${totalSpent.toFixed(0)}. Relation prioritaire.`
+                    });
+                }
+
+                // Overdue payments
+                if (unpaidAmount > 0) {
+                    insights.alerts.push({
+                        type: 'warning',
+                        icon: '💰',
+                        title: 'Paiements en attente',
+                        message: `€${unpaidAmount.toFixed(2)} impayé. En parler avant nouveaux soins.`
+                    });
+                } else if (invoices.length >= 3) {
+                    insights.opportunities.push({
+                        icon: '✅',
+                        title: 'Paiements réguliers',
+                        message: '100% des factures payées à temps. Client de confiance.'
+                    });
+                }
+            }
+
+            // ===== TREATMENT PLANS ANALYSIS =====
+            if (treatmentPlans.length > 0) {
+                const activePlans = treatmentPlans.filter(tp => tp.status === 'active' || tp.status === 'in_progress');
+                const incompletePlans = activePlans.filter(tp => {
+                    const progress = parseFloat(tp.completion_percentage) || 0;
+                    return progress < 100;
+                });
+
+                if (incompletePlans.length > 0) {
+                    incompletePlans.forEach(plan => {
+                        const progress = parseFloat(plan.completion_percentage) || 0;
+                        const daysSinceUpdate = plan.updated_at
+                            ? Math.floor((now - new Date(plan.updated_at)) / (1000 * 60 * 60 * 24))
+                            : 0;
+
+                        if (daysSinceUpdate > 60) {
+                            insights.alerts.push({
+                                type: 'info',
+                                icon: '📋',
+                                title: 'Plan de traitement en attente',
+                                message: `${plan.treatment_name || 'Traitement'} - ${progress}% complété. Pas d'activité depuis ${daysSinceUpdate} jours.`
+                            });
+                        }
+                    });
+                }
+            }
+
+            // ===== BEHAVIORAL PATTERNS =====
+            // Preferred time slots
+            if (completedAppts.length >= 3) {
+                const morningAppts = completedAppts.filter(a => {
+                    const time = a.start_time;
+                    return time && parseInt(time.split(':')[0]) < 12;
+                });
+                const afternoonAppts = completedAppts.filter(a => {
+                    const time = a.start_time;
+                    return time && parseInt(time.split(':')[0]) >= 12;
+                });
+
+                const morningRate = (morningAppts.length / completedAppts.length * 100).toFixed(0);
+                if (morningRate > 70) {
+                    insights.recommendations.push({
+                        icon: '🌅',
+                        text: `Préfère RDV matinée (${morningRate}%). Proposer créneaux avant 12h.`
+                    });
+                } else if (morningRate < 30) {
+                    insights.recommendations.push({
+                        icon: '🌆',
+                        text: `Préfère RDV après-midi (${100 - morningRate}%). Proposer créneaux après 14h.`
+                    });
+                }
+            }
+
+            // No data fallback
+            if (insights.alerts.length === 0 && insights.recommendations.length === 0 &&
+                insights.risks.length === 0 && insights.opportunities.length === 0) {
+                insights.alerts.push({
+                    type: 'info',
+                    icon: 'ℹ️',
+                    title: 'Dossier récent',
+                    message: 'Pas encore assez de données pour générer des insights détaillés.'
+                });
+            }
+
+            return insights;
+        }
+
+        function displayAIInsights(container, insights) {
+            let html = '<div style="display: flex; flex-direction: column; gap: 16px;">';
+
+            // Alerts section
+            if (insights.alerts.length > 0) {
+                html += '<div>';
+                insights.alerts.forEach(alert => {
+                    const bgColor = alert.type === 'danger' ? '#FEE2E2' :
+                                   alert.type === 'warning' ? '#FEF3C7' : '#DBEAFE';
+                    const textColor = alert.type === 'danger' ? '#991B1B' :
+                                     alert.type === 'warning' ? '#92400E' : '#1E40AF';
+
+                    html += `
+                        <div style="background: ${bgColor}; border-left: 4px solid ${textColor}; padding: 12px 16px; border-radius: 4px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: start; gap: 12px;">
+                                <span style="font-size: 20px;">${alert.icon}</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: ${textColor}; margin-bottom: 4px;">${alert.title}</div>
+                                    <div style="font-size: 13px; color: ${textColor};">${alert.message}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Risks section
+            if (insights.risks.length > 0) {
+                html += '<div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">';
+                html += '<div style="font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">⚠️ Facteurs de risque</div>';
+                html += '<div style="display: flex; flex-direction: column; gap: 12px;">';
+
+                insights.risks.forEach(risk => {
+                    const levelColor = risk.level === 'high' ? '#DC2626' :
+                                      risk.level === 'medium' ? '#F59E0B' : '#10B981';
+                    html += `
+                        <div style="display: flex; align-items: start; gap: 12px; padding: 12px; background: #F9FAFB; border-radius: 6px;">
+                            <span style="font-size: 18px;">${risk.icon}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">${risk.title}</div>
+                                <div style="font-size: 13px; color: ${levelColor}; font-weight: 600; margin-bottom: 4px;">${risk.value}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">→ ${risk.suggestion}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            // Recommendations section
+            if (insights.recommendations.length > 0) {
+                html += '<div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">';
+                html += '<div style="font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">💡 Recommandations</div>';
+                html += '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+                insights.recommendations.forEach(rec => {
+                    html += `
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #F9FAFB; border-radius: 6px;">
+                            <span style="font-size: 18px;">${rec.icon}</span>
+                            <div style="font-size: 13px; color: var(--text-primary);">${rec.text}</div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            // Opportunities section
+            if (insights.opportunities.length > 0) {
+                html += '<div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">';
+                html += '<div style="font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">✨ Opportunités</div>';
+                html += '<div style="display: flex; flex-direction: column; gap: 12px;">';
+
+                insights.opportunities.forEach(opp => {
+                    html += `
+                        <div style="display: flex; align-items: start; gap: 12px; padding: 12px; background: #ECFDF5; border-radius: 6px;">
+                            <span style="font-size: 18px;">${opp.icon}</span>
+                            <div>
+                                <div style="font-weight: 600; color: #065F46; margin-bottom: 4px;">${opp.title}</div>
+                                <div style="font-size: 13px; color: #047857;">${opp.message}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            html += '</div>';
+
+            // Add timestamp
+            html += `
+                <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary);">
+                    Analyse générée le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
         console.log('📦 K2 Dent Patients - Supabase integration loaded');
 
     </script>
