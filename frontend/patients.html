@@ -2882,8 +2882,8 @@
         // Search patients
         // Hero search autocomplete functionality
         function showSearchDropdown(query) {
-            const dropdown = document.getElementById('heroDropdown');
-            const clearBtn = document.getElementById('heroClearBtn');
+            const dropdown = document.getElementById('searchDropdown');
+            const clearBtn = document.getElementById('searchClearBtn');
 
             // Show/hide clear button
             if (query.length > 0) {
@@ -2902,7 +2902,7 @@
 
             // Build dropdown HTML
             if (filtered.length === 0) {
-                dropdown.innerHTML = '<div class="hero-dropdown-empty">Aucun patient trouvé</div>';
+                dropdown.innerHTML = '<div class="search-dropdown-empty">Aucun patient trouvé</div>';
                 dropdown.style.display = 'block';
                 return;
             }
@@ -2913,11 +2913,11 @@
                 const phone = patient.phone || patient.mobile || 'Pas de téléphone';
 
                 return `
-                    <div class="hero-dropdown-item" onclick="selectPatientFromSearch('${patient.id}')">
-                        <div class="hero-dropdown-avatar">${initials || '👤'}</div>
-                        <div class="hero-dropdown-info">
-                            <div class="hero-dropdown-name">${patient.first_name} ${patient.last_name}</div>
-                            <div class="hero-dropdown-details">
+                    <div class="search-dropdown-item" onclick="selectPatientFromSearch('${patient.id}')">
+                        <div class="search-dropdown-avatar">${initials || '👤'}</div>
+                        <div class="search-dropdown-info">
+                            <div class="search-dropdown-name">${patient.first_name} ${patient.last_name}</div>
+                            <div class="search-dropdown-details">
                                 ${patient.niss ? `NISS: ${patient.niss}` : 'Sans NISS'}
                                 ${age ? ` • ${age} ans` : ''}
                                 • ${phone}
@@ -2939,9 +2939,9 @@
             openPatientDashboard(patient);
 
             // Clear search
-            const searchInput = document.getElementById('heroSearchInput');
-            const dropdown = document.getElementById('heroDropdown');
-            const clearBtn = document.getElementById('heroClearBtn');
+            const searchInput = document.getElementById('globalSearchInput');
+            const dropdown = document.getElementById('searchDropdown');
+            const clearBtn = document.getElementById('searchClearBtn');
 
             searchInput.value = '';
             dropdown.style.display = 'none';
@@ -2950,7 +2950,7 @@
 
         // Scan card functionality
         async function scanCard() {
-            const searchInput = document.getElementById('heroSearchInput');
+            const searchInput = document.getElementById('globalSearchInput');
 
             // Show instruction
             searchInput.placeholder = '📡 En attente du scan de carte...';
@@ -3004,47 +3004,47 @@
             }, 30000);
         }
 
-        // Initialize hero search functionality
+        // Initialize global search functionality
         document.addEventListener('DOMContentLoaded', () => {
-            const heroSearchInput = document.getElementById('heroSearchInput');
-            const heroClearBtn = document.getElementById('heroClearBtn');
-            const heroDropdown = document.getElementById('heroDropdown');
-            const heroScanBtn = document.getElementById('heroScanBtn');
+            const globalSearchInput = document.getElementById('globalSearchInput');
+            const searchClearBtn = document.getElementById('searchClearBtn');
+            const searchDropdown = document.getElementById('searchDropdown');
+            const scanCardBtn = document.getElementById('scanCardBtn');
 
-            if (!heroSearchInput || !heroClearBtn || !heroDropdown || !heroScanBtn) {
-                console.warn('⚠️ Hero search elements not found');
+            if (!globalSearchInput || !searchClearBtn || !searchDropdown || !scanCardBtn) {
+                console.warn('⚠️ Global search elements not found');
                 return;
             }
 
             // Search input
-            heroSearchInput.addEventListener('input', (e) => {
+            globalSearchInput.addEventListener('input', (e) => {
                 showSearchDropdown(e.target.value);
             });
 
             // Clear button
-            heroClearBtn.addEventListener('click', () => {
-                heroSearchInput.value = '';
-                heroDropdown.style.display = 'none';
-                heroClearBtn.classList.remove('visible');
-                heroSearchInput.focus();
+            searchClearBtn.addEventListener('click', () => {
+                globalSearchInput.value = '';
+                searchDropdown.style.display = 'none';
+                searchClearBtn.classList.remove('visible');
+                globalSearchInput.focus();
             });
 
             // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.hero-search-container')) {
-                    heroDropdown.style.display = 'none';
+                if (!e.target.closest('.search-bar')) {
+                    searchDropdown.style.display = 'none';
                 }
             });
 
             // Scan card button
-            heroScanBtn.addEventListener('click', scanCard);
+            scanCardBtn.addEventListener('click', scanCard);
 
             // ESC key to clear search
-            heroSearchInput.addEventListener('keydown', (e) => {
+            globalSearchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    heroSearchInput.value = '';
-                    heroDropdown.style.display = 'none';
-                    heroClearBtn.classList.remove('visible');
+                    globalSearchInput.value = '';
+                    searchDropdown.style.display = 'none';
+                    searchClearBtn.classList.remove('visible');
                 }
             });
         });
