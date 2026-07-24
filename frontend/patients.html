@@ -4530,11 +4530,17 @@
                 ? Math.round((completedAppts.length / (completedAppts.length + noShows.length)) * 100)
                 : 100;
 
-            if (punctualityRate >= 95) {
+            if (punctualityRate >= 90) {
                 insights.opportunities.push({
                     icon: '⭐',
-                    title: 'Patient fiable',
+                    title: 'Patient très fiable',
                     message: `Taux de présence: ${punctualityRate}%. Excellent candidat pour traitements longs.`
+                });
+            } else if (punctualityRate >= 75) {
+                insights.opportunities.push({
+                    icon: '👍',
+                    title: 'Patient fiable',
+                    message: `Taux de présence: ${punctualityRate}%. Bon profil pour planification.`
                 });
             }
 
