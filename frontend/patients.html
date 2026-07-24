@@ -2266,10 +2266,25 @@
                 return;
             }
 
-            // Filter patients by name, NISS, email, phone
+            // Filter patients by matching at the start of words only
             const filtered = allPatients.filter(p => {
-                const searchStr = `${p.first_name} ${p.last_name} ${p.niss || ''} ${p.email || ''} ${p.phone || ''} ${p.mobile || ''}`.toLowerCase();
-                return searchStr.includes(searchQuery);
+                // Split search into words for multi-word search
+                const words = searchQuery.split(/\s+/);
+
+                // Create searchable fields (each word separately + NISS as one field)
+                const searchableFields = [
+                    (p.first_name || '').toLowerCase(),
+                    (p.last_name || '').toLowerCase(),
+                    (p.niss || '').toLowerCase(),
+                    (p.email || '').toLowerCase(),
+                    (p.phone || '').toLowerCase(),
+                    (p.mobile || '').toLowerCase()
+                ];
+
+                // Check if all search words match at the start of any field
+                return words.every(word =>
+                    searchableFields.some(field => field.startsWith(word))
+                );
             });
 
             displayPatients(filtered);
