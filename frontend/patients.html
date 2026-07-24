@@ -4549,15 +4549,20 @@
                 }
             }
 
-            // No-show analysis
-            if (noShows.length > 0) {
+            // No-show analysis - only flag if significant pattern
+            if (noShows.length >= 2 || (noShows.length > 0 && appointments.length > 0 && (noShows.length / appointments.length) >= 0.20)) {
                 const noShowRate = (noShows.length / appointments.length * 100).toFixed(0);
                 insights.risks.push({
                     level: noShows.length >= 3 ? 'high' : 'medium',
                     icon: '❌',
                     title: 'Risque de no-show',
                     value: `${noShows.length} no-show (${noShowRate}%)`,
-                    suggestion: 'Confirmer RDV 48h avant par SMS'
+                    suggestion: 'Configurer rappels automatiques 48h avant',
+                    action: {
+                        type: 'configure_reminders',
+                        label: 'Activer rappels SMS',
+                        patientId: null // Will be set when rendering
+                    }
                 });
             }
 
@@ -4799,6 +4804,30 @@
                 insights.risks.forEach(risk => {
                     const levelColor = risk.level === 'high' ? '#DC2626' :
                                       risk.level === 'medium' ? '#F59E0B' : '#10B981';
+
+                    // Check if risk has an actionable button
+                    const actionButton = risk.action ? `
+                        <button
+                            onclick="handleInsightAction('${risk.action.type}', '${currentPatientId}')"
+                            style="
+                                margin-top: 8px;
+                                padding: 6px 12px;
+                                background: #3B82F6;
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                font-size: 12px;
+                                font-weight: 500;
+                                cursor: pointer;
+                                transition: background 0.2s;
+                            "
+                            onmouseover="this.style.background='#2563EB'"
+                            onmouseout="this.style.background='#3B82F6'"
+                        >
+                            ${risk.action.label}
+                        </button>
+                    ` : '';
+
                     html += `
                         <div style="display: flex; align-items: start; gap: 12px; padding: 12px; background: #F9FAFB; border-radius: 6px;">
                             <span style="font-size: 18px;">${risk.icon}</span>
@@ -4806,6 +4835,7 @@
                                 <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">${risk.title}</div>
                                 <div style="font-size: 13px; color: ${levelColor}; font-weight: 600; margin-bottom: 4px;">${risk.value}</div>
                                 <div style="font-size: 12px; color: var(--text-secondary);">→ ${risk.suggestion}</div>
+                                ${actionButton}
                             </div>
                         </div>
                     `;
@@ -4863,6 +4893,25 @@
             `;
 
             container.innerHTML = html;
+        }
+
+        // Handle insight action buttons
+        function handleInsightAction(actionType, patientId) {
+            console.log(`Action triggered: ${actionType} for patient ${patientId}`);
+
+            switch (actionType) {
+                case 'configure_reminders':
+                    alert(`Configuration des rappels automatiques pour ce patient.\n\n` +
+                          `Fonctionnalité à implémenter:\n` +
+                          `- SMS automatiques 48h avant RDV\n` +
+                          `- Email de confirmation 24h avant\n` +
+                          `- Réduction des no-shows\n\n` +
+                          `Cette fonctionnalité sera disponible dans la Phase 2 eHealth (Q4 2026).`);
+                    break;
+
+                default:
+                    console.warn(`Unknown action type: ${actionType}`);
+            }
         }
 
         console.log('📦 K2 Dent Patients - Supabase integration loaded');
