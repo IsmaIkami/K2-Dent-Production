@@ -1511,6 +1511,58 @@
             color: var(--warning);
         }
 
+        /* AI Recording Section */
+        .ai-recording-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .ai-recording-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .btn-start-recording {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #FF3B30, #FF6B6B);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-start-recording:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 59, 48, 0.4);
+        }
+
+        .btn-start-recording:active {
+            transform: translateY(0);
+        }
+
+        .btn-start-recording.recording {
+            background: linear-gradient(135deg, #34C759, #30D158);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
         .modal-header h2 {
             margin: 0;
             color: var(--text-primary);
@@ -1946,6 +1998,28 @@
             <div class="modal-header">
                 <h2>📋 Nouvelle Anamnèse</h2>
                 <button class="modal-close" onclick="closeAnamnesisModal()">&times;</button>
+            </div>
+
+            <!-- AI Voice Recording Section -->
+            <div class="ai-recording-section">
+                <div class="ai-recording-header">
+                    <span style="font-size: 24px;">🎤</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">Enregistrement & Transcription IA</div>
+                        <div id="recordingStatus" style="font-size: 13px; color: var(--text-secondary);">Prêt</div>
+                    </div>
+                </div>
+                <button type="button" id="startRecordingBtn" class="btn-start-recording" onclick="startVoiceRecording()">
+                    🎤 Démarrer l'enregistrement
+                </button>
+                <div style="margin-top: 12px; padding: 12px; background: rgba(0, 102, 255, 0.1); border-radius: 8px; font-size: 13px;">
+                    💡 <strong>Enregistrez votre consultation</strong> - L'IA va transcrire et générer l'anamnèse automatiquement
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 24px 0; color: var(--text-secondary); font-size: 13px; position: relative;">
+                <div style="border-top: 1px solid var(--border); position: absolute; top: 50%; left: 0; right: 0; z-index: 0;"></div>
+                <span style="background: #1a1d2e; padding: 0 16px; position: relative; z-index: 1;">OU remplir manuellement</span>
             </div>
 
             <form id="anamnesisForm" onsubmit="saveAnamnesis(event)">
@@ -3173,6 +3247,9 @@
                 dateInput.valueAsDate = new Date();
             }
 
+            // Initialize autocomplete
+            setTimeout(() => initializeAutocomplete(), 100);
+
             // Show modal
             modal.style.display = 'flex';
             modal.classList.add('active');
@@ -3410,6 +3487,289 @@
                 content.style.display = 'none';
                 toggle.textContent = '▼';
             }
+        }
+
+        // ===========================
+        // VOICE RECORDING & AI TRANSCRIPTION
+        // ===========================
+
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        async function startVoiceRecording() {
+            const btn = document.getElementById('startRecordingBtn');
+            const status = document.getElementById('recordingStatus');
+
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                // Start recording
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        await transcribeAndFillForm(audioBlob);
+
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+
+                    // Update UI
+                    btn.classList.add('recording');
+                    btn.innerHTML = '⏹️ Arrêter l\'enregistrement';
+                    status.textContent = '🔴 Enregistrement en cours...';
+                    status.style.color = 'var(--error)';
+
+                } catch (error) {
+                    console.error('Error starting recording:', error);
+                    alert('❌ Erreur: Impossible d\'accéder au microphone.\n\n' + error.message);
+                }
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+
+                // Update UI
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤 Démarrer l\'enregistrement';
+                status.textContent = '⏳ Transcription en cours...';
+                status.style.color = 'var(--warning)';
+            }
+        }
+
+        async function transcribeAndFillForm(audioBlob) {
+            const status = document.getElementById('recordingStatus');
+
+            try {
+                // TODO: Integrate with OpenAI Whisper API or similar
+                // For now, show demo message
+                status.textContent = '⚠️ Transcription IA en développement';
+                status.style.color = 'var(--warning)';
+
+                alert('🚧 Transcription IA en développement\n\n' +
+                      'Cette fonctionnalité sera bientôt disponible.\n\n' +
+                      'Elle utilisera :\n' +
+                      '• OpenAI Whisper pour la transcription audio\n' +
+                      '• GPT-4 pour extraire les informations médicales\n' +
+                      '• Auto-remplissage du formulaire\n\n' +
+                      'En attendant, utilisez le formulaire manuel ci-dessous.');
+
+                // Demo: Fill with test data
+                if (confirm('Voulez-vous remplir avec des données de test ?')) {
+                    fillDemoData();
+                }
+
+                setTimeout(() => {
+                    status.textContent = 'Prêt';
+                    status.style.color = 'var(--text-secondary)';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Transcription error:', error);
+                status.textContent = '❌ Erreur de transcription';
+                status.style.color = 'var(--error)';
+            }
+        }
+
+        function fillDemoData() {
+            const form = document.getElementById('anamnesisForm');
+            if (!form) return;
+
+            form.chief_complaint.value = 'Douleur molaire inférieure droite depuis 3 jours';
+            form.querySelector('[name="medical_diabetes"]').checked = false;
+            form.querySelector('[name="medical_hypertension"]').checked = true;
+            form.allergies.value = 'Pénicilline';
+            form.medications.value = 'Aspirine 100mg, Lisinopril 10mg';
+            form.smoking_status.value = 'non-fumeur';
+            form.alcohol_consumption.value = 'occasional';
+            form.dental_pain.value = 'true';
+            form.dental_pain_description.value = 'Douleur pulsatile, aggravée par le chaud et le froid';
+            form.oral_hygiene_score.value = '6';
+            form.periodontal_status.value = 'healthy';
+            form.caries_risk.value = 'medium';
+            form.proposed_treatment.value = 'Traitement endodontique molaire 46. Obturation temporaire puis couronne.';
+            form.treatment_priority.value = 'high';
+            form.estimated_cost.value = '850.00';
+            form.clinical_notes.value = 'Carie profonde avec atteinte pulpaire probable. Test de vitalité négatif.';
+            form.patient_concerns.value = 'Patient anxieux concernant le traitement. Souhaite préserver la dent.';
+        }
+
+        // ===========================
+        // AUTOCOMPLETE WITH COMMON VALUES
+        // ===========================
+
+        const commonMedicalConditions = [
+            'Diabète type 1',
+            'Diabète type 2',
+            'Hypertension artérielle',
+            'Problèmes cardiaques',
+            'Arythmie cardiaque',
+            'Insuffisance cardiaque',
+            'Asthme',
+            'BPCO',
+            'Hépatite B',
+            'Hépatite C',
+            'VIH',
+            'Cancer en rémission',
+            'Arthrite',
+            'Ostéoporose',
+            'Maladie de Crohn',
+            'Colite ulcéreuse',
+            'Hypothyroïdie',
+            'Hyperthyroïdie'
+        ];
+
+        const commonAllergies = [
+            'Pénicilline',
+            'Amoxicilline',
+            'Aspirine',
+            'Ibuprofène',
+            'Codéine',
+            'Morphine',
+            'Latex',
+            'Anesthésiques locaux',
+            'Métaux (nickel, chrome)',
+            'Arachides',
+            'Fruits de mer',
+            'Œufs',
+            'Lait',
+            'Gluten'
+        ];
+
+        const commonMedications = [
+            'Aspirine 100mg',
+            'Aspirine 500mg',
+            'Paracétamol 500mg',
+            'Ibuprofène 400mg',
+            'Lisinopril 10mg',
+            'Amlodipine 5mg',
+            'Metformine 500mg',
+            'Metformine 850mg',
+            'Levothyroxine 50µg',
+            'Oméprazole 20mg',
+            'Atorvastatine 20mg',
+            'Bisoprolol 5mg',
+            'Warfarine',
+            'Rivaroxaban',
+            'Clopidogrel',
+            'Prednisolone'
+        ];
+
+        const commonDentalComplaints = [
+            'Douleur dentaire',
+            'Douleur à la mastication',
+            'Sensibilité au chaud/froid',
+            'Saignement des gencives',
+            'Gencives gonflées',
+            'Mauvaise haleine persistante',
+            'Dent cassée',
+            'Couronne décollée',
+            'Plombage tombé',
+            'Douleur à l\'articulation',
+            'Bruxisme',
+            'Aphtes récurrents',
+            'Sécheresse buccale',
+            'Goût métallique',
+            'Contrôle de routine',
+            'Nettoyage professionnel'
+        ];
+
+        // Initialize autocomplete on modal open
+        function initializeAutocomplete() {
+            const form = document.getElementById('anamnesisForm');
+            if (!form) return;
+
+            // Autocomplete for allergies
+            addAutocomplete(form.allergies, commonAllergies);
+
+            // Autocomplete for medications
+            addAutocomplete(form.medications, commonMedications);
+
+            // Autocomplete for chief complaint
+            addAutocomplete(form.chief_complaint, commonDentalComplaints);
+        }
+
+        function addAutocomplete(input, suggestions) {
+            if (!input) return;
+
+            let currentFocus = -1;
+            let autocompleteList = null;
+
+            input.addEventListener('input', function() {
+                const val = this.value;
+                closeAllLists();
+
+                if (!val || val.length < 2) return;
+                currentFocus = -1;
+
+                autocompleteList = document.createElement('div');
+                autocompleteList.className = 'autocomplete-items';
+                autocompleteList.style.cssText = `
+                    position: absolute;
+                    border: 1px solid var(--border);
+                    border-top: none;
+                    z-index: 99;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    max-height: 200px;
+                    overflow-y: auto;
+                    background: var(--bg-card);
+                    border-radius: 0 0 8px 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                `;
+
+                this.parentNode.style.position = 'relative';
+                this.parentNode.appendChild(autocompleteList);
+
+                const matches = suggestions.filter(s =>
+                    s.toLowerCase().includes(val.toLowerCase())
+                ).slice(0, 8);
+
+                matches.forEach(suggestion => {
+                    const item = document.createElement('div');
+                    item.style.cssText = `
+                        padding: 10px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        color: var(--text-primary);
+                    `;
+                    item.textContent = suggestion;
+
+                    item.addEventListener('mouseenter', function() {
+                        this.style.background = 'var(--bg-hover)';
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        this.style.background = 'transparent';
+                    });
+
+                    item.addEventListener('click', function() {
+                        // Add to existing value (comma-separated)
+                        const currentVal = input.value;
+                        const parts = currentVal.split(',').map(s => s.trim());
+                        parts[parts.length - 1] = suggestion;
+                        input.value = parts.join(', ');
+                        closeAllLists();
+                    });
+
+                    autocompleteList.appendChild(item);
+                });
+            });
+
+            function closeAllLists() {
+                const items = document.getElementsByClassName('autocomplete-items');
+                Array.from(items).forEach(item => item.parentNode.removeChild(item));
+            }
+
+            document.addEventListener('click', function(e) {
+                if (e.target !== input) closeAllLists();
+            });
         }
 
         console.log('📦 K2 Dent Patients - Supabase integration loaded');
