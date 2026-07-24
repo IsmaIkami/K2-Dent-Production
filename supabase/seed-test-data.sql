@@ -25,6 +25,12 @@ BEGIN
     -- Get or create a practitioner (you can replace with actual practitioner ID)
     SELECT id INTO practitioner_id FROM users WHERE role = 'admin' OR role = 'dentist' LIMIT 1;
 
+    -- If no practitioner found, use patient ID as fallback
+    IF practitioner_id IS NULL THEN
+        practitioner_id := test_patient_id;
+        RAISE NOTICE 'No practitioner found, using patient ID as created_by';
+    END IF;
+
     RAISE NOTICE 'Populating test data for patient: %', test_patient_id;
 
     -- ============================================
