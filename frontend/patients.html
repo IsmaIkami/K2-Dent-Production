@@ -3686,35 +3686,32 @@
                 // 2. Extraire toutes les données du formulaire actuel
                 const formData = {
                     // Motif de consultation
-                    chiefComplaint: form.chief_complaint.value || '',
-                    consultationReason: form.consultation_reason.value || '',
+                    chiefComplaint: form.chief_complaint?.value || '',
 
                     // Conditions médicales
                     medicalConditions: Array.from(form.querySelectorAll('[name="medical_conditions"]:checked')).map(cb => cb.value),
-                    allergies: form.allergies.value ? form.allergies.value.split(',').map(a => a.trim()) : [],
-                    currentMedications: form.medications.value ? form.medications.value.split(',').map(m => m.trim()) : [],
+                    allergies: form.allergies?.value ? form.allergies.value.split(',').map(a => a.trim()) : [],
+                    currentMedications: form.medications?.value ? form.medications.value.split(',').map(m => m.trim()) : [],
 
                     // Habitudes
-                    smoking: form.smoking_status.value || '',
-                    alcohol: form.alcohol_consumption.value || '',
+                    smoking: form.smoking_status?.value || '',
+                    alcohol: form.alcohol_consumption?.value || '',
 
                     // Douleur dentaire
-                    dentalPain: form.dental_pain.value === 'true',
-                    dentalPainDescription: form.dental_pain_description.value || '',
-                    currentPain: form.dental_pain_current.value === 'true',
-                    painDescription: form.pain_description.value || '',
+                    dentalPain: form.dental_pain?.value === 'true',
+                    dentalPainDescription: form.dental_pain_description?.value || '',
 
                     // Symptômes
                     bleedingGums: form.querySelector('[name="bleeding_gums"]')?.checked || false,
                     sensitivity: form.querySelector('[name="sensitivity"]')?.checked || false,
 
                     // Examen clinique
-                    hygieneScore: parseInt(form.oral_hygiene_score.value) || 5,
-                    periodontalStatus: form.periodontal_status.value || '',
-                    cariesRisk: form.caries_risk.value || '',
+                    hygieneScore: parseInt(form.oral_hygiene_score?.value) || 5,
+                    periodontalStatus: form.periodontal_status?.value || '',
+                    cariesRisk: form.caries_risk?.value || '',
 
                     // Préoccupations du patient
-                    patientConcerns: form.patient_concerns.value || ''
+                    patientConcerns: form.patient_concerns?.value || ''
                 };
 
                 // 3. Analyser l'historique pour détecter des patterns
@@ -3848,9 +3845,9 @@
             let diagnoses = [];
 
             // Analyse de la douleur
-            const painDesc = formData.dentalPainDescription.toLowerCase() + ' ' + formData.painDescription.toLowerCase();
+            const painDesc = (formData.dentalPainDescription || '').toLowerCase();
 
-            if (formData.dentalPain || formData.currentPain) {
+            if (formData.dentalPain) {
                 if (painDesc.includes('pulsatile') || painDesc.includes('lancinante') || painDesc.includes('intense')) {
                     diagnoses.push('→ PULPITE IRRÉVERSIBLE (priorité urgente)');
                     diagnoses.push('  • Douleur spontanée, intense, pulsatile');
@@ -3911,7 +3908,7 @@
             let examsSection = ['\n═══ EXAMENS COMPLÉMENTAIRES ═══'];
             let exams = [];
 
-            if (formData.dentalPain || formData.currentPain) {
+            if (formData.dentalPain) {
                 exams.push('• RX périapicale ou rétro-alvéolaire de la zone concernée');
                 exams.push('• Tests de vitalité pulpaire (froid, chaleur, électrique)');
                 exams.push('• Test de percussion');
