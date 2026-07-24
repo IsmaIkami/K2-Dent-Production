@@ -1887,15 +1887,6 @@
                                 <span style="font-size: 18px;">➕</span>
                             </button>
                         </div>
-                        <div class="patient-list-search">
-                            <span class="patient-list-search-icon">🔍</span>
-                            <input
-                                type="text"
-                                id="patientListSearch"
-                                placeholder="Rechercher..."
-                                autocomplete="off"
-                            >
-                        </div>
                     </div>
 
                     <div class="patient-list-scroll" id="patientListScroll">
@@ -2898,15 +2889,7 @@
             console.log(`🔍 Filtered ${filtered.length} patients from ${allPatients.length} total`);
         }
 
-        // Initialize patient list search
-        document.addEventListener('DOMContentLoaded', () => {
-            const patientListSearch = document.getElementById('patientListSearch');
-            if (patientListSearch) {
-                patientListSearch.addEventListener('input', (e) => {
-                    filterPatientList(e.target.value);
-                });
-            }
-        });
+        // Patient list search is now handled by globalSearchInput in topbar
 
         // Update statistics
         function updateStats(patients) {
@@ -3185,16 +3168,19 @@
                 return;
             }
 
-            // Search input
+            // Search input - filter patient list AND show dropdown
             globalSearchInput.addEventListener('input', (e) => {
-                showSearchDropdown(e.target.value);
+                const query = e.target.value;
+                filterPatientList(query);
+                showSearchDropdown(query);
             });
 
-            // Clear button
+            // Clear button - reset search and show all patients
             searchClearBtn.addEventListener('click', () => {
                 globalSearchInput.value = '';
                 searchDropdown.style.display = 'none';
                 searchClearBtn.classList.remove('visible');
+                filterPatientList(''); // Show all patients
                 globalSearchInput.focus();
             });
 
@@ -3208,12 +3194,13 @@
             // Scan card button
             scanCardBtn.addEventListener('click', scanCard);
 
-            // ESC key to clear search
+            // ESC key to clear search and show all patients
             globalSearchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     globalSearchInput.value = '';
                     searchDropdown.style.display = 'none';
                     searchClearBtn.classList.remove('visible');
+                    filterPatientList(''); // Show all patients
                 }
             });
         });
