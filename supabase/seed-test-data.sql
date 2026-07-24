@@ -290,7 +290,7 @@ BEGIN
     -- Timeline: Anamnesis creation
     INSERT INTO timeline_events (
         patient_id,
-        appointment_type,
+        type,
         title,
         description,
         badge,
@@ -313,7 +313,7 @@ BEGIN
     -- Timeline: First consultation
     INSERT INTO timeline_events (
         patient_id,
-        appointment_type,
+        type,
         title,
         description,
         badge,
@@ -332,7 +332,7 @@ BEGIN
     -- Timeline: Treatment (composite)
     INSERT INTO timeline_events (
         patient_id,
-        appointment_type,
+        type,
         title,
         description,
         badge,
@@ -351,7 +351,7 @@ BEGIN
     -- Timeline: X-Ray (if planned)
     INSERT INTO timeline_events (
         patient_id,
-        appointment_type,
+        type,
         title,
         description,
         badge,
@@ -370,7 +370,7 @@ BEGIN
     -- Timeline: Note
     INSERT INTO timeline_events (
         patient_id,
-        appointment_type,
+        type,
         title,
         description,
         badge,
