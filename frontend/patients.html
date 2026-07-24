@@ -2531,6 +2531,9 @@
 
             // Load patient anamneses
             await loadPatientAnamneses(patientId);
+
+            // Auto-generate AI insights
+            await generateAIInsights(patientId);
         }
 
         // Load real patient stats from Supabase
