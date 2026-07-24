@@ -3354,20 +3354,19 @@
         }
 
         async function fillFromGoogle() {
-            // Google Sign-In integration for contact info
-            alert('🔍 Connexion Google\n\n' +
-                  'Récupérez rapidement les informations de base depuis votre compte Google.\n\n' +
+            // Google Sign-In integration for contact info (OAuth 2.0)
+            alert('🔐 Compte Google (OAuth 2.0)\n\n' +
+                  'Créez rapidement un patient en vous connectant avec un compte Google.\n\n' +
                   'Fonctionnement :\n' +
-                  '1. Connexion avec votre compte Google\n' +
+                  '1. Connexion avec votre compte Google (OAuth 2.0)\n' +
                   '2. Autorisation d\'accès aux informations\n' +
                   '3. Import automatique des données\n\n' +
                   'Données récupérées :\n' +
-                  '- Nom et prénom\n' +
-                  '- Email\n' +
-                  '- Téléphone (si disponible)\n' +
-                  '- Photo de profil\n\n' +
+                  '• Nom et prénom\n' +
+                  '• Email\n' +
+                  '• Téléphone (si disponible)\n\n' +
                   '⚠️ Le NISS et la date de naissance devront être complétés manuellement.\n\n' +
-                  '⚙️ Intégration Google Sign-In en cours de développement...');
+                  '⚙️ Intégration Google Sign-In (OAuth 2.0) en cours de développement...');
 
             // TODO: Integrate with Google Sign-In API
             // - https://developers.google.com/identity/sign-in/web
