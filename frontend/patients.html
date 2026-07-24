@@ -2555,19 +2555,31 @@
                 const noShows = appointments?.filter(apt => apt.status === 'no_show').length || 0;
 
                 // 4. Calculate total spending (sum of paid invoices)
-                const { data: invoices } = await supabaseClient
-                    .from('invoices')
-                    .select('total_amount')
-                    .eq('patient_id', patientId)
-                    .eq('payment_status', 'paid');
+                let invoices = [];
+                try {
+                    const res = await supabaseClient
+                        .from('invoices')
+                        .select('total_amount')
+                        .eq('patient_id', patientId)
+                        .eq('payment_status', 'paid');
+                    invoices = res.data || [];
+                } catch (e) {
+                    // Invoices table doesn't exist yet - use empty array
+                }
 
                 const spending = invoices?.reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0;
 
                 // 5. Calculate plan completion (treatment plans)
-                const { data: plans } = await supabaseClient
-                    .from('treatment_plans')
-                    .select('status, total_sessions, completed_sessions')
-                    .eq('patient_id', patientId);
+                let plans = [];
+                try {
+                    const res = await supabaseClient
+                        .from('treatment_plans')
+                        .select('status, total_sessions, completed_sessions')
+                        .eq('patient_id', patientId);
+                    plans = res.data || [];
+                } catch (e) {
+                    // Treatment plans table doesn't exist yet - use empty array
+                }
 
                 let planCompletion = 0;
                 if (plans && plans.length > 0) {
