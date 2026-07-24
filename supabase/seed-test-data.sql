@@ -38,7 +38,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -65,7 +65,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -92,7 +92,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -119,7 +119,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -146,7 +146,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -175,7 +175,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -204,7 +204,7 @@ BEGIN
         start_time,
         end_time,
         duration_minutes,
-        type,
+        appointment_type,
         status,
         reason,
         notes,
@@ -290,7 +290,7 @@ BEGIN
     -- Timeline: Anamnesis creation
     INSERT INTO timeline_events (
         patient_id,
-        type,
+        appointment_type,
         title,
         description,
         badge,
@@ -313,7 +313,7 @@ BEGIN
     -- Timeline: First consultation
     INSERT INTO timeline_events (
         patient_id,
-        type,
+        appointment_type,
         title,
         description,
         badge,
@@ -332,7 +332,7 @@ BEGIN
     -- Timeline: Treatment (composite)
     INSERT INTO timeline_events (
         patient_id,
-        type,
+        appointment_type,
         title,
         description,
         badge,
@@ -351,7 +351,7 @@ BEGIN
     -- Timeline: X-Ray (if planned)
     INSERT INTO timeline_events (
         patient_id,
-        type,
+        appointment_type,
         title,
         description,
         badge,
@@ -370,7 +370,7 @@ BEGIN
     -- Timeline: Note
     INSERT INTO timeline_events (
         patient_id,
-        type,
+        appointment_type,
         title,
         description,
         badge,
