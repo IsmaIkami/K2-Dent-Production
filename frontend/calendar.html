@@ -1984,7 +1984,7 @@
                     ` : ''}
                 `;
 
-                // Notification status badges
+                // Notification status badges - toujours afficher pour vue complète
                 const notificationBadges = document.createElement('div');
                 notificationBadges.style.cssText = 'display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;';
 
@@ -1994,7 +1994,7 @@
                     </span>` :
                     (patient?.email ?
                         `<span class="tag" style="background: #FF950015; color: #FF9500; font-size: 11px;">⏳ Email non envoyé</span>` :
-                        '');
+                        `<span class="tag" style="background: #8E8E9315; color: #8E8E93; font-size: 11px;">📧 Pas d'email</span>`);
 
                 const smsStatus = apt.sms_sent_at ?
                     `<span class="tag" style="background: #34C75915; color: #34C759; font-size: 11px;">
@@ -2002,7 +2002,7 @@
                     </span>` :
                     ((patient?.mobile || patient?.phone) ?
                         `<span class="tag" style="background: #FF950015; color: #FF9500; font-size: 11px;">⏳ SMS non envoyé</span>` :
-                        '');
+                        `<span class="tag" style="background: #8E8E9315; color: #8E8E93; font-size: 11px;">📱 Pas de tél</span>`);
 
                 notificationBadges.innerHTML = emailStatus + smsStatus;
                 detailsDiv.appendChild(notificationBadges);
@@ -2018,11 +2018,11 @@
 
                 const emailBtn = patient?.email ?
                     `<button class="action-btn" onclick="event.stopPropagation(); sendManualEmailReminder('${apt.id}')" style="white-space: nowrap; background: var(--primary); color: white;">📧 Email</button>` :
-                    '';
+                    `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; white-space: nowrap;" title="Patient sans email - Ajouter dans dossier patient">📧 Email</button>`;
 
                 const smsBtn = (patient?.mobile || patient?.phone) ?
                     `<button class="action-btn" onclick="event.stopPropagation(); sendManualSMSReminder('${apt.id}')" style="white-space: nowrap; background: var(--success); color: white;">📱 SMS</button>` :
-                    '';
+                    `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; white-space: nowrap;" title="Patient sans téléphone - Ajouter dans dossier patient">📱 SMS</button>`;
 
                 actionsDiv.innerHTML = `
                     <button class="action-btn" onclick='event.stopPropagation(); editAppointment(${JSON.stringify(apt).replace(/'/g, "\\'")})' style="white-space: nowrap;">✏️ Modifier</button>
