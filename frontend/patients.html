@@ -3695,6 +3695,11 @@
             addAutocomplete(form.chief_complaint, commonDentalComplaints);
         }
 
+        // Normalize string by removing accents for better autocomplete matching
+        function normalizeString(str) {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
         function addAutocomplete(input, suggestions) {
             if (!input) return;
 
@@ -3728,8 +3733,9 @@
                 this.parentNode.style.position = 'relative';
                 this.parentNode.appendChild(autocompleteList);
 
+                const normalizedVal = normalizeString(val);
                 const matches = suggestions.filter(s =>
-                    s.toLowerCase().includes(val.toLowerCase())
+                    normalizeString(s).includes(normalizedVal)
                 ).slice(0, 8);
 
                 matches.forEach(suggestion => {
