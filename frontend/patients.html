@@ -3292,14 +3292,23 @@
             }
         }
 
+        let isSavingAnamnesis = false; // Protection contre double soumission
+
         async function saveAnamnesis(event) {
             event.preventDefault();
+
+            // Prevent double submission
+            if (isSavingAnamnesis) {
+                console.warn('Anamnesis save already in progress');
+                return;
+            }
 
             if (!supabaseInitialized) {
                 alert('⚠️ Supabase non configuré');
                 return;
             }
 
+            isSavingAnamnesis = true;
             const form = event.target;
             const formData = new FormData(form);
 
@@ -3372,6 +3381,8 @@
             } catch (error) {
                 console.error('Error saving anamnesis:', error);
                 alert('❌ Erreur lors de l\'enregistrement: ' + error.message);
+            } finally {
+                isSavingAnamnesis = false;
             }
         }
 
@@ -3390,7 +3401,21 @@
 
                 if (error) throw error;
 
-                displayAnamnesesHistory(patientId, data || []);
+                // Dédupliquer les anamnèses par ID (protection contre doublons)
+                const uniqueAnamneses = [];
+                const seenIds = new Set();
+
+                (data || []).forEach(anamnesis => {
+                    if (!seenIds.has(anamnesis.id)) {
+                        seenIds.add(anamnesis.id);
+                        uniqueAnamneses.push(anamnesis);
+                    } else {
+                        console.warn('Duplicate anamnesis detected:', anamnesis.id);
+                    }
+                });
+
+                console.log(`Loading ${uniqueAnamneses.length} unique anamneses for patient ${patientId}`);
+                displayAnamnesesHistory(patientId, uniqueAnamneses);
 
             } catch (error) {
                 console.error('Error loading anamneses:', error);
