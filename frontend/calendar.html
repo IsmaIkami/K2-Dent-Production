@@ -1984,16 +1984,51 @@
                     ` : ''}
                 `;
 
+                // Notification status badges
+                const notificationBadges = document.createElement('div');
+                notificationBadges.style.cssText = 'display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;';
+
+                const emailStatus = apt.email_sent_at ?
+                    `<span class="tag" style="background: #34C75915; color: #34C759; font-size: 11px;">
+                        ✅ Email envoyé ${new Date(apt.email_sent_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </span>` :
+                    (patient?.email ?
+                        `<span class="tag" style="background: #FF950015; color: #FF9500; font-size: 11px;">⏳ Email non envoyé</span>` :
+                        '');
+
+                const smsStatus = apt.sms_sent_at ?
+                    `<span class="tag" style="background: #34C75915; color: #34C759; font-size: 11px;">
+                        ✅ SMS envoyé ${new Date(apt.sms_sent_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </span>` :
+                    ((patient?.mobile || patient?.phone) ?
+                        `<span class="tag" style="background: #FF950015; color: #FF9500; font-size: 11px;">⏳ SMS non envoyé</span>` :
+                        '');
+
+                notificationBadges.innerHTML = emailStatus + smsStatus;
+                detailsDiv.appendChild(notificationBadges);
+
+                // Actions section with quick action buttons
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'appointment-actions';
+                actionsDiv.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-left: auto;';
 
                 const dossierBtn = patient?.niss ?
-                    `<button class="action-btn" onclick="window.location.href='dashboard.html?niss=${patient.niss}'">👤 Dossier</button>` :
-                    `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Patient sans NISS">👤 Dossier</button>`;
+                    `<button class="action-btn" onclick="window.location.href='dashboard.html?niss=${patient.niss}'" style="white-space: nowrap;">👤 Dossier</button>` :
+                    `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; white-space: nowrap;" title="Patient sans NISS">👤 Dossier</button>`;
+
+                const emailBtn = patient?.email ?
+                    `<button class="action-btn" onclick="event.stopPropagation(); sendManualEmailReminder('${apt.id}')" style="white-space: nowrap; background: var(--primary); color: white;">📧 Email</button>` :
+                    '';
+
+                const smsBtn = (patient?.mobile || patient?.phone) ?
+                    `<button class="action-btn" onclick="event.stopPropagation(); sendManualSMSReminder('${apt.id}')" style="white-space: nowrap; background: var(--success); color: white;">📱 SMS</button>` :
+                    '';
 
                 actionsDiv.innerHTML = `
-                    <button class="action-btn" onclick='editAppointment(${JSON.stringify(apt).replace(/'/g, "\\'")})'>✏️ Modifier</button>
+                    <button class="action-btn" onclick='event.stopPropagation(); editAppointment(${JSON.stringify(apt).replace(/'/g, "\\'")})' style="white-space: nowrap;">✏️ Modifier</button>
                     ${dossierBtn}
+                    ${emailBtn}
+                    ${smsBtn}
                 `;
 
                 item.appendChild(timeDiv);
@@ -2466,6 +2501,73 @@ L'équipe DentalCockpit Pro
             console.log('📅 Reminders would be scheduled in production system');
         }
 
+        // Manually send email reminder for appointment
+        async function sendManualEmailReminder(appointmentId) {
+            try {
+                const apt = appointments.find(a => a.id === appointmentId);
+                if (!apt) {
+                    alert('❌ Rendez-vous introuvable');
+                    return;
+                }
+
+                const patient = patients.find(p => p.id === apt.patient_id);
+                if (!patient || !patient.email) {
+                    alert('⚠️ Patient sans adresse email');
+                    return;
+                }
+
+                const success = await sendEmailConfirmation(patient, apt);
+                if (success) {
+                    // Update notification timestamp
+                    await window.supabaseClient
+                        .from('appointments')
+                        .update({ email_sent_at: new Date().toISOString() })
+                        .eq('id', appointmentId);
+
+                    await loadAppointments();
+                    renderMainCalendar();
+                    alert('✅ Email de rappel envoyé à ' + patient.email);
+                }
+            } catch (error) {
+                console.error('Error sending manual email:', error);
+                alert('❌ Erreur lors de l\'envoi de l\'email');
+            }
+        }
+
+        // Manually send SMS reminder for appointment
+        async function sendManualSMSReminder(appointmentId) {
+            try {
+                const apt = appointments.find(a => a.id === appointmentId);
+                if (!apt) {
+                    alert('❌ Rendez-vous introuvable');
+                    return;
+                }
+
+                const patient = patients.find(p => p.id === apt.patient_id);
+                const phone = patient?.mobile || patient?.phone;
+                if (!patient || !phone) {
+                    alert('⚠️ Patient sans numéro de téléphone');
+                    return;
+                }
+
+                const success = await sendSMSReminder(patient, apt, 'reminder_24h');
+                if (success) {
+                    // Update notification timestamp
+                    await window.supabaseClient
+                        .from('appointments')
+                        .update({ sms_sent_at: new Date().toISOString() })
+                        .eq('id', appointmentId);
+
+                    await loadAppointments();
+                    renderMainCalendar();
+                    alert('✅ SMS de rappel envoyé au ' + phone);
+                }
+            } catch (error) {
+                console.error('Error sending manual SMS:', error);
+                alert('❌ Erreur lors de l\'envoi du SMS');
+            }
+        }
+
         // Save appointment
         document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -2510,6 +2612,8 @@ L'équipe DentalCockpit Pro
             console.log('📋 Full appointment data:', appointmentData);
 
             try {
+                let savedAppointmentId = appointmentId;
+
                 if (appointmentId) {
                     const { error } = await window.supabaseClient
                         .from('appointments')
@@ -2517,29 +2621,46 @@ L'équipe DentalCockpit Pro
                         .eq('id', appointmentId);
                     if (error) throw error;
                 } else {
-                    const { error } = await window.supabaseClient
+                    const { data, error } = await window.supabaseClient
                         .from('appointments')
-                        .insert([appointmentData]);
+                        .insert([appointmentData])
+                        .select();
                     if (error) throw error;
+                    savedAppointmentId = data[0]?.id;
                 }
 
                 // Send notifications for new appointments or status changes to "confirmed"
                 const patient = patients.find(p => p.id === patientId);
+                let notificationStatus = { emailSent: false, smsSent: false };
+
                 if (patient && (!appointmentId || status === 'confirmed')) {
                     console.log('📬 Sending appointment notifications...');
 
                     // Send email confirmation if patient has email
                     if (patient.email) {
-                        await sendEmailConfirmation(patient, appointmentData);
+                        notificationStatus.emailSent = await sendEmailConfirmation(patient, appointmentData);
                     }
 
                     // Send SMS confirmation if patient has phone
                     if (patient.mobile || patient.phone) {
-                        await sendSMSReminder(patient, appointmentData, 'confirmation');
+                        notificationStatus.smsSent = await sendSMSReminder(patient, appointmentData, 'confirmation');
                     }
 
                     // Schedule automatic reminders
                     scheduleAppointmentReminders(patient, appointmentData);
+
+                    // Update appointment with notification timestamps
+                    const now = new Date().toISOString();
+                    const notificationData = {};
+                    if (notificationStatus.emailSent) notificationData.email_sent_at = now;
+                    if (notificationStatus.smsSent) notificationData.sms_sent_at = now;
+
+                    if (Object.keys(notificationData).length > 0 && savedAppointmentId) {
+                        await window.supabaseClient
+                            .from('appointments')
+                            .update(notificationData)
+                            .eq('id', savedAppointmentId);
+                    }
                 }
 
                 closeAppointmentModal();
