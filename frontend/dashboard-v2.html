@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Management - DentalCockpit Pro</title>
+    <script src="auth-check.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --secondary: #00C896;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --purple: #8B5CF6;
+            --bg-main: #0A0E1A;
+            --bg-card: #141B2D;
+            --bg-hover: #1E2740;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B92A8;
+            --border: #2A3347;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E8ECF1;
+            --text-primary: #1A1D29;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            width: 280px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .user-info-compact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .user-avatar-display {
+            font-size: 24px;
+        }
+
+        .user-name-display {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 3-Column Case Management Layout */
+        .case-management-container {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 220px 1fr 280px;
+            gap: 24px;
+            max-width: none;
+        }
+
+        /* Left Column: Quick Actions */
+        .quick-actions-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 102, 255, 0.15);
+        }
+
+        .quick-action-btn .icon {
+            font-size: 20px;
+        }
+
+        .quick-action-btn .count-badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Center Column: Main Widgets */
+        .main-widgets-area {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .widget-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .widget-card:hover {
+            border-color: rgba(0, 102, 255, 0.3);
+            box-shadow: 0 12px 32px rgba(0, 102, 255, 0.1);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .widget-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .widget-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .widget-btn {
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .widget-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        /* Patient Header Widget */
+        .patient-header-widget {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(0, 200, 150, 0.1) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 102, 255, 0.2);
+        }
+
+        .patient-header-content {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .patient-avatar-xl {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 0 8px 24px rgba(0, 102, 255, 0.3);
+        }
+
+        .patient-info-main {
+            flex: 1;
+        }
+
+        .patient-name-xl {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .patient-meta-row {
+            display: flex;
+            gap: 24px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .patient-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .patient-score-ring {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .score-ring-circle {
+            transform: rotate(-90deg);
+        }
+
+        .score-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+
+        .score-ring-progress {
+            fill: none;
+            stroke: var(--success);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .score-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .score-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Dental Chart Mini */
+        .dental-chart-mini {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .tooth-mini {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tooth-mini:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .tooth-mini.healthy {
+            background: rgba(52, 199, 89, 0.15);
+            border-color: var(--success);
+        }
+
+        .tooth-mini.watch {
+            background: rgba(255, 149, 0, 0.15);
+            border-color: var(--warning);
+        }
+
+        .tooth-mini.urgent {
+            background: rgba(255, 59, 48, 0.15);
+            border-color: var(--danger);
+        }
+
+        /* AI Insights Widget */
+        .ai-insight-item {
+            padding: 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .ai-insight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .ai-insight-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .confidence-badge {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--purple);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .ai-insight-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Timeline Sidebar */
+        .timeline-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timeline-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timeline-filter-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .timeline-filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .timeline-filter-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+        }
+
+        .timeline-events {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timeline-event {
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-left: 3px solid var(--primary);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .timeline-event.ai {
+            border-left-color: var(--purple);
+        }
+
+        .timeline-event.treatment {
+            border-left-color: var(--success);
+        }
+
+        .timeline-event.payment {
+            border-left-color: var(--warning);
+        }
+
+        .timeline-event.communication {
+            border-left-color: var(--secondary);
+        }
+
+        .timeline-event-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .timeline-event-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-event-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .timeline-event-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .timeline-event-badge.ai {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--purple);
+        }
+
+        .timeline-event-badge.manual {
+            background: rgba(0, 102, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .timeline-event-badge.xray {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+        }
+
+        /* Responsive */
+        @media (max-width: 1600px) {
+            .case-management-container {
+                grid-template-columns: 200px 1fr 260px;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .case-management-container {
+                grid-template-columns: 1fr 280px;
+            }
+
+            .quick-actions-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .case-management-container {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-sidebar {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- K2 Configuration -->
+    <script src="config.js"></script>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🦷</div>
+                <div class="logo-text">DentalCockpit Pro</div>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="patients.html" class="nav-item">
+                        <span>👥</span>
+                        <span>Patients</span>
+                    </a>
+                    <a href="calendar.html" class="nav-item">
+                        <span>📅</span>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="dashboard-v2.html" class="nav-item active">
+                        <span>📋</span>
+                        <span>Case Management</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Clinique</div>
+                    <a href="dental-chart.html" class="nav-item">
+                        <span>🦷</span>
+                        <span>Schéma Dentaire</span>
+                    </a>
+                    <a href="paro.html" class="nav-item">
+                        <span>📊</span>
+                        <span>Parodontologie</span>
+                    </a>
+                    <a href="prescriptions.html" class="nav-item">
+                        <span>💊</span>
+                        <span>Prescriptions</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Intelligence Artificielle</div>
+                    <a href="ai-analysis.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>Analyses IA</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="topbar">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Rechercher patient, dossier, diagnostic...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="icon-btn" onclick="toggleTheme()" id="themeToggle" title="Changer le thème">
+                        🌙
+                    </div>
+                    <div class="user-info-compact">
+                        <span id="userAvatar" class="user-avatar-display">👤</span>
+                        <span id="userName" class="user-name-display">Dr. Sialyen</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Management 3-Column Layout -->
+            <div class="case-management-container">
+                <!-- Left Column: Quick Actions -->
+                <div class="quick-actions-sidebar">
+                    <a href="calendar.html" class="quick-action-btn">
+                        <span class="icon">📅</span>
+                        <span>Planifier RDV</span>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="sendEmail(); return false;">
+                        <span class="icon">📧</span>
+                        <span>Envoyer Email</span>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="sendSMS(); return false;">
+                        <span class="icon">📱</span>
+                        <span>Envoyer SMS</span>
+                    </a>
+                    <a href="prescriptions.html" class="quick-action-btn">
+                        <span class="icon">💊</span>
+                        <span>Prescription</span>
+                        <span class="count-badge" id="rxPendingCount" style="display: none;">0</span>
+                    </a>
+                    <a href="certificates.html" class="quick-action-btn">
+                        <span class="icon">📄</span>
+                        <span>Certificat</span>
+                    </a>
+                    <a href="xrays.html" class="quick-action-btn">
+                        <span class="icon">📷</span>
+                        <span>Radiographies</span>
+                    </a>
+                </div>
+
+                <!-- Center Column: Main Widgets -->
+                <div class="main-widgets-area">
+                    <!-- Widget 1: Patient Header -->
+                    <div class="widget-card patient-header-widget">
+                        <div class="patient-header-content">
+                            <div class="patient-avatar-xl" id="patientAvatar">👤</div>
+                            <div class="patient-info-main">
+                                <h1 class="patient-name-xl" id="patientName">Chargement...</h1>
+                                <div class="patient-meta-row">
+                                    <div class="patient-meta-item">
+                                        <span>📧</span>
+                                        <span id="patientEmail">-</span>
+                                    </div>
+                                    <div class="patient-meta-item">
+                                        <span>📞</span>
+                                        <span id="patientPhone">-</span>
+                                    </div>
+                                    <div class="patient-meta-item">
+                                        <span>🎂</span>
+                                        <span id="patientAge">-</span>
+                                    </div>
+                                    <div class="patient-meta-item">
+                                        <span>🏥</span>
+                                        <span id="patientMutuelle">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="patient-score-ring">
+                                <svg class="score-ring-circle" width="100" height="100">
+                                    <circle class="score-ring-bg" cx="50" cy="50" r="42"></circle>
+                                    <circle class="score-ring-progress" cx="50" cy="50" r="42"
+                                            id="scoreCircle"
+                                            stroke-dasharray="264"
+                                            stroke-dashoffset="66"></circle>
+                                </svg>
+                                <div class="score-ring-text">
+                                    <div class="score-number" id="patientScore">92</div>
+                                    <div class="score-label">Score</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-stats-bar">
+                            <div class="stat-item">
+                                <div class="stat-value" id="statAppointments">12</div>
+                                <div class="stat-label">RDV</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statPunctuality">98%</div>
+                                <div class="stat-label">Ponctuel</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statSpending">€2.4k</div>
+                                <div class="stat-label">Dépensé</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statPlanCompletion">80%</div>
+                                <div class="stat-label">Plan</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statNoShows">0</div>
+                                <div class="stat-label">No-show</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 2: Dental Chart Mini -->
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <div class="widget-title">
+                                <span>🦷</span>
+                                <span>Schéma Dentaire</span>
+                            </div>
+                            <div class="widget-actions">
+                                <button class="widget-btn" onclick="window.location.href='dental-chart.html'">
+                                    Voir complet
+                                </button>
+                            </div>
+                        </div>
+                        <div class="dental-chart-mini" id="dentalChartMini">
+                            <!-- Teeth 18-11 (top right to top left) -->
+                            <div class="tooth-mini healthy" title="18">18</div>
+                            <div class="tooth-mini healthy" title="17">17</div>
+                            <div class="tooth-mini watch" title="16">16</div>
+                            <div class="tooth-mini healthy" title="15">15</div>
+                            <div class="tooth-mini healthy" title="14">14</div>
+                            <div class="tooth-mini healthy" title="13">13</div>
+                            <div class="tooth-mini healthy" title="12">12</div>
+                            <div class="tooth-mini healthy" title="11">11</div>
+                            <!-- Teeth 21-28 (top left to top right) -->
+                            <div class="tooth-mini healthy" title="21">21</div>
+                            <div class="tooth-mini healthy" title="22">22</div>
+                            <div class="tooth-mini healthy" title="23">23</div>
+                            <div class="tooth-mini healthy" title="24">24</div>
+                            <div class="tooth-mini healthy" title="25">25</div>
+                            <div class="tooth-mini healthy" title="26">26</div>
+                            <div class="tooth-mini healthy" title="27">27</div>
+                            <div class="tooth-mini healthy" title="28">28</div>
+
+                            <!-- Teeth 48-41 (bottom right to bottom left) -->
+                            <div class="tooth-mini healthy" title="48">48</div>
+                            <div class="tooth-mini healthy" title="47">47</div>
+                            <div class="tooth-mini healthy" title="46">46</div>
+                            <div class="tooth-mini healthy" title="45">45</div>
+                            <div class="tooth-mini healthy" title="44">44</div>
+                            <div class="tooth-mini healthy" title="43">43</div>
+                            <div class="tooth-mini healthy" title="42">42</div>
+                            <div class="tooth-mini healthy" title="41">41</div>
+                            <!-- Teeth 31-38 (bottom left to bottom right) -->
+                            <div class="tooth-mini healthy" title="31">31</div>
+                            <div class="tooth-mini healthy" title="32">32</div>
+                            <div class="tooth-mini healthy" title="33">33</div>
+                            <div class="tooth-mini healthy" title="34">34</div>
+                            <div class="tooth-mini healthy" title="35">35</div>
+                            <div class="tooth-mini urgent" title="36">36</div>
+                            <div class="tooth-mini healthy" title="37">37</div>
+                            <div class="tooth-mini healthy" title="38">38</div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 5: AI Insights -->
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <div class="widget-title">
+                                <span>🤖</span>
+                                <span>Insights IA</span>
+                            </div>
+                            <div class="widget-actions">
+                                <button class="widget-btn" onclick="refreshAIInsights()">
+                                    Actualiser
+                                </button>
+                            </div>
+                        </div>
+                        <div id="aiInsightsContainer">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <div>Chargement des insights IA...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Timeline -->
+                <div class="timeline-sidebar">
+                    <div class="timeline-filters">
+                        <button class="timeline-filter-btn active" onclick="filterTimeline('all')">Tous</button>
+                        <button class="timeline-filter-btn" onclick="filterTimeline('ai')">IA</button>
+                        <button class="timeline-filter-btn" onclick="filterTimeline('treatment')">Soins</button>
+                        <button class="timeline-filter-btn" onclick="filterTimeline('payment')">Paiements</button>
+                        <button class="timeline-filter-btn" onclick="filterTimeline('communication')">Comms</button>
+                    </div>
+
+                    <div class="timeline-events" id="timelineEvents">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div style="font-size: 14px;">Chargement timeline...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global state
+        let currentPatient = null;
+        let currentPatientId = null;
+        let timelineData = [];
+        let aiInsights = [];
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.textContent = newTheme === 'light' ? '☀️' : '🌙';
+        }
+
+        // Load theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.textContent = savedTheme === 'light' ? '☀️' : '🌙';
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Dashboard V2 Case Management - Loading...');
+
+            // Get patient NISS from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const niss = urlParams.get('niss');
+
+            if (!niss) {
+                // Show error if no NISS provided
+                document.querySelector('.main-widgets-area').innerHTML = `
+                    <div style="text-align: center; padding: 100px 40px; color: var(--text-secondary);">
+                        <div style="font-size: 64px; margin-bottom: 24px;">⚠️</div>
+                        <h2 style="font-size: 24px; color: var(--text-primary); margin-bottom: 12px;">
+                            Aucun patient sélectionné
+                        </h2>
+                        <p style="font-size: 16px; margin-bottom: 32px;">
+                            Veuillez sélectionner un patient depuis la liste des patients.
+                        </p>
+                        <a href="patients.html" style="display: inline-block; padding: 16px 32px; background: var(--primary); color: white; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                            ← Retour aux patients
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                // Load patient data
+                await loadPatientData(niss);
+
+                // Load additional data in parallel
+                await Promise.all([
+                    loadTimeline(),
+                    loadAIInsights()
+                ]);
+
+                console.log('✅ Dashboard V2 loaded successfully');
+            } catch (error) {
+                console.error('❌ Error loading dashboard:', error);
+                showError('Erreur lors du chargement du dossier patient');
+            }
+        });
+
+        // Load patient data from Supabase
+        async function loadPatientData(niss) {
+            try {
+                console.log('📥 Loading patient with NISS:', niss);
+
+                // Get patient by NISS
+                const patient = await DB.getPatientByNISS(niss);
+
+                if (!patient) {
+                    throw new Error('Patient non trouvé');
+                }
+
+                currentPatient = patient;
+                currentPatientId = patient.id;
+
+                // Update patient header
+                document.getElementById('patientName').textContent =
+                    `${patient.first_name} ${patient.last_name}`;
+                document.getElementById('patientEmail').textContent =
+                    patient.email || 'Pas d\'email';
+                document.getElementById('patientPhone').textContent =
+                    patient.mobile || patient.phone || 'Pas de téléphone';
+
+                // Calculate age
+                const age = calculateAge(patient.date_of_birth);
+                document.getElementById('patientAge').textContent = `${age} ans`;
+
+                document.getElementById('patientMutuelle').textContent =
+                    patient.mutuelle_name || patient.mutuelle_code || 'Non renseigné';
+
+                // Update score (mock data for now)
+                const score = Math.floor(Math.random() * 20) + 80; // 80-100
+                updateScoreRing(score);
+
+                // Update quick stats (mock data)
+                document.getElementById('statAppointments').textContent = '12';
+                document.getElementById('statPunctuality').textContent = '98%';
+                document.getElementById('statSpending').textContent = '€2.4k';
+                document.getElementById('statPlanCompletion').textContent = '80%';
+                document.getElementById('statNoShows').textContent = '0';
+
+                console.log('✅ Patient data loaded:', patient.first_name, patient.last_name);
+            } catch (error) {
+                console.error('Error loading patient data:', error);
+                throw error;
+            }
+        }
+
+        // Calculate age from date of birth
+        function calculateAge(dateOfBirth) {
+            if (!dateOfBirth) return '?';
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Update score ring animation
+        function updateScoreRing(score) {
+            const circle = document.getElementById('scoreCircle');
+            const scoreText = document.getElementById('patientScore');
+
+            scoreText.textContent = score;
+
+            // Calculate stroke-dashoffset (264 = circumference for r=42)
+            const circumference = 264;
+            const offset = circumference - (score / 100) * circumference;
+
+            circle.style.strokeDashoffset = offset;
+
+            // Change color based on score
+            if (score >= 90) {
+                circle.style.stroke = 'var(--success)';
+            } else if (score >= 70) {
+                circle.style.stroke = 'var(--warning)';
+            } else {
+                circle.style.stroke = 'var(--danger)';
+            }
+        }
+
+        // Load timeline events
+        async function loadTimeline() {
+            if (!currentPatientId) return;
+
+            try {
+                console.log('📅 Loading timeline for patient:', currentPatientId);
+
+                const events = await DB.getPatientTimeline(currentPatientId);
+                timelineData = events || [];
+
+                renderTimeline(timelineData);
+
+                console.log(`✅ Timeline loaded: ${timelineData.length} events`);
+            } catch (error) {
+                console.error('Error loading timeline:', error);
+                document.getElementById('timelineEvents').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
+                        <div>Erreur de chargement</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Render timeline events
+        function renderTimeline(events, filter = 'all') {
+            const container = document.getElementById('timelineEvents');
+
+            if (!events || events.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <div style="font-size: 32px; margin-bottom: 12px;">📭</div>
+                        <div>Aucun événement</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Filter events
+            let filteredEvents = events;
+            if (filter !== 'all') {
+                filteredEvents = events.filter(e => e.type === filter);
+            }
+
+            // Sort by date (most recent first)
+            filteredEvents.sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+
+            // Render events
+            container.innerHTML = filteredEvents.map(event => {
+                const date = new Date(event.event_date);
+                const formattedDate = date.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const badgeClass = event.badge ? event.badge.toLowerCase() : 'manual';
+                const eventClass = event.type || 'treatment';
+
+                return `
+                    <div class="timeline-event ${eventClass}">
+                        <div class="timeline-event-date">${formattedDate}</div>
+                        <div class="timeline-event-title">${event.title || 'Événement'}</div>
+                        <div class="timeline-event-description">${event.description || ''}</div>
+                        <span class="timeline-event-badge ${badgeClass}">${event.badge || 'MANUAL'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter timeline
+        function filterTimeline(type) {
+            // Update active button
+            document.querySelectorAll('.timeline-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Render filtered timeline
+            renderTimeline(timelineData, type);
+        }
+
+        // Load AI Insights
+        async function loadAIInsights() {
+            if (!currentPatientId) return;
+
+            try {
+                console.log('🤖 Loading AI insights for patient:', currentPatientId);
+
+                // Get latest anamnesis with AI type
+                const anamnesisList = await DB.getPatientAnamnesis(currentPatientId);
+                const aiAnamnesis = anamnesisList.filter(a => a.type === 'AI');
+
+                const container = document.getElementById('aiInsightsContainer');
+
+                if (aiAnamnesis.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <div style="font-size: 32px; margin-bottom: 12px;">🤖</div>
+                            <div>Aucune analyse IA disponible</div>
+                            <div style="margin-top: 16px;">
+                                <a href="patients.html?niss=${currentPatient.niss}"
+                                   style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                                    Lancer une analyse IA →
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mock AI insights for demo
+                const insights = [
+                    {
+                        title: 'Risque carie dent #16',
+                        description: 'Détection probable de carie sur la dent 16 basée sur l\'historique et l\'examen visuel',
+                        confidence: 94
+                    },
+                    {
+                        title: 'Rappel contrôle périodique',
+                        description: 'Dernier contrôle il y a 5 mois. Rappel recommandé dans 1 mois',
+                        confidence: 100
+                    },
+                    {
+                        title: 'Plan de traitement à 80%',
+                        description: 'Le traitement orthodontique progresse bien. Prochaine visite recommandée dans 2 semaines',
+                        confidence: 87
+                    }
+                ];
+
+                container.innerHTML = insights.map(insight => `
+                    <div class="ai-insight-item">
+                        <div class="ai-insight-header">
+                            <div class="ai-insight-title">${insight.title}</div>
+                            <span class="confidence-badge">${insight.confidence}%</span>
+                        </div>
+                        <div class="ai-insight-description">${insight.description}</div>
+                    </div>
+                `).join('');
+
+                console.log('✅ AI insights loaded');
+            } catch (error) {
+                console.error('Error loading AI insights:', error);
+                document.getElementById('aiInsightsContainer').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
+                        <div>Erreur de chargement</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Refresh AI insights
+        async function refreshAIInsights() {
+            document.getElementById('aiInsightsContainer').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div>Actualisation...</div>
+                </div>
+            `;
+            await loadAIInsights();
+        }
+
+        // Quick actions
+        function sendEmail() {
+            if (!currentPatient || !currentPatient.email) {
+                alert('⚠️ Ce patient n\'a pas d\'adresse email');
+                return;
+            }
+            alert(`📧 Envoi email à ${currentPatient.email}\n\nFonctionnalité en cours d'implémentation...`);
+        }
+
+        function sendSMS() {
+            if (!currentPatient || (!currentPatient.mobile && !currentPatient.phone)) {
+                alert('⚠️ Ce patient n\'a pas de numéro de téléphone');
+                return;
+            }
+            const phone = currentPatient.mobile || currentPatient.phone;
+            alert(`📱 Envoi SMS au ${phone}\n\nFonctionnalité en cours d'implémentation...`);
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.querySelector('.case-management-container');
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 100px 40px; color: var(--text-secondary);">
+                    <div style="font-size: 64px; margin-bottom: 24px;">⚠️</div>
+                    <h2 style="font-size: 24px; color: var(--danger); margin-bottom: 12px;">
+                        ${message}
+                    </h2>
+                    <p style="font-size: 16px; margin-bottom: 32px;">
+                        Veuillez réessayer ou contacter le support technique.
+                    </p>
+                    <a href="patients.html" style="display: inline-block; padding: 16px 32px; background: var(--primary); color: white; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                        ← Retour aux patients
+                    </a>
+                </div>
+            `;
+        }
+
+        console.log('📦 Dashboard V2 Case Management - Script loaded');
+    </script>
+</body>
+</html>
