@@ -393,6 +393,31 @@
             transform: translateY(0);
         }
 
+        .btn-add-anamnesis {
+            padding: 8px 16px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add-anamnesis:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        }
+
+        .btn-add-anamnesis:active {
+            transform: translateY(0);
+        }
+
         .patient-list-search {
             position: relative;
         }
@@ -1424,6 +1449,68 @@
             transform: translateY(0);
         }
 
+        /* Anamnesis Cards */
+        .anamnesis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .anamnesis-card:hover {
+            border-color: var(--primary);
+        }
+
+        .anamnesis-header {
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            user-select: none;
+        }
+
+        .anamnesis-header:hover {
+            background: var(--bg-hover);
+        }
+
+        .anamnesis-toggle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+
+        .anamnesis-content {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .anamnesis-content p {
+            margin: 8px 0;
+        }
+
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-badge.urgent {
+            background: rgba(255, 59, 48, 0.15);
+            color: var(--error);
+        }
+
+        .priority-badge.high {
+            background: rgba(255, 149, 0, 0.15);
+            color: var(--warning);
+        }
+
         .modal-header h2 {
             margin: 0;
             color: var(--text-primary);
@@ -1853,6 +1940,182 @@
         </div>
     </div>
 
+    <!-- Modal Anamnèse -->
+    <div id="anamnesisModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>📋 Nouvelle Anamnèse</h2>
+                <button class="modal-close" onclick="closeAnamnesisModal()">&times;</button>
+            </div>
+
+            <form id="anamnesisForm" onsubmit="saveAnamnesis(event)">
+                <input type="hidden" name="patient_id" id="anamnesis_patient_id">
+
+                <div class="form-grid">
+                    <!-- Date et Praticien -->
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" name="anamnesis_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Praticien</label>
+                        <input type="text" name="practitioner_name" placeholder="Dr. Nom">
+                    </div>
+
+                    <!-- Motif de consultation -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Motif de consultation *</label>
+                        <textarea name="chief_complaint" rows="2" required placeholder="Ex: Douleur molaire inf. droite"></textarea>
+                    </div>
+
+                    <!-- Antécédents médicaux -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Conditions médicales</label>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                                <input type="checkbox" name="medical_diabetes" value="Diabète"> Diabète
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                                <input type="checkbox" name="medical_hypertension" value="Hypertension"> Hypertension
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                                <input type="checkbox" name="medical_cardiac" value="Problèmes cardiaques"> Cardiaque
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                                <input type="checkbox" name="medical_asthma" value="Asthme"> Asthme
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                                <input type="checkbox" name="medical_hepatitis" value="Hépatite"> Hépatite
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                                <input type="checkbox" name="medical_hiv" value="VIH"> VIH
+                            </label>
+                        </div>
+                        <input type="text" name="medical_other" placeholder="Autres conditions...">
+                    </div>
+
+                    <!-- Allergies et médicaments -->
+                    <div class="form-group">
+                        <label>Allergies</label>
+                        <input type="text" name="allergies" placeholder="Ex: Pénicilline, latex">
+                    </div>
+                    <div class="form-group">
+                        <label>Médications actuelles</label>
+                        <input type="text" name="medications" placeholder="Ex: Aspirine, ...">
+                    </div>
+
+                    <!-- Habitudes -->
+                    <div class="form-group">
+                        <label>Tabac</label>
+                        <select name="smoking_status">
+                            <option value="non-fumeur">Non-fumeur</option>
+                            <option value="ancien">Ancien fumeur</option>
+                            <option value="fumeur">Fumeur actif</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Alcool</label>
+                        <select name="alcohol_consumption">
+                            <option value="none">Aucun</option>
+                            <option value="occasional">Occasionnel</option>
+                            <option value="regular">Régulier</option>
+                            <option value="heavy">Important</option>
+                        </select>
+                    </div>
+
+                    <!-- Historique dentaire -->
+                    <div class="form-group">
+                        <label>Dernière visite dentaire</label>
+                        <input type="date" name="last_dental_visit">
+                    </div>
+                    <div class="form-group">
+                        <label>Douleur actuelle</label>
+                        <select name="dental_pain">
+                            <option value="false">Non</option>
+                            <option value="true">Oui</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Description de la douleur</label>
+                        <input type="text" name="dental_pain_description" placeholder="Localisation, intensité, type...">
+                    </div>
+
+                    <!-- Symptômes -->
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" name="bleeding_gums" value="true"> Saignement gencives
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" name="sensitivity" value="true"> Sensibilité dentaire
+                        </label>
+                    </div>
+
+                    <!-- Examen clinique -->
+                    <div class="form-group">
+                        <label>Hygiène orale (0-10)</label>
+                        <input type="number" name="oral_hygiene_score" min="0" max="10" placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label>État parodontal</label>
+                        <select name="periodontal_status">
+                            <option value="healthy">Sain</option>
+                            <option value="gingivitis">Gingivite</option>
+                            <option value="periodontitis">Parodontite</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Risque carieux</label>
+                        <select name="caries_risk">
+                            <option value="low">Faible</option>
+                            <option value="medium">Moyen</option>
+                            <option value="high">Élevé</option>
+                        </select>
+                    </div>
+
+                    <!-- Plan de traitement -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Traitement proposé</label>
+                        <textarea name="proposed_treatment" rows="3" placeholder="Description du plan de traitement..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Priorité</label>
+                        <select name="treatment_priority">
+                            <option value="low">Faible</option>
+                            <option value="medium">Moyenne</option>
+                            <option value="high">Haute</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Coût estimé (€)</label>
+                        <input type="number" name="estimated_cost" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Notes cliniques</label>
+                        <textarea name="clinical_notes" rows="3" placeholder="Observations, recommandations..."></textarea>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Préoccupations du patient</label>
+                        <textarea name="patient_concerns" rows="2" placeholder="Ce que le patient exprime..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAnamnesisModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Theme Management
         function toggleTheme() {
@@ -2092,6 +2355,9 @@
 
             // Render patient detail panel
             await renderPatientDetail(patient);
+
+            // Load patient anamneses
+            await loadPatientAnamneses(patientId);
         }
 
         // Render patient detail panel with full case management
@@ -2268,6 +2534,24 @@
                             <div class="health-widget-stat">
                                 <span class="status-badge">${patient.mutuelle_code ? 'MC Mutuelle' : 'Pas de mutuelle'}</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anamnèse Section -->
+                <div class="patient-detail-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="patient-detail-section-title">📋 Anamnèse</div>
+                        <button class="btn-add-anamnesis" onclick="openNewAnamnesisModal(${JSON.stringify(patient).replace(/"/g, '&quot;')})" title="Nouvelle anamnèse">
+                            ➕ Nouvelle
+                        </button>
+                    </div>
+                    <div id="anamnesisHistory-${patient.id}">
+                        <!-- Anamnesis history will be loaded here -->
+                        <div style="text-align: center; padding: 24px; color: var(--text-secondary);">
+                            <div style="font-size: 32px; margin-bottom: 8px;">📝</div>
+                            <div>Aucune anamnèse enregistrée</div>
+                            <div style="font-size: 13px; margin-top: 4px;">Cliquez sur "Nouvelle" pour ajouter la première</div>
                         </div>
                     </div>
                 </div>
@@ -2861,6 +3145,270 @@
             } catch (error) {
                 console.error('Error creating patient:', error);
                 alert('❌ Erreur: ' + error.message);
+            }
+        }
+
+        // ===========================
+        // ANAMNESIS FUNCTIONS
+        // ===========================
+
+        function openNewAnamnesisModal(patient) {
+            const modal = document.getElementById('anamnesisModal');
+            const form = document.getElementById('anamnesisForm');
+
+            if (!modal || !form) {
+                console.error('Anamnesis modal not found');
+                return;
+            }
+
+            // Reset form
+            form.reset();
+
+            // Set patient ID
+            document.getElementById('anamnesis_patient_id').value = patient.id;
+
+            // Set default date to today
+            const dateInput = form.querySelector('[name="anamnesis_date"]');
+            if (dateInput) {
+                dateInput.valueAsDate = new Date();
+            }
+
+            // Show modal
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        }
+
+        function closeAnamnesisModal() {
+            const modal = document.getElementById('anamnesisModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+        }
+
+        async function saveAnamnesis(event) {
+            event.preventDefault();
+
+            if (!supabaseInitialized) {
+                alert('⚠️ Supabase non configuré');
+                return;
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            // Collect medical conditions from checkboxes
+            const medicalConditions = [];
+            if (formData.get('medical_diabetes')) medicalConditions.push('Diabète');
+            if (formData.get('medical_hypertension')) medicalConditions.push('Hypertension');
+            if (formData.get('medical_cardiac')) medicalConditions.push('Problèmes cardiaques');
+            if (formData.get('medical_asthma')) medicalConditions.push('Asthme');
+            if (formData.get('medical_hepatitis')) medicalConditions.push('Hépatite');
+            if (formData.get('medical_hiv')) medicalConditions.push('VIH');
+
+            const otherCondition = formData.get('medical_other');
+            if (otherCondition && otherCondition.trim()) {
+                medicalConditions.push(otherCondition.trim());
+            }
+
+            // Parse allergies and medications (comma-separated)
+            const allergiesStr = formData.get('allergies') || '';
+            const allergies = allergiesStr.split(',').map(s => s.trim()).filter(s => s);
+
+            const medicationsStr = formData.get('medications') || '';
+            const medications = medicationsStr.split(',').map(s => s.trim()).filter(s => s);
+
+            // Build anamnesis object
+            const anamnesisData = {
+                patient_id: formData.get('patient_id'),
+                anamnesis_date: formData.get('anamnesis_date'),
+                practitioner_name: formData.get('practitioner_name') || null,
+                chief_complaint: formData.get('chief_complaint'),
+                medical_conditions: medicalConditions.length > 0 ? medicalConditions : null,
+                allergies: allergies.length > 0 ? allergies : null,
+                current_medications: medications.length > 0 ? medications : null,
+                smoking_status: formData.get('smoking_status'),
+                alcohol_consumption: formData.get('alcohol_consumption'),
+                last_dental_visit: formData.get('last_dental_visit') || null,
+                dental_pain: formData.get('dental_pain') === 'true',
+                dental_pain_description: formData.get('dental_pain_description') || null,
+                bleeding_gums: formData.get('bleeding_gums') === 'true',
+                sensitivity: formData.get('sensitivity') === 'true',
+                oral_hygiene_score: formData.get('oral_hygiene_score') ? parseInt(formData.get('oral_hygiene_score')) : null,
+                periodontal_status: formData.get('periodontal_status'),
+                caries_risk: formData.get('caries_risk'),
+                proposed_treatment: formData.get('proposed_treatment') || null,
+                treatment_priority: formData.get('treatment_priority'),
+                estimated_cost: formData.get('estimated_cost') ? parseFloat(formData.get('estimated_cost')) : null,
+                clinical_notes: formData.get('clinical_notes') || null,
+                patient_concerns: formData.get('patient_concerns') || null,
+                created_by: localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')).username : null
+            };
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('anamneses')
+                    .insert([anamnesisData])
+                    .select();
+
+                if (error) throw error;
+
+                console.log('✅ Anamnesis saved:', data);
+                alert('✅ Anamnèse enregistrée avec succès');
+
+                // Close modal
+                closeAnamnesisModal();
+
+                // Reload patient detail to show new anamnesis
+                const patientId = formData.get('patient_id');
+                selectPatient(patientId);
+
+            } catch (error) {
+                console.error('Error saving anamnesis:', error);
+                alert('❌ Erreur lors de l\'enregistrement: ' + error.message);
+            }
+        }
+
+        async function loadPatientAnamneses(patientId) {
+            if (!supabaseInitialized) {
+                console.warn('Supabase not initialized');
+                return;
+            }
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('anamneses')
+                    .select('*')
+                    .eq('patient_id', patientId)
+                    .order('anamnesis_date', { ascending: false });
+
+                if (error) throw error;
+
+                displayAnamnesesHistory(patientId, data || []);
+
+            } catch (error) {
+                console.error('Error loading anamneses:', error);
+            }
+        }
+
+        function displayAnamnesesHistory(patientId, anamneses) {
+            const container = document.getElementById(`anamnesisHistory-${patientId}`);
+            if (!container) {
+                console.warn('Anamnesis history container not found');
+                return;
+            }
+
+            if (!anamneses || anamneses.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: var(--text-secondary);">
+                        <div style="font-size: 32px; margin-bottom: 8px;">📝</div>
+                        <div>Aucune anamnèse enregistrée</div>
+                        <div style="font-size: 13px; margin-top: 4px;">Cliquez sur "Nouvelle" pour ajouter la première</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = anamneses.map((anamnesis, index) => {
+                const date = new Date(anamnesis.anamnesis_date).toLocaleDateString('fr-BE', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const accordionId = `anamnesis-${anamnesis.id}`;
+
+                return `
+                    <div class="anamnesis-card">
+                        <div class="anamnesis-header" onclick="toggleAnamnesis('${accordionId}')">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 4px;">
+                                    📋 ${date}
+                                    ${anamnesis.treatment_priority === 'urgent' ? '<span class="priority-badge urgent">URGENT</span>' : ''}
+                                    ${anamnesis.treatment_priority === 'high' ? '<span class="priority-badge high">Haute</span>' : ''}
+                                </div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">
+                                    ${anamnesis.chief_complaint || 'Pas de motif spécifié'}
+                                </div>
+                            </div>
+                            <span class="anamnesis-toggle" id="${accordionId}-toggle">▼</span>
+                        </div>
+                        <div class="anamnesis-content" id="${accordionId}" style="display: none;">
+                            ${anamnesis.practitioner_name ? `<p><strong>Praticien:</strong> ${anamnesis.practitioner_name}</p>` : ''}
+
+                            ${anamnesis.medical_conditions && anamnesis.medical_conditions.length > 0 ? `
+                                <p><strong>Conditions médicales:</strong> ${anamnesis.medical_conditions.join(', ')}</p>
+                            ` : ''}
+
+                            ${anamnesis.allergies && anamnesis.allergies.length > 0 ? `
+                                <p><strong>⚠️ Allergies:</strong> <span style="color: var(--error);">${anamnesis.allergies.join(', ')}</span></p>
+                            ` : ''}
+
+                            ${anamnesis.current_medications && anamnesis.current_medications.length > 0 ? `
+                                <p><strong>Médications:</strong> ${anamnesis.current_medications.join(', ')}</p>
+                            ` : ''}
+
+                            ${anamnesis.smoking_status !== 'non-fumeur' ? `
+                                <p><strong>Tabac:</strong> ${anamnesis.smoking_status}</p>
+                            ` : ''}
+
+                            ${anamnesis.dental_pain ? `
+                                <p><strong>🚨 Douleur:</strong> ${anamnesis.dental_pain_description || 'Oui'}</p>
+                            ` : ''}
+
+                            ${anamnesis.oral_hygiene_score !== null ? `
+                                <p><strong>Hygiène orale:</strong> ${anamnesis.oral_hygiene_score}/10</p>
+                            ` : ''}
+
+                            ${anamnesis.periodontal_status ? `
+                                <p><strong>État parodontal:</strong> ${anamnesis.periodontal_status}</p>
+                            ` : ''}
+
+                            ${anamnesis.caries_risk ? `
+                                <p><strong>Risque carieux:</strong> ${anamnesis.caries_risk}</p>
+                            ` : ''}
+
+                            ${anamnesis.proposed_treatment ? `
+                                <div style="margin-top: 12px; padding: 12px; background: rgba(0, 102, 255, 0.1); border-radius: 8px;">
+                                    <strong>Plan de traitement:</strong>
+                                    <div style="margin-top: 4px;">${anamnesis.proposed_treatment}</div>
+                                    ${anamnesis.estimated_cost ? `<div style="margin-top: 4px; font-weight: 600;">Coût estimé: €${anamnesis.estimated_cost.toFixed(2)}</div>` : ''}
+                                </div>
+                            ` : ''}
+
+                            ${anamnesis.clinical_notes ? `
+                                <div style="margin-top: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                                    <strong>Notes cliniques:</strong>
+                                    <div style="margin-top: 4px;">${anamnesis.clinical_notes}</div>
+                                </div>
+                            ` : ''}
+
+                            ${anamnesis.patient_concerns ? `
+                                <div style="margin-top: 12px; padding: 12px; background: rgba(255, 149, 0, 0.1); border-radius: 8px;">
+                                    <strong>💭 Préoccupations du patient:</strong>
+                                    <div style="margin-top: 4px;">${anamnesis.patient_concerns}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            console.log(`✅ Displayed ${anamneses.length} anamneses for patient ${patientId}`);
+        }
+
+        function toggleAnamnesis(accordionId) {
+            const content = document.getElementById(accordionId);
+            const toggle = document.getElementById(`${accordionId}-toggle`);
+
+            if (!content || !toggle) return;
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▼';
             }
         }
 
