@@ -366,7 +366,31 @@
         .patient-list-title {
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 16px;
+        }
+
+        .btn-add-patient {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-add-patient:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn-add-patient:active {
+            transform: translateY(0);
         }
 
         .patient-list-search {
@@ -1343,6 +1367,31 @@
             border-bottom: 1px solid var(--border);
         }
 
+        .auto-fill-btn {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-primary);
+        }
+
+        .auto-fill-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+        }
+
+        .auto-fill-btn:active {
+            transform: translateY(0);
+        }
+
         .modal-header h2 {
             margin: 0;
             color: var(--text-primary);
@@ -1567,7 +1616,12 @@
                 <!-- Patient List Panel (35% Left) -->
                 <div class="patient-list-panel">
                     <div class="patient-list-header">
-                        <div class="patient-list-title">👥 Patients</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div class="patient-list-title">👥 Patients</div>
+                            <button class="btn-add-patient" onclick="showNewPatientModal()" title="Créer un nouveau patient">
+                                <span style="font-size: 18px;">➕</span>
+                            </button>
+                        </div>
                         <div class="patient-list-search">
                             <span class="patient-list-search-icon">🔍</span>
                             <input
@@ -1604,21 +1658,37 @@
                 <button class="modal-close" onclick="closeNewPatientModal()">&times;</button>
             </div>
 
-            <div style="margin-bottom: 24px; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <span style="font-size: 24px;">🪪</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: var(--primary);">Lecture automatique carte d'identité</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">Remplissage automatique des informations depuis la carte eID belge</div>
-                    </div>
+            <div style="margin-bottom: 24px;">
+                <div style="font-size: 15px; font-weight: 600; margin-bottom: 16px; text-align: center;">
+                    Remplissage automatique
                 </div>
-                <button type="button" class="btn btn-primary" onclick="scanBelgianEID()" style="width: 100%;">
-                    📡 Scanner Carte d'Identité Belge
-                </button>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+                    <!-- Carte eID -->
+                    <button type="button" class="auto-fill-btn" onclick="scanBelgianEID()">
+                        <span style="font-size: 32px; margin-bottom: 8px;">🪪</span>
+                        <span style="font-size: 13px; font-weight: 600;">Carte eID</span>
+                        <span style="font-size: 11px; color: var(--text-secondary);">Lecteur carte</span>
+                    </button>
+
+                    <!-- ITSME -->
+                    <button type="button" class="auto-fill-btn" onclick="fillFromItsme()">
+                        <span style="font-size: 32px; margin-bottom: 8px;">📱</span>
+                        <span style="font-size: 13px; font-weight: 600;">itsme®</span>
+                        <span style="font-size: 11px; color: var(--text-secondary);">Smartphone</span>
+                    </button>
+
+                    <!-- Google -->
+                    <button type="button" class="auto-fill-btn" onclick="fillFromGoogle()">
+                        <span style="font-size: 32px; margin-bottom: 8px;">🔍</span>
+                        <span style="font-size: 13px; font-weight: 600;">Google</span>
+                        <span style="font-size: 11px; color: var(--text-secondary);">Connexion</span>
+                    </button>
+                </div>
             </div>
 
-            <div style="text-align: center; margin-bottom: 20px; color: var(--text-secondary); font-size: 13px;">
-                OU remplir manuellement
+            <div style="text-align: center; margin-bottom: 20px; color: var(--text-secondary); font-size: 13px; position: relative;">
+                <div style="border-top: 1px solid var(--border); position: absolute; top: 50%; left: 0; right: 0; z-index: 0;"></div>
+                <span style="background: #1a1d2e; padding: 0 16px; position: relative; z-index: 1;">OU remplir manuellement</span>
             </div>
 
             <form id="newPatientForm" onsubmit="createNewPatient(event)">
@@ -2567,8 +2637,79 @@
                 form.niss.value = '85051822334';
                 form.date_of_birth.value = '1985-05-18';
                 form.address.value = 'Rue de la Loi 123, 1000 Bruxelles';
+                form.gender.value = 'M';
 
                 alert('✅ Données eID chargées (TEST)\n\nVeuillez vérifier et compléter les informations manquantes.');
+            }
+        }
+
+        async function fillFromItsme() {
+            // itsme® integration for Belgian identity verification
+            alert('📱 Connexion itsme®\n\n' +
+                  'itsme® est l\'app belge d\'identification numérique.\n\n' +
+                  'Fonctionnement :\n' +
+                  '1. Un QR code s\'affichera\n' +
+                  '2. Scannez-le avec votre app itsme®\n' +
+                  '3. Confirmez sur votre smartphone\n' +
+                  '4. Les données sont automatiquement remplies\n\n' +
+                  'Données récupérées :\n' +
+                  '- Nom et prénom officiels\n' +
+                  '- NISS\n' +
+                  '- Date de naissance\n' +
+                  '- Adresse officielle\n\n' +
+                  '⚙️ Intégration itsme® en cours de développement...');
+
+            // TODO: Integrate with itsme® API
+            // - https://www.itsme.be/developers
+            // - OAuth 2.0 / OpenID Connect flow
+            // - Requires itsme® partner agreement
+
+            // Mock data for demonstration
+            if (confirm('Utiliser des données de test itsme® pour démonstration ?')) {
+                const form = document.getElementById('newPatientForm');
+                form.first_name.value = 'Sophie';
+                form.last_name.value = 'Lejeune';
+                form.niss.value = '92031545678';
+                form.date_of_birth.value = '1992-03-15';
+                form.address.value = 'Avenue Louise 234, 1050 Bruxelles';
+                form.gender.value = 'F';
+                form.email.value = 'sophie.lejeune@example.com';
+                form.phone.value = '+32 478 12 34 56';
+
+                alert('✅ Données itsme® récupérées (TEST)\n\nVeuillez vérifier et compléter les informations manquantes.');
+            }
+        }
+
+        async function fillFromGoogle() {
+            // Google Sign-In integration for contact info
+            alert('🔍 Connexion Google\n\n' +
+                  'Récupérez rapidement les informations de base depuis votre compte Google.\n\n' +
+                  'Fonctionnement :\n' +
+                  '1. Connexion avec votre compte Google\n' +
+                  '2. Autorisation d\'accès aux informations\n' +
+                  '3. Import automatique des données\n\n' +
+                  'Données récupérées :\n' +
+                  '- Nom et prénom\n' +
+                  '- Email\n' +
+                  '- Téléphone (si disponible)\n' +
+                  '- Photo de profil\n\n' +
+                  '⚠️ Le NISS et la date de naissance devront être complétés manuellement.\n\n' +
+                  '⚙️ Intégration Google Sign-In en cours de développement...');
+
+            // TODO: Integrate with Google Sign-In API
+            // - https://developers.google.com/identity/sign-in/web
+            // - OAuth 2.0 flow
+            // - Requires Google Cloud project setup
+
+            // Mock data for demonstration
+            if (confirm('Utiliser des données de test Google pour démonstration ?')) {
+                const form = document.getElementById('newPatientForm');
+                form.first_name.value = 'Marc';
+                form.last_name.value = 'Dubois';
+                form.email.value = 'marc.dubois@gmail.com';
+                form.phone.value = '+32 495 67 89 01';
+
+                alert('✅ Données Google récupérées (TEST)\n\n⚠️ Complétez obligatoirement :\n- NISS\n- Date de naissance\n- Genre');
             }
         }
 
