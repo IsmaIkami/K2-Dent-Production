@@ -2178,8 +2178,8 @@
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label style="display: flex; justify-content: space-between; align-items: center;">
                             <span>Traitement proposé</span>
-                            <button type="button" class="btn-ai-suggest" onclick="suggestTreatment()" title="Suggérer un traitement avec l'IA">
-                                ✨ Suggérer avec IA
+                            <button type="button" class="btn-ai-suggest" onclick="generateDiagnostic()" title="Générer un diagnostic complet basé sur l'anamnèse et l'historique">
+                                🩺 Diagnostic IA
                             </button>
                         </label>
                         <textarea name="proposed_treatment" rows="6" placeholder="Description du plan de traitement..." style="resize: vertical;"></textarea>
@@ -3633,103 +3633,405 @@
         // AI TREATMENT SUGGESTION
         // ===========================
 
-        function suggestTreatment() {
+        async function generateDiagnostic() {
             const form = document.getElementById('anamnesisForm');
-            if (!form) return;
+            if (!form || !selectedPatientId) {
+                alert('Veuillez sélectionner un patient d\'abord.');
+                return;
+            }
 
-            // Analyze form data
-            const chiefComplaint = (form.chief_complaint.value || '').toLowerCase();
-            const dentalPain = form.dental_pain.value === 'true';
-            const painDescription = (form.dental_pain_description.value || '').toLowerCase();
-            const bleedingGums = form.querySelector('[name="bleeding_gums"]')?.checked || false;
-            const sensitivity = form.querySelector('[name="sensitivity"]')?.checked || false;
-            const cariesRisk = form.caries_risk.value || '';
-            const periodontalStatus = form.periodontal_status.value || '';
-            const hygieneScore = parseInt(form.oral_hygiene_score.value) || 5;
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Analyse en cours...';
+            btn.disabled = true;
 
-            // Build intelligent treatment suggestion
-            let treatment = [];
-            let priority = 'medium';
+            try {
+                // 1. Récupérer l'historique des anamnèses du patient
+                const { data: anamnesisHistory, error: historyError } = await window.supabase
+                    .from('anamneses')
+                    .select('*')
+                    .eq('patient_id', selectedPatientId)
+                    .order('anamnesis_date', { ascending: false })
+                    .limit(5);
 
-            // Pain-based treatments
-            if (dentalPain) {
-                if (painDescription.includes('pulsatile') || painDescription.includes('intense') || painDescription.includes('nuit')) {
-                    treatment.push('Traitement endodontique probable (pulpite irréversible).');
-                    treatment.push('RX périapicale pour confirmer le diagnostic.');
-                    priority = 'urgent';
-                } else if (chiefComplaint.includes('molaire') || chiefComplaint.includes('dent')) {
-                    treatment.push('Examen clinique approfondi + tests de vitalité.');
-                    treatment.push('RX rétro-alvéolaire de la dent concernée.');
-                    priority = 'high';
+                if (historyError && historyError.code !== 'PGRST116') {
+                    console.error('Erreur lors de la récupération de l\'historique:', historyError);
+                }
+
+                // 2. Extraire toutes les données du formulaire actuel
+                const formData = {
+                    // Motif de consultation
+                    chiefComplaint: form.chief_complaint.value || '',
+                    consultationReason: form.consultation_reason.value || '',
+
+                    // Conditions médicales
+                    medicalConditions: Array.from(form.querySelectorAll('[name="medical_conditions"]:checked')).map(cb => cb.value),
+                    allergies: form.allergies.value ? form.allergies.value.split(',').map(a => a.trim()) : [],
+                    currentMedications: form.medications.value ? form.medications.value.split(',').map(m => m.trim()) : [],
+
+                    // Habitudes
+                    smoking: form.smoking_status.value || '',
+                    alcohol: form.alcohol_consumption.value || '',
+
+                    // Douleur dentaire
+                    dentalPain: form.dental_pain.value === 'true',
+                    dentalPainDescription: form.dental_pain_description.value || '',
+                    currentPain: form.dental_pain_current.value === 'true',
+                    painDescription: form.pain_description.value || '',
+
+                    // Symptômes
+                    bleedingGums: form.querySelector('[name="bleeding_gums"]')?.checked || false,
+                    sensitivity: form.querySelector('[name="sensitivity"]')?.checked || false,
+
+                    // Examen clinique
+                    hygieneScore: parseInt(form.oral_hygiene_score.value) || 5,
+                    periodontalStatus: form.periodontal_status.value || '',
+                    cariesRisk: form.caries_risk.value || '',
+
+                    // Préoccupations du patient
+                    patientConcerns: form.patient_concerns.value || ''
+                };
+
+                // 3. Analyser l'historique pour détecter des patterns
+                const historyInsights = analyzeHistory(anamnesisHistory || []);
+
+                // 4. Générer le diagnostic structuré
+                const diagnostic = buildCompleteDiagnostic(formData, historyInsights);
+
+                // 5. Remplir le champ de traitement
+                form.proposed_treatment.value = diagnostic.treatment;
+
+                // 6. Mettre à jour la priorité
+                if (diagnostic.priority && form.treatment_priority.value === '') {
+                    form.treatment_priority.value = diagnostic.priority;
+                }
+
+                // 7. Ajouter les notes cliniques si le champ est vide
+                if (diagnostic.clinicalNotes && form.clinical_notes.value === '') {
+                    form.clinical_notes.value = diagnostic.clinicalNotes;
+                }
+
+                // Visual feedback
+                form.proposed_treatment.style.background = 'rgba(0, 122, 255, 0.05)';
+                setTimeout(() => {
+                    form.proposed_treatment.style.background = '';
+                }, 2000);
+
+                btn.innerHTML = '✅ Diagnostic généré';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (error) {
+                console.error('Erreur lors de la génération du diagnostic:', error);
+                alert('Erreur lors de la génération du diagnostic. Veuillez réessayer.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function analyzeHistory(historyRecords) {
+            if (!historyRecords || historyRecords.length === 0) {
+                return {
+                    hasHistory: false,
+                    recurringIssues: [],
+                    riskFactors: [],
+                    complianceNotes: ''
+                };
+            }
+
+            const insights = {
+                hasHistory: true,
+                recurringIssues: [],
+                riskFactors: [],
+                complianceNotes: ''
+            };
+
+            // Détecter les problèmes récurrents
+            const allConditions = historyRecords.flatMap(r => r.medical_conditions || []);
+            const conditionCounts = {};
+            allConditions.forEach(c => {
+                conditionCounts[c] = (conditionCounts[c] || 0) + 1;
+            });
+            insights.recurringIssues = Object.entries(conditionCounts)
+                .filter(([_, count]) => count >= 2)
+                .map(([condition, _]) => condition);
+
+            // Analyser les facteurs de risque
+            const latestAnamnesis = historyRecords[0];
+            if (latestAnamnesis.smoking_status === 'current') {
+                insights.riskFactors.push('Tabagisme actif');
+            }
+            if (latestAnamnesis.caries_risk === 'high') {
+                insights.riskFactors.push('Risque carieux élevé persistant');
+            }
+            if (latestAnamnesis.periodontal_status === 'periodontitis') {
+                insights.riskFactors.push('Antécédents parodontaux');
+            }
+
+            // Notes de compliance
+            if (historyRecords.length >= 3) {
+                insights.complianceNotes = 'Patient suivi régulièrement (bon compliance)';
+            } else if (historyRecords.length === 1) {
+                const daysSinceLastVisit = Math.floor((Date.now() - new Date(historyRecords[0].anamnesis_date)) / (1000 * 60 * 60 * 24));
+                if (daysSinceLastVisit > 365) {
+                    insights.complianceNotes = 'Dernière consultation il y a plus d\'un an';
                 }
             }
 
-            // Caries risk
-            if (cariesRisk === 'high') {
-                treatment.push('Restaurations composites des lésions carieuses actives.');
-                treatment.push('Programme de prévention renforcé (fluorure, scellement).');
+            return insights;
+        }
+
+        function buildCompleteDiagnostic(formData, history) {
+            let sections = [];
+            let priority = 'medium';
+            let clinicalNotes = [];
+
+            // === SECTION 1: ANAMNÈSE (résumé) ===
+            let anamnesisSection = ['═══ ANAMNÈSE ═══'];
+
+            if (formData.chiefComplaint) {
+                anamnesisSection.push(`Motif: ${formData.chiefComplaint}`);
+            }
+
+            if (formData.medicalConditions.length > 0) {
+                anamnesisSection.push(`Antécédents: ${formData.medicalConditions.join(', ')}`);
+            }
+
+            if (formData.allergies.length > 0) {
+                anamnesisSection.push(`⚠️ Allergies: ${formData.allergies.join(', ')}`);
+                clinicalNotes.push(`ATTENTION: Allergies documentées - ${formData.allergies.join(', ')}`);
+            }
+
+            if (formData.currentMedications.length > 0) {
+                anamnesisSection.push(`Médication actuelle: ${formData.currentMedications.join(', ')}`);
+            }
+
+            if (formData.smoking === 'current' || formData.alcohol !== 'never') {
+                const habits = [];
+                if (formData.smoking === 'current') habits.push('Tabagisme actif');
+                if (formData.alcohol === 'daily') habits.push('Consommation d\'alcool quotidienne');
+                else if (formData.alcohol === 'weekly') habits.push('Consommation d\'alcool hebdomadaire');
+                anamnesisSection.push(`Habitudes: ${habits.join(', ')}`);
+            }
+
+            sections.push(anamnesisSection.join('\n'));
+
+            // === SECTION 2: DIAGNOSTIC DIFFÉRENTIEL ===
+            let diagnosisSection = ['\n═══ DIAGNOSTIC DIFFÉRENTIEL ═══'];
+            let diagnoses = [];
+
+            // Analyse de la douleur
+            const painDesc = formData.dentalPainDescription.toLowerCase() + ' ' + formData.painDescription.toLowerCase();
+
+            if (formData.dentalPain || formData.currentPain) {
+                if (painDesc.includes('pulsatile') || painDesc.includes('lancinante') || painDesc.includes('intense')) {
+                    diagnoses.push('→ PULPITE IRRÉVERSIBLE (priorité urgente)');
+                    diagnoses.push('  • Douleur spontanée, intense, pulsatile');
+                    diagnoses.push('  • Nécessite traitement endodontique immédiat');
+                    priority = 'urgent';
+                } else if (painDesc.includes('froid') || painDesc.includes('sucre')) {
+                    diagnoses.push('→ PULPITE RÉVERSIBLE / CARIE PROFONDE');
+                    diagnoses.push('  • Douleur provoquée par stimuli thermiques/sucrés');
+                    diagnoses.push('  • Restauration possible si vitalité préservée');
+                    if (priority === 'medium') priority = 'high';
+                } else if (painDesc.includes('mastication') || painDesc.includes('percussion')) {
+                    diagnoses.push('→ PARODONTITE APICALE / ABCÈS');
+                    diagnoses.push('  • Douleur à la percussion/mastication');
+                    diagnoses.push('  • RX et tests de vitalité indispensables');
+                    priority = 'urgent';
+                } else {
+                    diagnoses.push('→ DOULEUR DENTAIRE (étiologie à préciser)');
+                    diagnoses.push('  • Examen clinique et radiologique nécessaires');
+                    if (priority === 'medium') priority = 'high';
+                }
+            }
+
+            // Analyse parodontale
+            if (formData.periodontalStatus === 'periodontitis') {
+                diagnoses.push('→ PARODONTITE (confirmée)');
+                diagnoses.push('  • Perte d\'attache, poches parodontales');
+                diagnoses.push('  • Traitement parodontal structuré requis');
                 if (priority === 'medium') priority = 'high';
-            } else if (cariesRisk === 'medium' && chiefComplaint.includes('carie')) {
-                treatment.push('Restaurations des caries avec composites.');
+            } else if (formData.periodontalStatus === 'gingivitis' || formData.bleedingGums) {
+                diagnoses.push('→ GINGIVITE / INFLAMMATION GINGIVALE');
+                diagnoses.push('  • Saignement gingival, inflammation');
+                diagnoses.push('  • Détartrage + amélioration hygiène');
             }
 
-            // Periodontal issues
-            if (periodontalStatus === 'gingivitis' || bleedingGums) {
-                treatment.push('Détartrage et polissage.');
-                treatment.push('Instructions d\'hygiène orale renforcées.');
-            } else if (periodontalStatus === 'periodontitis') {
-                treatment.push('Surfaçage radiculaire + détartrage en profondeur.');
-                treatment.push('Réévaluation parodontale à 6 semaines.');
-                treatment.push('Orientation vers parodontiste si sévère.');
-                if (priority === 'medium') priority = 'high';
+            // Analyse du risque carieux
+            if (formData.cariesRisk === 'high') {
+                diagnoses.push('→ RISQUE CARIEUX ÉLEVÉ');
+                diagnoses.push('  • Facteurs multiples (hygiène, alimentation, fluorure)');
+                diagnoses.push('  • Programme préventif intensif indiqué');
             }
 
-            // Sensitivity
-            if (sensitivity && !dentalPain) {
-                treatment.push('Application de vernis fluoré ou désensibilisant.');
-                treatment.push('Évaluation de l\'usure dentaire et des récessions gingivales.');
+            // Sensibilité dentaire
+            if (formData.sensitivity && !formData.dentalPain) {
+                diagnoses.push('→ HYPERSENSIBILITÉ DENTINAIRE');
+                diagnoses.push('  • Usure, récessions, érosions possibles');
+                diagnoses.push('  • Désensibilisation + protection');
             }
 
-            // Hygiene-based prevention
-            if (hygieneScore < 5) {
-                treatment.push('Motivation à l\'hygiène orale + démonstration technique de brossage.');
-                treatment.push('Suivi rapproché (3-4 mois).');
+            if (diagnoses.length === 0) {
+                diagnoses.push('→ EXAMEN SYSTÉMATIQUE / PRÉVENTION');
+                diagnoses.push('  • Pas de pathologie aiguë détectée');
+                diagnoses.push('  • Maintien de la santé bucco-dentaire');
             }
 
-            // Default if nothing specific detected
-            if (treatment.length === 0) {
-                treatment.push('Examen clinique complet + bilan radiologique.');
-                treatment.push('Nettoyage prophylactique.');
-                treatment.push('Conseils d\'hygiène personnalisés.');
+            sections.push(diagnosisSection.concat(diagnoses).join('\n'));
+
+            // === SECTION 3: EXAMENS COMPLÉMENTAIRES ===
+            let examsSection = ['\n═══ EXAMENS COMPLÉMENTAIRES ═══'];
+            let exams = [];
+
+            if (formData.dentalPain || formData.currentPain) {
+                exams.push('• RX périapicale ou rétro-alvéolaire de la zone concernée');
+                exams.push('• Tests de vitalité pulpaire (froid, chaleur, électrique)');
+                exams.push('• Test de percussion');
             }
 
-            // Format the treatment plan
-            const suggestion = treatment.join('\n');
-
-            // Fill the textarea
-            const treatmentField = form.proposed_treatment;
-            treatmentField.value = suggestion;
-
-            // Update priority field if needed
-            if (priority && form.treatment_priority.value === '') {
-                form.treatment_priority.value = priority;
+            if (formData.periodontalStatus === 'periodontitis' || formData.bleedingGums) {
+                exams.push('• Sondage parodontal (6 points par dent)');
+                exams.push('• RX panoramique ou status parodontal complet');
             }
 
-            // Visual feedback
-            treatmentField.style.background = 'rgba(0, 122, 255, 0.05)';
-            setTimeout(() => {
-                treatmentField.style.background = '';
-            }, 1500);
+            if (formData.cariesRisk === 'high' || formData.cariesRisk === 'medium') {
+                exams.push('• Bilan carieux complet (visuel + bitewings)');
+                exams.push('• Analyse de la salive (flux, pH, capacité tampon) si risque élevé');
+            }
 
-            // Show notification
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '✅ Suggestion générée';
-            btn.disabled = true;
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }, 2000);
+            if (exams.length === 0) {
+                exams.push('• RX panoramique de contrôle (si > 2 ans)');
+                exams.push('• Examen visuel complet (miroir, sonde)');
+            }
+
+            sections.push(examsSection.concat(exams).join('\n'));
+
+            // === SECTION 4: PLAN DE TRAITEMENT ===
+            let treatmentSection = ['\n═══ PLAN DE TRAITEMENT ═══'];
+            let treatments = [];
+
+            // Phase d'urgence
+            if (priority === 'urgent') {
+                treatments.push('PHASE 1 - URGENCE:');
+                if (painDesc.includes('pulsatile') || painDesc.includes('intense')) {
+                    treatments.push('  → Traitement endodontique (pulpectomie) de la dent causale');
+                    treatments.push('  → Anesthésie locale + ouverture chambre pulpaire');
+                    treatments.push('  → Prescription antalgiques (palier 2) + anti-inflammatoires si non CI');
+                } else if (painDesc.includes('percussion') || painDesc.includes('abcès')) {
+                    treatments.push('  → Drainage si collection purulente');
+                    treatments.push('  → Antibiothérapie (Amoxicilline 1g x3/j 7j ou Clindamycine si allergie)');
+                    treatments.push('  → Traitement endodontique dès résolution de la phase aiguë');
+                }
+                treatments.push('');
+            }
+
+            // Phase initiale
+            treatments.push('PHASE 2 - THÉRAPEUTIQUE INITIALE:');
+
+            if (formData.periodontalStatus === 'periodontitis') {
+                treatments.push('  → Détartrage supra- et sous-gingival par quadrants');
+                treatments.push('  → Surfaçage radiculaire (scaling root planing)');
+                treatments.push('  → Motivation à l\'hygiène + technique de brossage Bass modifiée');
+                treatments.push('  → Brossettes interdentaires adaptées à chaque espace');
+            } else if (formData.periodontalStatus === 'gingivitis' || formData.bleedingGums) {
+                treatments.push('  → Détartrage complet + polissage');
+                treatments.push('  → Instructions d\'hygiène orale personnalisées');
+            }
+
+            if (formData.cariesRisk === 'high' || formData.cariesRisk === 'medium') {
+                treatments.push('  → Restaurations des lésions carieuses actives (composites)');
+                treatments.push('  → Application de vernis fluoré haute concentration (22600 ppm)');
+                treatments.push('  → Scellement des sillons si molaires/prémolaires saines');
+            }
+
+            if (formData.sensitivity) {
+                treatments.push('  → Application de vernis désensibilisant (glutaraldéhyde/HEMA)');
+                treatments.push('  → Dentifrice haute teneur en fluorure (5000 ppm) usage quotidien');
+            }
+
+            if (formData.hygieneScore < 5) {
+                treatments.push('  → Séance d\'éducation thérapeutique (motivation)');
+                treatments.push('  → Démonstration technique de brossage sur modèle');
+                treatments.push('  → Révélateur de plaque pour auto-évaluation');
+            }
+
+            treatments.push('');
+
+            // Phase corrective
+            treatments.push('PHASE 3 - RÉÉVALUATION & SUITE:');
+            if (formData.periodontalStatus === 'periodontitis') {
+                treatments.push('  → Réévaluation parodontale à 6-8 semaines');
+                treatments.push('  → Chirurgie parodontale si poches résiduelles > 5mm');
+                treatments.push('  → Orientation vers parodontiste si cas complexe');
+            }
+            treatments.push('  → Restaurations prothétiques si nécessaire (après stabilisation)');
+            treatments.push('  → Contrôle d\'occlusion et ajustements si bruxisme/usure');
+
+            sections.push(treatmentSection.concat(treatments).join('\n'));
+
+            // === SECTION 5: PRÉVENTION & SUIVI ===
+            let preventionSection = ['\n═══ PRÉVENTION & SUIVI ═══'];
+            let prevention = [];
+
+            // Conseils d'hygiène
+            prevention.push('HYGIÈNE QUOTIDIENNE:');
+            prevention.push('  • Brossage 2x/jour, 2 minutes, brosse souple, technique Bass');
+            prevention.push('  • Nettoyage interdentaire quotidien (fil ou brossettes)');
+            prevention.push('  • Dentifrice fluoré 1450 ppm minimum (5000 ppm si risque élevé)');
+            if (formData.smoking === 'current') {
+                prevention.push('  • ⚠️ SEVRAGE TABAGIQUE fortement recommandé (risque parodontal x3)');
+            }
+            prevention.push('');
+
+            // Recommandations alimentaires
+            if (formData.cariesRisk === 'high' || formData.cariesRisk === 'medium') {
+                prevention.push('CONSEILS ALIMENTAIRES:');
+                prevention.push('  • Limiter la fréquence des apports sucrés (< 4/jour)');
+                prevention.push('  • Éviter grignotage entre les repas');
+                prevention.push('  • Privilégier eau/fromage en fin de repas (pH salivaire)');
+                prevention.push('');
+            }
+
+            // Calendrier de suivi
+            prevention.push('RAPPELS:');
+            if (formData.periodontalStatus === 'periodontitis' || formData.cariesRisk === 'high') {
+                prevention.push('  • Contrôle à 3 mois (suivi rapproché)');
+                prevention.push('  • Puis détartrage tous les 3-4 mois la première année');
+            } else if (formData.periodontalStatus === 'gingivitis' || formData.cariesRisk === 'medium') {
+                prevention.push('  • Contrôle à 4-6 mois');
+                prevention.push('  • Détartrage tous les 6 mois');
+            } else {
+                prevention.push('  • Contrôle annuel');
+                prevention.push('  • Détartrage tous les 6-12 mois selon évolution');
+            }
+
+            sections.push(preventionSection.concat(prevention).join('\n'));
+
+            // === NOTES HISTORIQUES ===
+            if (history.hasHistory) {
+                clinicalNotes.push('═══ HISTORIQUE ═══');
+                if (history.recurringIssues.length > 0) {
+                    clinicalNotes.push(`Problèmes récurrents: ${history.recurringIssues.join(', ')}`);
+                }
+                if (history.riskFactors.length > 0) {
+                    clinicalNotes.push(`Facteurs de risque: ${history.riskFactors.join(', ')}`);
+                }
+                if (history.complianceNotes) {
+                    clinicalNotes.push(history.complianceNotes);
+                }
+            }
+
+            // Assembler le diagnostic complet
+            const fullDiagnostic = sections.join('\n');
+
+            return {
+                treatment: fullDiagnostic,
+                priority: priority,
+                clinicalNotes: clinicalNotes.length > 0 ? clinicalNotes.join('\n') : null
+            };
         }
 
         // ===========================
