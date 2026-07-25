@@ -2664,6 +2664,10 @@
                 <div class="patient-detail-section" style="margin-top: 20px;">
                     <div class="patient-detail-section-title">⚡ Actions Rapides</div>
                     <div class="smart-actions-grid">
+                        <button class="smart-action-btn" onclick="editPatient('${patient.id}')" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%); border: 1.5px solid rgba(139, 92, 246, 0.3);">
+                            <span class="smart-action-icon">✏️</span>
+                            <span class="smart-action-text">Modifier Profil</span>
+                        </button>
                         <button class="smart-action-btn" onclick="scheduleAppointment(${JSON.stringify(patient).replace(/"/g, '&quot;')})">
                             <span class="smart-action-icon">📅</span>
                             <span class="smart-action-text">Planifier RDV</span>
