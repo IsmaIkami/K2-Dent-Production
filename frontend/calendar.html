@@ -621,16 +621,22 @@
 
         .bar-content {
             flex: 1 !important;
+            min-width: 0 !important;
         }
 
         .bar-actions {
-            display: none !important;
+            display: flex !important;
             gap: 4px !important;
             margin-left: 8px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 0.2s ease !important;
+            flex-shrink: 0 !important;
         }
 
         .appointment-bar:hover .bar-actions {
-            display: flex !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
 
         .bar-action-btn {
@@ -641,8 +647,9 @@
             border-radius: 4px !important;
             font-size: 10px !important;
             cursor: pointer !important;
-            transition: all 0.2s !important;
+            transition: background 0.2s, transform 0.1s !important;
             white-space: nowrap !important;
+            flex-shrink: 0 !important;
         }
 
         .bar-action-btn:hover {
