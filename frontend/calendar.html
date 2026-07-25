@@ -308,42 +308,58 @@
         }
 
         .nav-btn {
-            padding: 10px 18px;
-            background: var(--bg-main);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            cursor: pointer;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
+            padding: 10px 18px !important;
+            background: var(--bg-main) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            cursor: pointer !important;
+            border-radius: 10px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .nav-btn span {
+            font-size: 16px !important;
+            line-height: 1 !important;
         }
 
         .nav-btn:hover {
-            background: var(--bg-hover);
-            border-color: var(--primary);
-            transform: translateY(-1px);
+            background: var(--bg-hover) !important;
+            border-color: var(--primary) !important;
+            transform: translateY(-1px) !important;
         }
 
         .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding: 12px 24px !important;
+            border: none !important;
+            border-radius: 10px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .btn span {
+            font-size: 18px !important;
+            line-height: 1 !important;
         }
 
         .btn-primary {
-            background: var(--primary);
-            color: white;
+            background: var(--primary) !important;
+            color: white !important;
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+            background: var(--primary-dark) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3) !important;
         }
 
         /* Calendar Grid */
@@ -1331,16 +1347,16 @@
                             <p style="color: var(--text-secondary); margin-top: 8px;">Gestion complète des rendez-vous avec optimisation IA</p>
                         </div>
                         <div class="calendar-controls">
-                            <button class="nav-btn" id="prevMonth">← Précédent</button>
+                            <button class="nav-btn" id="prevMonth"><span>←</span> Précédent</button>
                             <button class="nav-btn" id="todayBtn">Aujourd'hui</button>
-                            <button class="nav-btn" id="nextMonth">Suivant →</button>
+                            <button class="nav-btn" id="nextMonth">Suivant <span>→</span></button>
                             <div class="view-switcher">
                                 <button class="view-btn active" data-view="day" id="dayViewBtn"><span>📋</span> Jour</button>
                                 <button class="view-btn" data-view="week" id="weekViewBtn"><span>📅</span> Semaine</button>
                                 <button class="view-btn" data-view="month" id="monthViewBtn"><span>🗓️</span> Mois</button>
                             </div>
                             <button class="btn btn-primary" onclick="openNewAppointmentModal()">
-                                ➕ Nouveau RDV
+                                <span>➕</span> Nouveau RDV
                             </button>
                         </div>
                     </div>
