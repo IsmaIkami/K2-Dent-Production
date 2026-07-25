@@ -607,13 +607,57 @@
             cursor: pointer !important;
             transition: all 0.2s !important;
             font-size: 11px !important;
-            display: block !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: flex-start !important;
+            position: relative !important;
         }
 
         .appointment-bar:hover {
             border-color: var(--primary) !important;
             background: var(--bg-hover) !important;
             transform: translateX(2px) !important;
+        }
+
+        .bar-content {
+            flex: 1 !important;
+        }
+
+        .bar-actions {
+            display: none !important;
+            gap: 4px !important;
+            margin-left: 8px !important;
+        }
+
+        .appointment-bar:hover .bar-actions {
+            display: flex !important;
+        }
+
+        .bar-action-btn {
+            padding: 2px 6px !important;
+            background: var(--primary) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            font-size: 10px !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+            white-space: nowrap !important;
+        }
+
+        .bar-action-btn:hover {
+            background: var(--primary-dark) !important;
+            transform: scale(1.05) !important;
+        }
+
+        .bar-action-btn.secondary {
+            background: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        .bar-action-btn.secondary:hover {
+            background: var(--bg-hover) !important;
         }
 
         .appointment-bar.confirmed {
@@ -1990,11 +2034,15 @@
                     bar.classList.add('urgent');
                 }
 
+                // Content div
+                const content = document.createElement('div');
+                content.className = 'bar-content';
+
                 // Time
                 const timeSpan = document.createElement('span');
                 timeSpan.className = 'bar-time';
                 timeSpan.textContent = apt.start_time?.slice(0,5) || '';
-                bar.appendChild(timeSpan);
+                content.appendChild(timeSpan);
 
                 // Patient name
                 const nameSpan = document.createElement('span');
@@ -2004,18 +2052,45 @@
                 } else {
                     nameSpan.textContent = 'Patient';
                 }
-                bar.appendChild(nameSpan);
+                content.appendChild(nameSpan);
 
                 // Type on second line
                 const typeDiv = document.createElement('div');
                 typeDiv.className = 'bar-type';
                 typeDiv.textContent = apt.appointment_type || 'Consultation';
-                bar.appendChild(typeDiv);
+                content.appendChild(typeDiv);
 
-                bar.onclick = (e) => {
+                // Actions div (appears on hover)
+                const actions = document.createElement('div');
+                actions.className = 'bar-actions';
+
+                // Modifier button
+                const editBtn = document.createElement('button');
+                editBtn.className = 'bar-action-btn';
+                editBtn.innerHTML = '✏️';
+                editBtn.title = 'Modifier';
+                editBtn.onclick = (e) => {
                     e.stopPropagation();
                     editAppointment(apt);
                 };
+                actions.appendChild(editBtn);
+
+                // Dossier button
+                if (patient?.niss) {
+                    const dossierBtn = document.createElement('button');
+                    dossierBtn.className = 'bar-action-btn secondary';
+                    dossierBtn.innerHTML = '👤';
+                    dossierBtn.title = 'Dossier patient';
+                    dossierBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        window.location.href = `patients.html?niss=${patient.niss}`;
+                    };
+                    actions.appendChild(dossierBtn);
+                }
+
+                bar.appendChild(content);
+                bar.appendChild(actions);
+
                 appointmentsList.appendChild(bar);
             });
 
@@ -2299,7 +2374,6 @@
                         apptItem.style.cssText = 'padding: 12px; background: var(--bg-secondary); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.2s;';
                         apptItem.onmouseover = () => apptItem.style.transform = 'translateX(4px)';
                         apptItem.onmouseout = () => apptItem.style.transform = 'translateX(0)';
-                        apptItem.onclick = () => editAppointment(apt);
 
                         apptItem.innerHTML = `
                             <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
@@ -2316,9 +2390,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="action-btn" onclick="event.stopPropagation(); window.location.href='patients.html?niss=${patient?.niss || ''}'">
-                                👤
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="action-btn" onclick="event.stopPropagation(); editAppointment(${JSON.stringify(apt).replace(/'/g, "\\'")})">
+                                    ✏️ Modifier
+                                </button>
+                                ${patient?.niss ?
+                                    `<button class="action-btn" onclick="event.stopPropagation(); window.location.href='patients.html?niss=${patient.niss}'">
+                                        👤 Dossier
+                                    </button>` :
+                                    `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Patient sans NISS">
+                                        👤 Dossier
+                                    </button>`
+                                }
+                            </div>
                         `;
                         apptList.appendChild(apptItem);
                     });
