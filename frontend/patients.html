@@ -2402,6 +2402,23 @@
                 displayPatients(patients);
                 updateStats(patients);
                 console.log(`✅ Loaded ${patients.length} patients from Supabase`);
+
+                // Auto-select patient if NISS is in URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const niss = urlParams.get('niss');
+                if (niss) {
+                    console.log('🔍 Auto-selecting patient with NISS:', niss);
+                    const patient = allPatients.find(p => p.niss === niss);
+                    if (patient) {
+                        console.log('✅ Patient found, auto-selecting:', patient.first_name, patient.last_name);
+                        // Wait a bit for UI to render
+                        setTimeout(() => {
+                            selectPatient(patient.id);
+                        }, 300);
+                    } else {
+                        console.warn('⚠️ Patient not found for NISS:', niss);
+                    }
+                }
             } catch (error) {
                 console.error('Error loading patients:', error);
                 alert('⚠️ Erreur lors du chargement des patients: ' + error.message);
@@ -2974,9 +2991,9 @@
             return `${day}/${month}/${year}`;
         }
 
-        // Open patient dashboard
+        // Open patient dashboard (now selects patient in current page)
         function openPatientDashboard(patient) {
-            window.location.href = `dashboard-v2.html?niss=${encodeURIComponent(patient.niss)}`;
+            selectPatient(patient.id);
         }
 
         // Schedule appointment - pass patient ID to auto-fill appointment form

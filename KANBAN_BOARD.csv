@@ -1,0 +1,38 @@
+Status,Epic,Task ID,Task Name,Effort (h),Priority,Assigned,Dependencies,Due Date
+TODO,Epic 1,1.1,Backup Vérification,0.25,P0,,None,Week 1 - Mon
+TODO,Epic 1,1.2,Run complete-schema-final.sql,0.5,P0,,1.1,Week 1 - Mon
+TODO,Epic 1,1.3,Run ai-appointment-reminders.sql,0.33,P0,,1.2,Week 1 - Mon
+TODO,Epic 1,1.4,ALTER staff_profiles user_id,0.17,P0,,1.3,Week 1 - Mon
+TODO,Epic 1,1.5,Vérifier RLS Policies,0.33,P0,,1.4,Week 1 - Tue
+TODO,Epic 1,1.6,Test Inserts Manuels,0.33,P0,,1.5,Week 1 - Tue
+TODO,Epic 1,1.7,Backup Post-Migration,0.17,P0,,1.6,Week 1 - Tue
+TODO,Epic 2,2.1,Setup Supabase CLI Local,0.25,P0,,1.7,Week 2 - Mon
+TODO,Epic 2,2.2,generate-prescription-pdf,1,P0,,2.1,Week 2 - Mon
+TODO,Epic 2,2.3,generate-certificate-pdf,0.75,P0,,2.2,Week 2 - Tue
+TODO,Epic 2,2.4,generate-invoice-pdf (QR),1,P0,,2.3,Week 2 - Wed
+TODO,Epic 2,2.5,Test Local Functions,0.33,P0,,2.4,Week 2 - Wed
+TODO,Epic 2,2.6,Deploy Production,0.17,P0,,2.5,Week 2 - Wed
+TODO,Epic 2,2.7,Test End-to-End Frontend,0.17,P0,,2.6,Week 2 - Wed
+TODO,Epic 3,3.1,Dental Chart Editor,1,P1,,1.7,Week 3 - Mon
+TODO,Epic 3,3.2,Prescription Form,0.67,P1,,2.7,Week 3 - Tue
+TODO,Epic 3,3.3,Certificate Form,0.5,P1,,2.7,Week 3 - Tue
+TODO,Epic 3,3.4,X-Ray Viewer STL (Three.js),0.83,P1,,3.1,Week 3 - Wed
+TODO,Epic 3,3.5,Timeline Patient,0.67,P1,,1.7,Week 3 - Thu
+TODO,Epic 4,4.1,INAMI Codes Database,0.5,P0,,None,Week 3 - Fri
+TODO,Epic 4,4.2,Treatment Form avec INAMI,0.5,P0,,4.1,Week 3 - Fri
+TODO,Epic 4,4.3,eAttest CSV Export,0.5,P0,,4.2,Week 4 - Mon
+TODO,Epic 4,4.4,Invoice Generator UI,0.33,P0,,2.4,Week 4 - Mon
+TODO,Epic 4,4.5,Test Virement QR Code,0.17,P0,,4.4,Week 4 - Mon
+TODO,Epic 5,5.1,SendGrid Setup,0.5,P1,,None,Week 4 - Tue
+TODO,Epic 5,5.2,Edge Function send-reminders,0.83,P1,,5.1,Week 4 - Tue
+TODO,Epic 5,5.3,Cron Schedule,0.17,P1,,5.2,Week 4 - Wed
+TODO,Epic 5,5.4,SendGrid Template Email,0.33,P1,,5.1,Week 4 - Wed
+TODO,Epic 5,5.5,Test Manuel Trigger,0.17,P1,,5.4,Week 4 - Wed
+TODO,Epic 5,5.6,Monitor Logs 24h,0,P1,,5.5,Week 4 - Thu
+TODO,Epic 6,6.1,GitHub Actions Backup,0.5,P2,,None,Week 1 - Wed
+TODO,Epic 6,6.2,Monitoring Dashboard,0.42,P2,,None,Week 5 - Mon
+TODO,Epic 6,6.3,Test Backup Restore,0.08,P2,,6.1,Week 5 - Mon
+DONE,Setup,S.1,Baseline BACKUP_STEP5,0,P0,,None,2026-07-24
+DONE,Setup,S.2,5 tables existantes,0,P0,,None,2026-07-24
+DONE,Setup,S.3,Frontend dashboard.html,0,P0,,None,2026-07-24
+DONE,Setup,S.4,Supabase project config,0,P0,,None,2026-07-24

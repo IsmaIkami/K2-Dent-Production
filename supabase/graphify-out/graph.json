@@ -1,0 +1,677 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "ai_reminder_system_components",
+        "label": "AI Appointment Reminder System Architecture",
+        "nodes": [
+          "readme_ai_reminders_appointment_reminders_table",
+          "readme_ai_reminders_reminder_ai_config",
+          "readme_ai_reminders_pending_reminders_ai_view",
+          "readme_ai_reminders_generate_ai_reminders_function",
+          "readme_ai_reminders_mark_reminder_sent_function"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "README-AI-Reminders.md"
+      },
+      {
+        "id": "database_migration_workflow",
+        "label": "Database Migration and Deployment Process",
+        "nodes": [
+          "readme_migration_guide",
+          "readme_migration_database_schema",
+          "readme_migration_deployment_test",
+          "readme_migration_validation_checklist"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "README_MIGRATION.md"
+      },
+      {
+        "id": "notification_delivery_integration",
+        "label": "Multi-Channel Notification Delivery",
+        "nodes": [
+          "readme_ai_reminders_twilio_integration",
+          "readme_ai_reminders_sendgrid_integration",
+          "readme_ai_reminders_cron_automation"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "README-AI-Reminders.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "Migration Instructions - Anamneses Table",
+      "file_type": "document",
+      "source_file": "MIGRATION_INSTRUCTIONS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "migration_instructions_anamneses_table",
+      "community": 5,
+      "norm_label": "migration instructions - anamneses table"
+    },
+    {
+      "label": "006 Migration Execution",
+      "file_type": "document",
+      "source_file": "MIGRATION_INSTRUCTIONS.md",
+      "source_location": "\u00a73-14",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "migration_instructions_006_migration",
+      "community": 4,
+      "norm_label": "006 migration execution"
+    },
+    {
+      "label": "Anamneses Table",
+      "file_type": "rationale",
+      "source_file": "MIGRATION_INSTRUCTIONS.md",
+      "source_location": "\u00a731-44",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "migration_instructions_anamneses_table_entity",
+      "community": 4,
+      "norm_label": "anamneses table"
+    },
+    {
+      "label": "Patients Table (Dependency)",
+      "file_type": "rationale",
+      "source_file": "MIGRATION_INSTRUCTIONS.md",
+      "source_location": "\u00a780",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "migration_instructions_patients_table",
+      "community": 4,
+      "norm_label": "patients table (dependency)"
+    },
+    {
+      "label": "AI-Powered Appointment Reminders System",
+      "file_type": "document",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a71-50",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_appointment_reminders_system",
+      "community": 2,
+      "norm_label": "ai-powered appointment reminders system"
+    },
+    {
+      "label": "Appointment Reminders Table",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a79-16",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_appointment_reminders_table",
+      "community": 0,
+      "norm_label": "appointment reminders table"
+    },
+    {
+      "label": "Reminder AI Configuration Table",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a718-22",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_reminder_ai_config",
+      "community": 2,
+      "norm_label": "reminder ai configuration table"
+    },
+    {
+      "label": "Pending Reminders AI View",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a724-37",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_pending_reminders_ai_view",
+      "community": 2,
+      "norm_label": "pending reminders ai view"
+    },
+    {
+      "label": "Generate AI Reminders Function",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a741-45",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_generate_ai_reminders_function",
+      "community": 0,
+      "norm_label": "generate ai reminders function"
+    },
+    {
+      "label": "Mark Reminder Sent Function",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a747-49",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_mark_reminder_sent_function",
+      "community": 0,
+      "norm_label": "mark reminder sent function"
+    },
+    {
+      "label": "AI Scoring and Prioritization Logic",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7131-156",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_ai_scoring_logic",
+      "community": 2,
+      "norm_label": "ai scoring and prioritization logic"
+    },
+    {
+      "label": "Timing Optimization Strategy",
+      "file_type": "rationale",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7157-171",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_timing_optimization",
+      "community": 2,
+      "norm_label": "timing optimization strategy"
+    },
+    {
+      "label": "Twilio SMS Integration Example",
+      "file_type": "code",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7175-209",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_twilio_integration",
+      "community": 0,
+      "norm_label": "twilio sms integration example"
+    },
+    {
+      "label": "SendGrid Email Integration Example",
+      "file_type": "code",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7211-241",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_sendgrid_integration",
+      "community": 0,
+      "norm_label": "sendgrid email integration example"
+    },
+    {
+      "label": "Cron Job Automation Pattern",
+      "file_type": "code",
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7243-266",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_ai_reminders_cron_automation",
+      "community": 0,
+      "norm_label": "cron job automation pattern"
+    },
+    {
+      "label": "K2-Dent-Production Migration Guide",
+      "file_type": "document",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a71-5",
+      "source_url": null,
+      "captured_at": "2026-07-23",
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_guide",
+      "community": 3,
+      "norm_label": "k2-dent-production migration guide"
+    },
+    {
+      "label": "Complete Database Schema with 11 Tables",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a772-93",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_database_schema",
+      "community": 1,
+      "norm_label": "complete database schema with 11 tables"
+    },
+    {
+      "label": "Row Level Security (RLS) Implementation",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7172-188",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_row_level_security",
+      "community": 3,
+      "norm_label": "row level security (rls) implementation"
+    },
+    {
+      "label": "Post-Migration Validation Checklist",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7227-239",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_validation_checklist",
+      "community": 6,
+      "norm_label": "post-migration validation checklist"
+    },
+    {
+      "label": "Patients Table",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a774",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_patients_table",
+      "community": 1,
+      "norm_label": "patients table"
+    },
+    {
+      "label": "Anamnesis Table",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a775",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_anamnesis_table",
+      "community": 1,
+      "norm_label": "anamnesis table"
+    },
+    {
+      "label": "Appointments Table",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a782",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_appointments_table",
+      "community": 1,
+      "norm_label": "appointments table"
+    },
+    {
+      "label": "Staff Profiles Table",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a783",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_staff_profiles_table",
+      "community": 1,
+      "norm_label": "staff profiles table"
+    },
+    {
+      "label": "X-Rays Table with AI Analysis",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a784",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_xrays_table",
+      "community": 1,
+      "norm_label": "x-rays table with ai analysis"
+    },
+    {
+      "label": "Post-Deployment Testing and Validation",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7121-148",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_deployment_test",
+      "community": 3,
+      "norm_label": "post-deployment testing and validation"
+    },
+    {
+      "label": "Frontend-Database Alignment Strategy",
+      "file_type": "rationale",
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a78-22",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_migration_database_alignment",
+      "community": 3,
+      "norm_label": "frontend-database alignment strategy"
+    }
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MIGRATION_INSTRUCTIONS.md",
+      "source_location": "\u00a73-14",
+      "weight": 1.0,
+      "source": "migration_instructions_006_migration",
+      "target": "migration_instructions_anamneses_table_entity"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "MIGRATION_INSTRUCTIONS.md",
+      "source_location": "\u00a780",
+      "weight": 1.0,
+      "source": "migration_instructions_anamneses_table_entity",
+      "target": "migration_instructions_patients_table"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a775",
+      "weight": 1.0,
+      "source": "readme_migration_anamnesis_table",
+      "target": "migration_instructions_anamneses_table_entity"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7131-156",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_appointment_reminders_system",
+      "target": "readme_ai_reminders_ai_scoring_logic"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a79-16",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_appointment_reminders_system",
+      "target": "readme_ai_reminders_appointment_reminders_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a724-37",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_appointment_reminders_system",
+      "target": "readme_ai_reminders_pending_reminders_ai_view"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a718-22",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_appointment_reminders_system",
+      "target": "readme_ai_reminders_reminder_ai_config"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7157-171",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_appointment_reminders_system",
+      "target": "readme_ai_reminders_timing_optimization"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a71-50",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_appointment_reminders_system",
+      "target": "readme_migration_appointments_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a741-45",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_generate_ai_reminders_function",
+      "target": "readme_ai_reminders_appointment_reminders_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a747-49",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_mark_reminder_sent_function",
+      "target": "readme_ai_reminders_appointment_reminders_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7211-241",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_sendgrid_integration",
+      "target": "readme_ai_reminders_appointment_reminders_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7175-209",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_twilio_integration",
+      "target": "readme_ai_reminders_appointment_reminders_table"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md",
+      "source_location": "\u00a7243-266",
+      "weight": 1.0,
+      "source": "readme_ai_reminders_cron_automation",
+      "target": "readme_ai_reminders_generate_ai_reminders_function"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a78-22",
+      "weight": 1.0,
+      "source": "readme_migration_database_alignment",
+      "target": "readme_migration_guide"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a772-93",
+      "weight": 1.0,
+      "source": "readme_migration_guide",
+      "target": "readme_migration_database_schema"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7121-148",
+      "weight": 1.0,
+      "source": "readme_migration_guide",
+      "target": "readme_migration_deployment_test"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7172-188",
+      "weight": 1.0,
+      "source": "readme_migration_guide",
+      "target": "readme_migration_row_level_security"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7156-168",
+      "weight": 1.0,
+      "source": "readme_migration_database_schema",
+      "target": "readme_migration_anamnesis_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7156-168",
+      "weight": 1.0,
+      "source": "readme_migration_database_schema",
+      "target": "readme_migration_appointments_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7156-168",
+      "weight": 1.0,
+      "source": "readme_migration_database_schema",
+      "target": "readme_migration_patients_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7156-168",
+      "weight": 1.0,
+      "source": "readme_migration_database_schema",
+      "target": "readme_migration_staff_profiles_table"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7156-168",
+      "weight": 1.0,
+      "source": "readme_migration_database_schema",
+      "target": "readme_migration_xrays_table"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "README_MIGRATION.md",
+      "source_location": "\u00a7156-168",
+      "weight": 1.0,
+      "source": "readme_migration_patients_table",
+      "target": "readme_migration_anamnesis_table"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "ai_reminder_system_components",
+      "label": "AI Appointment Reminder System Architecture",
+      "nodes": [
+        "readme_ai_reminders_appointment_reminders_table",
+        "readme_ai_reminders_reminder_ai_config",
+        "readme_ai_reminders_pending_reminders_ai_view",
+        "readme_ai_reminders_generate_ai_reminders_function",
+        "readme_ai_reminders_mark_reminder_sent_function"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md"
+    },
+    {
+      "id": "database_migration_workflow",
+      "label": "Database Migration and Deployment Process",
+      "nodes": [
+        "readme_migration_guide",
+        "readme_migration_database_schema",
+        "readme_migration_deployment_test",
+        "readme_migration_validation_checklist"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README_MIGRATION.md"
+    },
+    {
+      "id": "notification_delivery_integration",
+      "label": "Multi-Channel Notification Delivery",
+      "nodes": [
+        "readme_ai_reminders_twilio_integration",
+        "readme_ai_reminders_sendgrid_integration",
+        "readme_ai_reminders_cron_automation"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README-AI-Reminders.md"
+    }
+  ],
+  "built_at_commit": "5153a3bbfa7c9342f463d52585fdc6890e821a84"
+}

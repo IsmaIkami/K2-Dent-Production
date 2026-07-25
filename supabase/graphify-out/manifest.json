@@ -1,0 +1,152 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1784909666.6000576,
+    "ast_hash": "b4043c8222d7f57d230e00cea211925b",
+    "semantic_hash": "b4043c8222d7f57d230e00cea211925b"
+  },
+  "01_CHECK_EXISTING_TABLES.sql": {
+    "mtime": 1784840333.669,
+    "ast_hash": "7eda0f69d25861962e2c025353758ee9",
+    "semantic_hash": "7eda0f69d25861962e2c025353758ee9"
+  },
+  "02_DROP_ALL_TABLES.sql": {
+    "mtime": 1784840333.786001,
+    "ast_hash": "3b89ec31ab9087b783de476ad0dad2c0",
+    "semantic_hash": "3b89ec31ab9087b783de476ad0dad2c0"
+  },
+  "02_DROP_ALL_TABLES_SAFE.sql": {
+    "mtime": 1784840472.8554647,
+    "ast_hash": "f010b5c1258d57b7db3816db462ff34e",
+    "semantic_hash": "f010b5c1258d57b7db3816db462ff34e"
+  },
+  "03_ADD_USERS_TABLE.sql": {
+    "mtime": 1784840648.383502,
+    "ast_hash": "13d37eb194d986b92f56a7b05f833466",
+    "semantic_hash": "13d37eb194d986b92f56a7b05f833466"
+  },
+  "04_FIX_RLS_POLICIES.sql": {
+    "mtime": 1784840781.2567809,
+    "ast_hash": "b3dfaede240b859ed1073708ff14a268",
+    "semantic_hash": "b3dfaede240b859ed1073708ff14a268"
+  },
+  "MIGRATION_TO_WORKING_STATE.sql": {
+    "mtime": 1784840049.5790045,
+    "ast_hash": "6b27831829b0c0785e12016e8b156f9f",
+    "semantic_hash": "6b27831829b0c0785e12016e8b156f9f"
+  },
+  "MIGRATION_TO_WORKING_STATE_FIXED.sql": {
+    "mtime": 1784840288.1260529,
+    "ast_hash": "8c129337a681358f72729e19fd07dc2a",
+    "semantic_hash": "8c129337a681358f72729e19fd07dc2a"
+  },
+  "add-missing-only.sql": {
+    "mtime": 1784837406.115069,
+    "ast_hash": "4d42ac325faa30f2d38579d3c9564d6b",
+    "semantic_hash": "4d42ac325faa30f2d38579d3c9564d6b"
+  },
+  "ai-appointment-reminders.sql": {
+    "mtime": 1784710817.9832284,
+    "ast_hash": "cb32757a48adc01622e14b5988123ea6",
+    "semantic_hash": "cb32757a48adc01622e14b5988123ea6"
+  },
+  "complete-migration-fixed.sql": {
+    "mtime": 1784837266.9613352,
+    "ast_hash": "0807e9a039e109f42583bbb5c5ccf05d",
+    "semantic_hash": "0807e9a039e109f42583bbb5c5ccf05d"
+  },
+  "complete-migration.sql": {
+    "mtime": 1784837236.6889093,
+    "ast_hash": "db7191989a67c6df72d6219b52e86f68",
+    "semantic_hash": "db7191989a67c6df72d6219b52e86f68"
+  },
+  "complete-schema-final.sql": {
+    "mtime": 1784839006.4239442,
+    "ast_hash": "c054ce9ebf129120bcdfe5bf07150815",
+    "semantic_hash": "c054ce9ebf129120bcdfe5bf07150815"
+  },
+  "complete-schema-v3-fixed.sql": {
+    "mtime": 1784838784.691367,
+    "ast_hash": "945f08d0aca84efd7271174f8a64ddba",
+    "semantic_hash": "945f08d0aca84efd7271174f8a64ddba"
+  },
+  "complete-schema-v3-ultra-safe.sql": {
+    "mtime": 1784838889.5577343,
+    "ast_hash": "d74fce66cef558fd5e61098a808ee7a9",
+    "semantic_hash": "d74fce66cef558fd5e61098a808ee7a9"
+  },
+  "complete-schema-v3.sql": {
+    "mtime": 1784838545.7228694,
+    "ast_hash": "9d94c7aa76591ba7a99a14b3bdae8923",
+    "semantic_hash": "9d94c7aa76591ba7a99a14b3bdae8923"
+  },
+  "enable-rls-policies.sql": {
+    "mtime": 1784672678.423991,
+    "ast_hash": "8c6dfededd8e1edbf67d0ec237c07f0e",
+    "semantic_hash": "8c6dfededd8e1edbf67d0ec237c07f0e"
+  },
+  "fix-appointments-schema.sql": {
+    "mtime": 1784836568.6988547,
+    "ast_hash": "a29600fd1b8318b6f46daa279ec8df48",
+    "semantic_hash": "a29600fd1b8318b6f46daa279ec8df48"
+  },
+  "insert-users.sql": {
+    "mtime": 1784837503.4301608,
+    "ast_hash": "0655f962c923b5a423edb5a48375205e",
+    "semantic_hash": "0655f962c923b5a423edb5a48375205e"
+  },
+  "medical-data-enhancement.sql": {
+    "mtime": 1784678178.045474,
+    "ast_hash": "b9483b09cb263627d4e30e5b6d6b1f05",
+    "semantic_hash": "b9483b09cb263627d4e30e5b6d6b1f05"
+  },
+  "migration-simple.sql": {
+    "mtime": 1784837307.382906,
+    "ast_hash": "c747c9256ef04a5e9b2696f362841836",
+    "semantic_hash": "c747c9256ef04a5e9b2696f362841836"
+  },
+  "migrations/006_create_anamneses_table.sql": {
+    "mtime": 1784884784.0212448,
+    "ast_hash": "a625eea7d6046e9470792180625efa8c",
+    "semantic_hash": "a625eea7d6046e9470792180625efa8c"
+  },
+  "migrations/007_add_notification_tracking.sql": {
+    "mtime": 1784892667.792768,
+    "ast_hash": "ca5873c35e232c0f11ab665eab826b47",
+    "semantic_hash": "ca5873c35e232c0f11ab665eab826b47"
+  },
+  "migrations/20260723_medical_history.sql": {
+    "mtime": 1784843430.6143394,
+    "ast_hash": "d120eba182651ad3aee83b72f0a6dbef",
+    "semantic_hash": "d120eba182651ad3aee83b72f0a6dbef"
+  },
+  "migrations/20260724_rename_type_to_appointment_type.sql": {
+    "mtime": 1784846156.5734599,
+    "ast_hash": "f8974439a67be14842c1b0780129d9bf",
+    "semantic_hash": "f8974439a67be14842c1b0780129d9bf"
+  },
+  "schema-supabase-fixed.sql": {
+    "mtime": 1784659650.825778,
+    "ast_hash": "fb92fe90fa4a9574fd72b97d68faf616",
+    "semantic_hash": "fb92fe90fa4a9574fd72b97d68faf616"
+  },
+  "schema.sql": {
+    "mtime": 1784651405.4255657,
+    "ast_hash": "cf767ce035d79ff9e8904df54d1c26e5",
+    "semantic_hash": "cf767ce035d79ff9e8904df54d1c26e5"
+  },
+  "MIGRATION_INSTRUCTIONS.md": {
+    "mtime": 1784884816.3360727,
+    "ast_hash": "f7646e5f7063147683ba651df14c3bdc",
+    "semantic_hash": "f7646e5f7063147683ba651df14c3bdc"
+  },
+  "README-AI-Reminders.md": {
+    "mtime": 1784711418.6897106,
+    "ast_hash": "c7049a36657ef184f55ceee2bd517277",
+    "semantic_hash": "c7049a36657ef184f55ceee2bd517277"
+  },
+  "README_MIGRATION.md": {
+    "mtime": 1784840101.4586837,
+    "ast_hash": "8bdce5626b88cbe5655732f4e437cdc7",
+    "semantic_hash": "8bdce5626b88cbe5655732f4e437cdc7"
+  }
+}

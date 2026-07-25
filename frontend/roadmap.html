@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2 Roadmap - MVP & NIC Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .phase {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .phase-header {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .phase-header h2 {
+            font-size: 1.8em;
+        }
+
+        .phase-header .toggle {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+
+        .phase-header.collapsed .toggle {
+            transform: rotate(-90deg);
+        }
+
+        .phase-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .phase-content {
+            padding: 30px;
+            display: none;
+        }
+
+        .phase-content.active {
+            display: block;
+        }
+
+        .epic {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .epic:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .epic.done {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .epic.in-progress {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .epic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .epic-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .epic-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .epic-status.todo {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .epic-status.in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .epic-status.done {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .epic-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .epic-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+
+        .tasks {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            display: none;
+        }
+
+        .tasks.active {
+            display: block;
+        }
+
+        .task {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 0.95em;
+        }
+
+        .task input[type="checkbox"] {
+            margin-top: 4px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .task label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .task input:checked + label {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .timeline {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .timeline h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            border-radius: 50%;
+            top: 5px;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .epic-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>🦷 K2 Dental Cockpit - Roadmap</h1>
+            <div class="subtitle">Plan d'implémentation 2 phases • Auteur: Ismail Sialyen</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">2</div>
+                <div class="label">Phases</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">14</div>
+                <div class="label">Epics Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">100h</div>
+                <div class="label">Effort Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">€100</div>
+                <div class="label">Coût Total</div>
+            </div>
+        </div>
+
+        <!-- PHASE 1: MVP CORE -->
+        <div class="phase">
+            <div class="phase-header" onclick="togglePhase(this)">
+                <div>
+                    <h2>📦 PHASE 1: MVP CORE (Sans NIC)</h2>
+                    <div class="phase-meta">
+                        <span>⏱️ 5 semaines</span>
+                        <span>💪 15h effort</span>
+                        <span>💰 €0 coût</span>
+                        <span>✅ Utilisable immédiatement</span>
+                    </div>
+                </div>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="phase-content active">
+                <!-- Epic 1: Database Core -->
+                <div class="epic done">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 1: Database Core</div>
+                        <span class="epic-status done">DONE</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 2h</span>
+                        <span>📅 Semaine 1</span>
+                        <span>🔴 P0 Bloquant</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;">100%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-1-1" checked>
+                            <label for="task-1-1">1.1 - Vérifier BACKUP_STEP5 (5 tables baseline)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-2">
+                            <label for="task-1-2">1.2 - CREATE TABLE dental_charts (JSONB)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-3">
+                            <label for="task-1-3">1.3 - CREATE TABLE tooth_treatments</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-4">
+                            <label for="task-1-4">1.4 - CREATE TABLE prescriptions</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-5">
+                            <label for="task-1-5">1.5 - CREATE TABLE certificates</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-6">
+                            <label for="task-1-6">1.6 - CREATE TABLE xrays</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-7">
+                            <label for="task-1-7">1.7 - CREATE TABLE timeline_events</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-8">
+                            <label for="task-1-8">1.8 - CREATE TABLE appointment_reminders</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-9">
+                            <label for="task-1-9">1.9 - CREATE VIEW pending_reminders_ai</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-10">
+                            <label for="task-1-10">1.10 - ALTER TABLE staff_profiles ADD user_id</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-11">
+                            <label for="task-1-11">1.11 - Test inserts + RLS policies</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-1-12">
+                            <label for="task-1-12">1.12 - Backup post-migration</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Epic 2: PDF Generation -->
+                <div class="epic todo">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 2: PDF Generation Engine (Puppeteer)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 3h</span>
+                        <span>📅 Semaine 2</span>
+                        <span>🔴 P0 Bloquant</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-2-1">
+                            <label for="task-2-1">2.1 - Setup Supabase CLI local</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-2-2">
+                            <label for="task-2-2">2.2 - Create generate-prescription-pdf (Puppeteer)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-2-3">
+                            <label for="task-2-3">2.3 - Create generate-certificate-pdf</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-2-4">
+                            <label for="task-2-4">2.4 - Create generate-invoice-pdf (avec QR EPC)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-2-5">
+                            <label for="task-2-5">2.5 - Test local functions</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-2-6">
+                            <label for="task-2-6">2.6 - Deploy production</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-2-7">
+                            <label for="task-2-7">2.7 - Test end-to-end frontend</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Epic 3: Frontend Integration -->
+                <div class="epic todo">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 3: Frontend Integration (5 UIs)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 3h</span>
+                        <span>📅 Semaine 3</span>
+                        <span>🟡 P1 Important</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-3-1">
+                            <label for="task-3-1">3.1 - Dental Chart Editor (JSONB)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-3-2">
+                            <label for="task-3-2">3.2 - Prescription Form</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-3-3">
+                            <label for="task-3-3">3.3 - Certificate Form</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-3-4">
+                            <label for="task-3-4">3.4 - X-Ray Viewer (Three.js STL)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-3-5">
+                            <label for="task-3-5">3.5 - Patient Timeline</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Epic 4: INAMI Tracking -->
+                <div class="epic todo">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 4: INAMI Tracking (Manuel CSV)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 2h</span>
+                        <span>📅 Semaine 3</span>
+                        <span>🔴 P0 Bloquant</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-4-1">
+                            <label for="task-4-1">4.1 - INAMI Codes Database (CSV nomenclature)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-4-2">
+                            <label for="task-4-2">4.2 - Treatment Form avec autocomplete INAMI</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-4-3">
+                            <label for="task-4-3">4.3 - CSV Export eAttest (manuel)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-4-4">
+                            <label for="task-4-4">4.4 - Invoice Generator UI</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-4-5">
+                            <label for="task-4-5">4.5 - Test QR virement banking app</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Epic 5: Reminders -->
+                <div class="epic todo">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 5: Appointment Reminders (SendGrid)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 2h</span>
+                        <span>📅 Semaine 4</span>
+                        <span>🟡 P1 Important</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-5-1">
+                            <label for="task-5-1">5.1 - SendGrid Setup (Free 100/jour)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-5-2">
+                            <label for="task-5-2">5.2 - Edge Function send-reminders</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-5-3">
+                            <label for="task-5-3">5.3 - Cron Schedule (daily 8h AM)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-5-4">
+                            <label for="task-5-4">5.4 - SendGrid Template Email</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-5-5">
+                            <label for="task-5-5">5.5 - Test manuel trigger</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Epic 6: Backup & Monitoring -->
+                <div class="epic todo">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 6: Backup & Monitoring</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 1h</span>
+                        <span>📅 Semaine 1, 5</span>
+                        <span>🔵 P2 Nice-to-have</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-6-1">
+                            <label for="task-6-1">6.1 - GitHub Actions Backup (daily 2h AM)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-6-2">
+                            <label for="task-6-2">6.2 - Monitoring Dashboard (DB/Storage limits)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-6-3">
+                            <label for="task-6-3">6.3 - Test backup restore (dry-run)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <h3>📅 Timeline Phase 1</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Semaine 1</div>
+                        <div>Epic 1 Database + Epic 6.1 Backup</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Semaine 2</div>
+                        <div>Epic 2 PDF Generation (3 Edge Functions)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Semaine 3</div>
+                        <div>Epic 3 Frontend + Epic 4 INAMI</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Semaine 4</div>
+                        <div>Epic 5 Reminders + Epic 6.2-6.3 Monitoring</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Semaine 5</div>
+                        <div>🎉 GO-LIVE Phase 1 (Cabinet opérationnel)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHASE 2: NIC INTEGRATION -->
+        <div class="phase">
+            <div class="phase-header collapsed" onclick="togglePhase(this)">
+                <div>
+                    <h2>🏆 PHASE 2: NIC INTEGRATION (Certification)</h2>
+                    <div class="phase-meta">
+                        <span>⏱️ 4-5 mois</span>
+                        <span>💪 85h effort</span>
+                        <span>💰 €100 coût</span>
+                        <span>🎯 Vente B2B possible</span>
+                    </div>
+                </div>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="phase-content">
+                <!-- Epic 7: Accès Test -->
+                <div class="epic todo">
+                    <div class="epic-header" onclick="toggleTasks(this)">
+                        <div class="epic-title">Epic 7: Accès Test Environment</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 2h</span>
+                        <span>📅 Mois 3 (Semaine 1-2)</span>
+                        <span>🔴 P0 Bloquant</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <div class="tasks">
+                        <div class="task">
+                            <input type="checkbox" id="task-7-1">
+                            <label for="task-7-1">7.1 - Email mycarenet@intermut.be (demande accès)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-7-2">
+                            <label for="task-7-2">7.2 - Email info@ehealth.fgov.be (certificat test)</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-7-3">
+                            <label for="task-7-3">7.3 - Download documentation SharePoint</label>
+                        </div>
+                        <div class="task">
+                            <input type="checkbox" id="task-7-4">
+                            <label for="task-7-4">7.4 - Install certificat test + test STS</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Epic 8-14: Autres epics NIC (résumé) -->
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 8: SAML Token Service</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 8h</span>
+                        <span>📅 Mois 3 (Semaine 3)</span>
+                        <span>🔴 P0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 9: API Insurability (Vérification assurabilité)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 12h</span>
+                        <span>📅 Mois 4 (Semaine 4)</span>
+                        <span>🔴 P0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 10: API Tarification (Consultation tarifs INAMI)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 10h</span>
+                        <span>📅 Mois 4 (Semaine 5)</span>
+                        <span>🔴 P0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 11: API eAttest (Attestations automatiques - COEUR NIC)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 25h</span>
+                        <span>📅 Mois 5-6 (Semaine 6-8)</span>
+                        <span>🔴 P0 CRITIQUE</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 12: Tests Internes NIC (Scénarios obligatoires)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 15h</span>
+                        <span>📅 Mois 6 (Semaine 9-10)</span>
+                        <span>🔴 P0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 13: Approval Assessment NIC (Certification officielle)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 5h</span>
+                        <span>📅 Mois 7 (Semaine 11)</span>
+                        <span>🔴 P0 CRITIQUE</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="epic todo">
+                    <div class="epic-header">
+                        <div class="epic-title">Epic 14: Production Migration (Go-live NIC)</div>
+                        <span class="epic-status todo">TODO</span>
+                    </div>
+                    <div class="epic-meta">
+                        <span>⏱️ 8h</span>
+                        <span>📅 Mois 7 (Semaine 12-13)</span>
+                        <span>🔴 P0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <h3>📅 Timeline Phase 2</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Mois 3</div>
+                        <div>Accès test + SAML Token Service</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Mois 4</div>
+                        <div>API Insurability + Tarification</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Mois 5-6</div>
+                        <div>API eAttest (complexe) + Tests internes</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Mois 7</div>
+                        <div>🎉 Approval Assessment + Production NIC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load config first -->
+    <script src="js/config.js"></script>
+
+    <script type="module">
+        // Import Supabase
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Use K2 Config
+        const supabase = createClient(
+            window.K2_CONFIG.SUPABASE_URL,
+            window.K2_CONFIG.SUPABASE_ANON_KEY
+        );
+
+        // Check auth (DISABLED for demo - uncomment to enable)
+        async function checkAuth() {
+            // DEMO MODE: Auth check disabled
+            // Uncomment lines below to enable authentication:
+            /*
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                // Redirect to login
+                window.location.href = 'index.html';
+            }
+            */
+        }
+
+        // Logout
+        window.logout = async function() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        };
+
+        // Toggle phase collapse
+        window.togglePhase = function(header) {
+            const content = header.nextElementSibling;
+            const isActive = content.classList.contains('active');
+
+            if (isActive) {
+                content.classList.remove('active');
+                header.classList.add('collapsed');
+            } else {
+                content.classList.add('active');
+                header.classList.remove('collapsed');
+            }
+        };
+
+        // Toggle tasks visibility
+        window.toggleTasks = function(header) {
+            const epic = header.parentElement;
+            const tasks = epic.querySelector('.tasks');
+
+            if (tasks.classList.contains('active')) {
+                tasks.classList.remove('active');
+            } else {
+                tasks.classList.add('active');
+            }
+        };
+
+        // Save task progress to localStorage
+        document.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                const taskId = e.target.id;
+                const checked = e.target.checked;
+                localStorage.setItem(taskId, checked);
+
+                // Update epic progress
+                updateEpicProgress(e.target);
+            }
+        });
+
+        // Update epic progress bar
+        function updateEpicProgress(checkbox) {
+            const epic = checkbox.closest('.epic');
+            const tasks = epic.querySelectorAll('input[type="checkbox"]');
+            const completed = epic.querySelectorAll('input[type="checkbox"]:checked').length;
+            const total = tasks.length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            const progressFill = epic.querySelector('.progress-fill');
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+                progressFill.textContent = percentage + '%';
+            }
+
+            // Update epic status
+            const statusBadge = epic.querySelector('.epic-status');
+            if (percentage === 100) {
+                epic.classList.remove('todo', 'in-progress');
+                epic.classList.add('done');
+                statusBadge.classList.remove('todo', 'in-progress');
+                statusBadge.classList.add('done');
+                statusBadge.textContent = 'DONE';
+            } else if (percentage > 0) {
+                epic.classList.remove('todo', 'done');
+                epic.classList.add('in-progress');
+                statusBadge.classList.remove('todo', 'done');
+                statusBadge.classList.add('in-progress');
+                statusBadge.textContent = 'IN PROGRESS';
+            }
+        }
+
+        // Load saved progress from localStorage
+        function loadProgress() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const saved = localStorage.getItem(checkbox.id);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    updateEpicProgress(checkbox);
+                }
+            });
+        }
+
+        // Init
+        checkAuth();
+        loadProgress();
+    </script>
+</body>
+</html>
