@@ -505,17 +505,19 @@
 
         .calendar-day {
             background: var(--bg-card);
-            min-height: 140px;
-            padding: 12px;
+            min-height: 120px;
+            padding: 8px 6px;
             position: relative;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .calendar-day:hover {
             background: var(--bg-hover);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .calendar-day.other-month {
@@ -530,59 +532,110 @@
 
         .day-number {
             font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 8px;
+            font-size: 13px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-count {
+            font-size: 9px;
+            font-weight: 600;
+            background: rgba(0, 102, 255, 0.2);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
         .appointments-list {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
             overflow-y: auto;
             flex: 1;
         }
 
         .appointment-chip {
-            background: var(--primary);
-            color: white;
-            padding: 6px 8px;
-            border-radius: 6px;
-            font-size: 11px;
+            background: rgba(0, 102, 255, 0.15);
+            color: rgba(255, 255, 255, 0.95);
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 10px;
             font-weight: 600;
             cursor: pointer;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             transition: all 0.2s;
-            border-left: 3px solid var(--primary-dark);
+            border-left: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.3;
         }
 
         .appointment-chip:hover {
+            background: rgba(0, 102, 255, 0.25);
             transform: translateX(-2px);
-            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.4);
+        }
+
+        .appointment-chip .chip-icon {
+            font-size: 9px;
+            flex-shrink: 0;
+        }
+
+        .appointment-chip .chip-time {
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            flex-shrink: 0;
+        }
+
+        .appointment-chip .chip-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .appointment-chip.confirmed {
-            background: var(--success);
-            border-left-color: #2d8e3e;
+            background: rgba(52, 199, 89, 0.15);
+            border-left-color: var(--success);
+        }
+
+        .appointment-chip.confirmed .chip-time {
+            color: var(--success);
         }
 
         .appointment-chip.completed {
-            background: var(--text-secondary);
-            border-left-color: #6b7280;
-            opacity: 0.7;
+            background: rgba(255, 255, 255, 0.08);
+            border-left-color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .appointment-chip.completed .chip-time {
+            color: var(--text-secondary);
         }
 
         .appointment-chip.cancelled {
-            background: var(--danger);
-            border-left-color: #cc2e24;
+            background: rgba(255, 59, 48, 0.15);
+            border-left-color: var(--danger);
             text-decoration: line-through;
         }
 
+        .appointment-chip.cancelled .chip-time {
+            color: var(--danger);
+        }
+
         .appointment-chip.urgent {
-            background: var(--warning);
-            border-left-color: #cc7800;
+            background: rgba(255, 149, 0, 0.2);
+            border-left-color: var(--warning);
             animation: pulse 2s infinite;
+        }
+
+        .appointment-chip.urgent .chip-time {
+            color: var(--warning);
         }
 
         @keyframes pulse {
@@ -1829,27 +1882,73 @@
             dayDiv.className = 'calendar-day';
             if (otherMonth) dayDiv.classList.add('other-month');
 
-            const dayNumber = document.createElement('div');
-            dayNumber.className = 'day-number';
-            dayNumber.textContent = day;
-            dayDiv.appendChild(dayNumber);
-
-            const appointmentsList = document.createElement('div');
-            appointmentsList.className = 'appointments-list';
-
             // Get appointments for this day
             const actualMonth = month < 0 ? 11 : month > 11 ? 0 : month;
             const actualYear = month < 0 ? year - 1 : month > 11 ? year + 1 : year;
             const dateStr = `${actualYear}-${String(actualMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const dayAppointments = appointments.filter(a => a.appointment_date === dateStr);
 
-            dayAppointments.slice(0, 4).forEach(apt => {
+            // Day number with count
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+
+            const dayNum = document.createElement('span');
+            dayNum.textContent = day;
+            dayNumber.appendChild(dayNum);
+
+            if (dayAppointments.length > 0 && !otherMonth) {
+                const count = document.createElement('span');
+                count.className = 'day-count';
+                count.textContent = dayAppointments.length;
+                dayNumber.appendChild(count);
+            }
+
+            dayDiv.appendChild(dayNumber);
+
+            const appointmentsList = document.createElement('div');
+            appointmentsList.className = 'appointments-list';
+
+            // Type d'appointment icons
+            const getAppointmentIcon = (type) => {
+                if (!type) return '📅';
+                const lowerType = type.toLowerCase();
+                if (lowerType.includes('urgence')) return '🚨';
+                if (lowerType.includes('contrôle') || lowerType.includes('control')) return '🔍';
+                if (lowerType.includes('détartrage') || lowerType.includes('nettoyage')) return '✨';
+                if (lowerType.includes('extraction')) return '🦷';
+                if (lowerType.includes('consultation')) return '💬';
+                if (lowerType.includes('radio') || lowerType.includes('imagerie')) return '📸';
+                if (lowerType.includes('orthodon')) return '🔧';
+                if (lowerType.includes('implant')) return '⚙️';
+                return '📋';
+            };
+
+            // Show up to 6 appointments (more compact)
+            dayAppointments.slice(0, 6).forEach(apt => {
                 const chip = document.createElement('div');
-                chip.className = `appointment-chip ${apt.status}`;
+                chip.className = `appointment-chip ${apt.status || ''}`;
                 if (apt.appointment_type && apt.appointment_type.toLowerCase().includes('urgence')) {
                     chip.classList.add('urgent');
                 }
-                chip.textContent = `${apt.start_time?.slice(0,5) || ''} ${apt.patient?.first_name || ''}`;
+
+                // Icon
+                const icon = document.createElement('span');
+                icon.className = 'chip-icon';
+                icon.textContent = getAppointmentIcon(apt.appointment_type);
+                chip.appendChild(icon);
+
+                // Time
+                const time = document.createElement('span');
+                time.className = 'chip-time';
+                time.textContent = apt.start_time?.slice(0,5) || '';
+                chip.appendChild(time);
+
+                // Name
+                const name = document.createElement('span');
+                name.className = 'chip-name';
+                name.textContent = apt.patient?.first_name || apt.patient?.last_name || 'Patient';
+                chip.appendChild(name);
+
                 chip.onclick = (e) => {
                     e.stopPropagation();
                     editAppointment(apt);
@@ -1857,10 +1956,11 @@
                 appointmentsList.appendChild(chip);
             });
 
-            if (dayAppointments.length > 4) {
+            if (dayAppointments.length > 6) {
                 const more = document.createElement('div');
                 more.className = 'more-appointments';
-                more.textContent = `+${dayAppointments.length - 4} autres`;
+                more.textContent = `+${dayAppointments.length - 6}`;
+                more.style.cssText = 'font-size: 9px; text-align: center; color: var(--text-secondary); padding: 2px; font-weight: 600;';
                 appointmentsList.appendChild(more);
             }
 
