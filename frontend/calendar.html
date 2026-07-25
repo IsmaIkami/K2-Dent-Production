@@ -505,23 +505,21 @@
 
         .calendar-day {
             background: var(--bg-card);
-            min-height: 110px;
-            padding: 6px 5px;
+            min-height: 140px;
+            padding: 8px;
             position: relative;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow: hidden;
         }
 
         .calendar-day:hover {
             background: var(--bg-hover);
             border-color: rgba(59, 130, 246, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 10;
+            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.15);
         }
 
         .calendar-day.other-month {
@@ -535,147 +533,172 @@
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
         }
 
-        /* Heat map effect based on density */
-        .calendar-day.density-low { background: var(--bg-card); }
-        .calendar-day.density-medium { background: rgba(59, 130, 246, 0.08); }
-        .calendar-day.density-high { background: rgba(59, 130, 246, 0.12); }
-        .calendar-day.density-full { background: rgba(255, 149, 0, 0.12); border-color: rgba(255, 149, 0, 0.3); }
-
         .day-number {
             font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 5px;
+            font-size: 15px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            z-index: 2;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .day-count {
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
             color: rgba(255, 255, 255, 0.95);
-            padding: 2px 7px;
+            padding: 3px 8px;
             border-radius: 12px;
             border: 1px solid rgba(59, 130, 246, 0.4);
-            min-width: 18px;
+            min-width: 20px;
             text-align: center;
         }
 
         .day-count.high {
             background: linear-gradient(135deg, rgba(255, 149, 0, 0.3) 0%, rgba(255, 149, 0, 0.2) 100%);
             border-color: rgba(255, 149, 0, 0.5);
+            color: #FFA500;
         }
 
         .appointments-list {
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            overflow: hidden;
+            gap: 4px;
+            overflow-y: auto;
             flex: 1;
         }
 
-        /* Ultra-compact bar style */
-        .appointment-chip {
-            background: rgba(59, 130, 246, 0.2);
-            color: rgba(255, 255, 255, 0.95);
-            padding: 3px 5px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: 600;
+        /* Mini appointment card for month view */
+        .appointment-mini-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 8px;
             cursor: pointer;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            transition: all 0.15s;
-            border-left: 3px solid rgba(59, 130, 246, 0.8);
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 3px;
-            line-height: 1.2;
+            gap: 6px;
             position: relative;
-        }
-
-        .appointment-chip:hover {
-            background: rgba(59, 130, 246, 0.35);
-            transform: translateX(-3px);
-            z-index: 5;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .appointment-chip .chip-icon {
-            font-size: 10px;
-            flex-shrink: 0;
-            filter: brightness(1.2);
-        }
-
-        .appointment-chip .chip-time {
-            font-weight: 700;
-            color: rgba(255, 255, 255, 1);
-            flex-shrink: 0;
-            font-size: 9px;
-            letter-spacing: 0.3px;
-        }
-
-        .appointment-chip .chip-name {
-            flex: 1;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 9px;
         }
 
-        /* Status colors - more vibrant */
-        .appointment-chip.confirmed {
-            background: rgba(52, 199, 89, 0.2);
-            border-left-color: rgb(52, 199, 89);
+        .appointment-mini-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
         }
 
-        .appointment-chip.confirmed:hover {
-            background: rgba(52, 199, 89, 0.3);
+        .appointment-mini-card:hover {
+            border-color: var(--primary);
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
         }
 
-        .appointment-chip.completed {
-            background: rgba(142, 142, 147, 0.15);
-            border-left-color: rgb(142, 142, 147);
-            opacity: 0.7;
+        .appointment-mini-card.confirmed::before {
+            background: var(--success);
         }
 
-        .appointment-chip.cancelled {
-            background: rgba(255, 59, 48, 0.15);
-            border-left-color: rgb(255, 59, 48);
+        .appointment-mini-card.completed::before {
+            background: var(--text-secondary);
+        }
+
+        .appointment-mini-card.completed {
             opacity: 0.6;
         }
 
-        .appointment-chip.cancelled .chip-name {
-            text-decoration: line-through;
+        .appointment-mini-card.cancelled::before {
+            background: var(--danger);
         }
 
-        .appointment-chip.urgent {
-            background: rgba(255, 149, 0, 0.25);
-            border-left-color: rgb(255, 149, 0);
+        .appointment-mini-card.cancelled {
+            opacity: 0.5;
+        }
+
+        .appointment-mini-card.urgent::before {
+            background: var(--warning);
             animation: pulseUrgent 1.5s ease-in-out infinite;
         }
 
-        .appointment-chip.urgent:hover {
-            background: rgba(255, 149, 0, 0.4);
+        .mini-card-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .mini-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mini-card-time {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .appointment-mini-card.confirmed .mini-card-time {
+            color: var(--success);
+        }
+
+        .appointment-mini-card.completed .mini-card-time {
+            color: var(--text-secondary);
+        }
+
+        .appointment-mini-card.cancelled .mini-card-time {
+            color: var(--danger);
+        }
+
+        .appointment-mini-card.urgent .mini-card-time {
+            color: var(--warning);
+        }
+
+        .mini-card-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mini-card-type {
+            font-size: 9px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 1px;
         }
 
         /* More appointments indicator */
         .more-appointments {
-            font-size: 8px;
+            font-size: 9px;
             text-align: center;
-            color: rgba(59, 130, 246, 0.9);
+            color: var(--primary);
             font-weight: 700;
-            padding: 3px;
+            padding: 4px;
             background: rgba(59, 130, 246, 0.1);
-            border-radius: 3px;
+            border-radius: 6px;
             margin-top: 2px;
             cursor: pointer;
             transition: all 0.2s;
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
         .more-appointments:hover {
@@ -686,11 +709,11 @@
         @keyframes pulseUrgent {
             0%, 100% {
                 opacity: 1;
-                border-left-width: 3px;
+                width: 3px;
             }
             50% {
-                opacity: 0.8;
-                border-left-width: 4px;
+                opacity: 0.7;
+                width: 4px;
             }
         }
 
@@ -1944,21 +1967,7 @@
             const dateStr = `${actualYear}-${String(actualMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const dayAppointments = appointments.filter(a => a.appointment_date === dateStr);
 
-            // Add density class for heat map effect
-            if (!otherMonth) {
-                const count = dayAppointments.length;
-                if (count === 0) {
-                    dayDiv.classList.add('density-low');
-                } else if (count <= 3) {
-                    dayDiv.classList.add('density-medium');
-                } else if (count <= 6) {
-                    dayDiv.classList.add('density-high');
-                } else {
-                    dayDiv.classList.add('density-full');
-                }
-            }
-
-            // Day number with count
+            // Day number with count badge
             const dayNumber = document.createElement('div');
             dayNumber.className = 'day-number';
 
@@ -1979,58 +1988,73 @@
             const appointmentsList = document.createElement('div');
             appointmentsList.className = 'appointments-list';
 
-            // Type d'appointment icons
-            const getAppointmentIcon = (type) => {
-                if (!type) return '📅';
-                const lowerType = type.toLowerCase();
-                if (lowerType.includes('urgence')) return '🚨';
-                if (lowerType.includes('contrôle') || lowerType.includes('control')) return '🔍';
-                if (lowerType.includes('détartrage') || lowerType.includes('nettoyage')) return '✨';
-                if (lowerType.includes('extraction')) return '🦷';
-                if (lowerType.includes('consultation')) return '💬';
-                if (lowerType.includes('radio') || lowerType.includes('imagerie')) return '📸';
-                if (lowerType.includes('orthodon')) return '🔧';
-                if (lowerType.includes('implant')) return '⚙️';
-                return '📋';
-            };
+            // Show up to 4 appointments as mini-cards
+            dayAppointments.slice(0, 4).forEach(apt => {
+                const patient = apt.patient || patients.find(p => p.id === apt.patient_id);
 
-            // Show up to 8 appointments (ultra-compact bars)
-            dayAppointments.slice(0, 8).forEach(apt => {
-                const chip = document.createElement('div');
-                chip.className = `appointment-chip ${apt.status || ''}`;
+                const card = document.createElement('div');
+                card.className = `appointment-mini-card ${apt.status || ''}`;
                 if (apt.appointment_type && apt.appointment_type.toLowerCase().includes('urgence')) {
-                    chip.classList.add('urgent');
+                    card.classList.add('urgent');
                 }
 
-                // Icon
-                const icon = document.createElement('span');
-                icon.className = 'chip-icon';
-                icon.textContent = getAppointmentIcon(apt.appointment_type);
-                chip.appendChild(icon);
+                // Avatar
+                const avatar = document.createElement('div');
+                avatar.className = 'mini-card-avatar';
+                if (patient) {
+                    const initials = (patient.first_name?.[0] || '') + (patient.last_name?.[0] || '');
+                    avatar.textContent = initials.toUpperCase();
+                } else {
+                    avatar.textContent = '?';
+                }
+                card.appendChild(avatar);
 
-                // Time
-                const time = document.createElement('span');
-                time.className = 'chip-time';
+                // Info section
+                const info = document.createElement('div');
+                info.className = 'mini-card-info';
+
+                const time = document.createElement('div');
+                time.className = 'mini-card-time';
                 time.textContent = apt.start_time?.slice(0,5) || '';
-                chip.appendChild(time);
+                info.appendChild(time);
 
-                // Name
-                const name = document.createElement('span');
-                name.className = 'chip-name';
-                name.textContent = apt.patient?.first_name || apt.patient?.last_name || 'Patient';
-                chip.appendChild(name);
+                const name = document.createElement('div');
+                name.className = 'mini-card-name';
+                if (patient) {
+                    name.textContent = `${patient.first_name || ''} ${patient.last_name || ''}`.trim();
+                } else {
+                    name.textContent = 'Patient';
+                }
+                info.appendChild(name);
 
-                chip.onclick = (e) => {
+                const type = document.createElement('div');
+                type.className = 'mini-card-type';
+                type.textContent = apt.appointment_type || 'Consultation';
+                info.appendChild(type);
+
+                card.appendChild(info);
+
+                card.onclick = (e) => {
                     e.stopPropagation();
                     editAppointment(apt);
                 };
-                appointmentsList.appendChild(chip);
+                appointmentsList.appendChild(card);
             });
 
-            if (dayAppointments.length > 8) {
+            if (dayAppointments.length > 4) {
                 const more = document.createElement('div');
                 more.className = 'more-appointments';
-                more.textContent = `+${dayAppointments.length - 8} autres`;
+                more.textContent = `+ ${dayAppointments.length - 4} autre${dayAppointments.length - 4 > 1 ? 's' : ''}`;
+                more.onclick = (e) => {
+                    e.stopPropagation();
+                    // Switch to day view for this date
+                    currentView = 'day';
+                    currentDate = new Date(dateStr);
+                    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelector('[data-view="day"]')?.classList.add('active');
+                    renderMainCalendar();
+                    renderListView(new Date(dateStr));
+                };
                 appointmentsList.appendChild(more);
             }
 
