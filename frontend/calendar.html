@@ -509,77 +509,59 @@
         }
 
         .calendar-day {
-            background: linear-gradient(135deg, rgba(20, 27, 45, 0.6) 0%, rgba(14, 19, 35, 0.8) 100%);
-            min-height: 150px;
-            padding: 10px;
+            background: var(--bg-card);
+            min-height: 130px;
+            padding: 8px;
             position: relative;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.2s;
             display: flex;
             flex-direction: column;
-            border: 1.5px solid rgba(255, 255, 255, 0.08);
-            overflow: hidden;
-            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
         }
 
         .calendar-day:hover {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(20, 27, 45, 0.9) 100%);
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 4px 20px rgba(0, 102, 255, 0.2);
-            transform: translateY(-2px);
+            background: var(--bg-hover);
+            border-color: var(--primary);
         }
 
         .calendar-day.other-month {
             background: rgba(10, 14, 26, 0.3);
-            opacity: 0.4;
+            opacity: 0.5;
         }
 
         .calendar-day.today {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
-            border: 2px solid rgba(59, 130, 246, 0.8);
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1);
-        }
-
-        .calendar-day.today:hover {
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.5), inset 0 0 25px rgba(59, 130, 246, 0.15);
+            background: rgba(0, 102, 255, 0.1);
+            border: 2px solid var(--primary);
         }
 
         .day-number {
             font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .day-count {
             font-size: 10px;
             font-weight: 700;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.2) 100%);
-            color: rgba(255, 255, 255, 1);
-            padding: 4px 10px;
-            border-radius: 14px;
-            border: 1.5px solid rgba(59, 130, 246, 0.5);
-            min-width: 22px;
+            background: rgba(0, 102, 255, 0.2);
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            min-width: 18px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-            letter-spacing: 0.5px;
         }
 
         .day-count.high {
-            background: linear-gradient(135deg, rgba(255, 149, 0, 0.35) 0%, rgba(255, 149, 0, 0.25) 100%);
-            border-color: rgba(255, 149, 0, 0.6);
-            color: #FFB84D;
-            box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
-            animation: pulseCount 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseCount {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            background: rgba(255, 149, 0, 0.25);
+            border-color: rgba(255, 149, 0, 0.4);
+            color: var(--warning);
         }
 
         .appointments-list {
@@ -590,130 +572,84 @@
             flex: 1;
         }
 
-        /* Mini appointment card for month view */
-        .appointment-mini-card {
-            background: linear-gradient(135deg, rgba(20, 27, 45, 0.95) 0%, rgba(14, 19, 35, 0.95) 100%);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 8px 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+        /* Simple appointment bar for month view - WORKING STYLE */
+        .appointment-bar {
+            background: var(--bg-main) !important;
+            border: 1px solid var(--border) !important;
+            border-left: 3px solid var(--primary) !important;
+            border-radius: 6px !important;
+            padding: 6px 8px !important;
+            margin-bottom: 3px !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+            font-size: 11px !important;
+            display: block !important;
         }
 
-        .appointment-mini-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(180deg, var(--primary) 0%, rgba(0, 102, 255, 0.6) 100%);
-            box-shadow: 0 0 8px var(--primary);
+        .appointment-bar:hover {
+            border-color: var(--primary) !important;
+            background: var(--bg-hover) !important;
+            transform: translateX(2px) !important;
         }
 
-        .appointment-mini-card:hover {
-            border-color: rgba(59, 130, 246, 0.6);
-            transform: translateX(3px) scale(1.02);
-            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.3);
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(20, 27, 45, 0.98) 100%);
+        .appointment-bar.confirmed {
+            border-left-color: var(--success) !important;
         }
 
-        .appointment-mini-card.confirmed::before {
-            background: var(--success);
+        .appointment-bar.completed {
+            border-left-color: var(--text-secondary) !important;
+            opacity: 0.7 !important;
         }
 
-        .appointment-mini-card.completed::before {
-            background: var(--text-secondary);
+        .appointment-bar.cancelled {
+            border-left-color: var(--danger) !important;
+            opacity: 0.6 !important;
         }
 
-        .appointment-mini-card.completed {
-            opacity: 0.6;
+        .appointment-bar.urgent {
+            border-left-color: var(--warning) !important;
+            animation: pulseBar 1.5s ease-in-out infinite !important;
         }
 
-        .appointment-mini-card.cancelled::before {
-            background: var(--danger);
+        .bar-time {
+            font-weight: 700 !important;
+            color: var(--primary) !important;
+            display: inline-block !important;
+            margin-right: 6px !important;
         }
 
-        .appointment-mini-card.cancelled {
-            opacity: 0.5;
+        .appointment-bar.confirmed .bar-time {
+            color: var(--success) !important;
         }
 
-        .appointment-mini-card.urgent::before {
-            background: var(--warning);
-            animation: pulseUrgent 1.5s ease-in-out infinite;
+        .appointment-bar.completed .bar-time {
+            color: var(--text-secondary) !important;
         }
 
-        .mini-card-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-            color: white;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.15);
+        .appointment-bar.cancelled .bar-time {
+            color: var(--danger) !important;
         }
 
-        .mini-card-info {
-            flex: 1;
-            min-width: 0;
+        .appointment-bar.urgent .bar-time {
+            color: var(--warning) !important;
         }
 
-        .mini-card-time {
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(59, 130, 246, 0.95);
-            margin-bottom: 3px;
-            letter-spacing: 0.3px;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        .bar-patient {
+            font-weight: 600 !important;
+            color: var(--text-primary) !important;
+            display: inline-block !important;
         }
 
-        .appointment-mini-card.confirmed .mini-card-time {
-            color: var(--success);
+        .bar-type {
+            font-size: 10px !important;
+            color: var(--text-secondary) !important;
+            display: block !important;
+            margin-top: 2px !important;
         }
 
-        .appointment-mini-card.completed .mini-card-time {
-            color: var(--text-secondary);
-        }
-
-        .appointment-mini-card.cancelled .mini-card-time {
-            color: var(--danger);
-        }
-
-        .appointment-mini-card.urgent .mini-card-time {
-            color: var(--warning);
-        }
-
-        .mini-card-name {
-            font-size: 12px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.95);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            line-height: 1.3;
-        }
-
-        .mini-card-type {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.6);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-top: 2px;
-            font-weight: 500;
+        @keyframes pulseBar {
+            0%, 100% { border-left-width: 3px; }
+            50% { border-left-width: 4px; }
         }
 
         /* More appointments indicator */
@@ -2018,57 +1954,43 @@
             const appointmentsList = document.createElement('div');
             appointmentsList.className = 'appointments-list';
 
-            // Show up to 4 appointments as mini-cards
+            // Show up to 4 appointments as simple bars
             dayAppointments.slice(0, 4).forEach(apt => {
                 const patient = apt.patient || patients.find(p => p.id === apt.patient_id);
 
-                const card = document.createElement('div');
-                card.className = `appointment-mini-card ${apt.status || ''}`;
+                const bar = document.createElement('div');
+                bar.className = `appointment-bar ${apt.status || ''}`;
                 if (apt.appointment_type && apt.appointment_type.toLowerCase().includes('urgence')) {
-                    card.classList.add('urgent');
+                    bar.classList.add('urgent');
                 }
 
-                // Avatar
-                const avatar = document.createElement('div');
-                avatar.className = 'mini-card-avatar';
+                // Time
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'bar-time';
+                timeSpan.textContent = apt.start_time?.slice(0,5) || '';
+                bar.appendChild(timeSpan);
+
+                // Patient name
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'bar-patient';
                 if (patient) {
-                    const initials = (patient.first_name?.[0] || '') + (patient.last_name?.[0] || '');
-                    avatar.textContent = initials.toUpperCase();
+                    nameSpan.textContent = `${patient.first_name || ''} ${patient.last_name || ''}`.trim();
                 } else {
-                    avatar.textContent = '?';
+                    nameSpan.textContent = 'Patient';
                 }
-                card.appendChild(avatar);
+                bar.appendChild(nameSpan);
 
-                // Info section
-                const info = document.createElement('div');
-                info.className = 'mini-card-info';
+                // Type on second line
+                const typeDiv = document.createElement('div');
+                typeDiv.className = 'bar-type';
+                typeDiv.textContent = apt.appointment_type || 'Consultation';
+                bar.appendChild(typeDiv);
 
-                const time = document.createElement('div');
-                time.className = 'mini-card-time';
-                time.textContent = apt.start_time?.slice(0,5) || '';
-                info.appendChild(time);
-
-                const name = document.createElement('div');
-                name.className = 'mini-card-name';
-                if (patient) {
-                    name.textContent = `${patient.first_name || ''} ${patient.last_name || ''}`.trim();
-                } else {
-                    name.textContent = 'Patient';
-                }
-                info.appendChild(name);
-
-                const type = document.createElement('div');
-                type.className = 'mini-card-type';
-                type.textContent = apt.appointment_type || 'Consultation';
-                info.appendChild(type);
-
-                card.appendChild(info);
-
-                card.onclick = (e) => {
+                bar.onclick = (e) => {
                     e.stopPropagation();
                     editAppointment(apt);
                 };
-                appointmentsList.appendChild(card);
+                appointmentsList.appendChild(bar);
             });
 
             if (dayAppointments.length > 4) {
